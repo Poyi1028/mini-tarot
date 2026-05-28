@@ -1,0 +1,155 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Palette */
+  --color-gold: #c9a94e;
+  --color-gold-soft: #b8a063;
+  --color-gold-dim: #7d6a38;
+  --color-ink: #070707;
+  --color-ink-2: #111110;
+  --color-purple-deep: #161512;
+  --color-parchment: #ece4cf;
+  --color-muted: #8c8676;
+
+  /* Typography — wired to next/font css variables in layout.js */
+  --font-display: var(--font-cinzel), serif;
+  --font-serif: var(--font-noto-serif-tc), serif;
+
+  /* Named animations */
+  --animate-sigil-spin: sigil-spin 12s linear infinite;
+  --animate-sigil-spin-r: sigil-spin-r 18s linear infinite;
+  --animate-breath-glow: breath-glow 2.6s ease-in-out infinite;
+  --animate-fade-up: fade-up 1400ms ease forwards;
+  --animate-dotpulse: dotpulse 1.4s steps(4, end) infinite;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-ink);
+    color: var(--color-parchment);
+    font-family: var(--font-serif);
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  textarea::placeholder {
+    color: #6f6a5c;
+    font-style: italic;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+
+  /* Hidden but functional scrollbars */
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.4);
+  }
+}
+
+@keyframes motePly {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2);
+    opacity: 0;
+  }
+}
+
+@keyframes dotpulse {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+  100% {
+    content: '';
+  }
+}
+
+.dotpulse::after {
+  content: '';
+  animation: var(--animate-dotpulse);
+}
+
+@keyframes sigil-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sigil-spin-r {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes breath-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.18), 0 0 22px rgba(212, 175, 55, 0.1),
+      inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 26px rgba(212, 175, 55, 0.55), 0 0 44px rgba(212, 175, 55, 0.32),
+      inset 0 0 0 1px rgba(212, 175, 55, 0.55);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
