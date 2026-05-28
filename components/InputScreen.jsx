@@ -114,10 +114,9 @@ export default function InputScreen({ onSubmit }) {
     if (!container) return;
     const charSpans = container.querySelectorAll('span[data-c]');
     const cBox = container.getBoundingClientRect();
-    // The whole device frame is rendered inside a CSS transform: scale() (see
-    // FitToViewport), so getBoundingClientRect returns *scaled* screen pixels.
-    // The dots' left/top are local pixels that the frame scales again, so we
-    // must divide measured deltas by the live scale to land on each glyph.
+    // getBoundingClientRect returns CSS-pixel deltas relative to offsetWidth, so
+    // scale is normally 1; the divide stays as a guard in case an ancestor ever
+    // applies a CSS transform that scales this subtree.
     const scale = container.offsetWidth ? cBox.width / container.offsetWidth : 1;
     const pts = [];
     let pid = 0;

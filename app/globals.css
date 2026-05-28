@@ -32,18 +32,15 @@
   body {
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
     background: var(--color-ink);
     color: var(--color-parchment);
     font-family: var(--font-serif);
+    overscroll-behavior: none;
   }
 
   body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   textarea::placeholder {

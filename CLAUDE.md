@@ -23,7 +23,7 @@ Next.js 15 (App Router) · React 19 · plain JavaScript (no TypeScript) · Tailw
 
 ## Architecture
 
-**Single-screen "device mockup" app.** `app/page.js` renders one `IOSFrame` (a hand-drawn iPhone: dynamic island, status bar, home indicator, optional fake keyboard) wrapping `TarotApp`. The whole experience is designed as a fixed portrait mobile UI displayed as a device on desktop — keep new UI inside that 402×874 frame and the mobile aesthetic.
+**Single-screen, mobile-first PWA.** `app/page.js` renders `TarotApp` directly inside a centered, full-height (`100dvh`) column capped at `max-w-[480px]` — on phones it fills the viewport, on desktop it stays a portrait phone-width strip on an ink background. The wrapper applies `env(safe-area-inset-*)` padding (notch/home-bar), so screens' hardcoded `pt-[60px]/pt-[70px]` sit below the status bar. Keep new UI portrait and mobile-first. Installable via `app/manifest.js` (generates `/manifest.webmanifest`) + `public/icon.svg`; PWA/viewport/theme-color/`viewport-fit=cover` metadata lives in `app/layout.js` (`metadata` + `viewport` exports). Manifest-only (no service worker) — no offline caching beyond browser defaults.
 
 **Screen flow is a client-side state machine.** `TarotApp.jsx` (`'use client'`) holds `screen` state and crossfades between three screens with framer-motion `AnimatePresence`:
 `input` → `shuffle` → `spread`. `InputScreen` collects the question; `ShuffleScreen` is the shuffle/cut interaction; `SpreadScreen` lays out the 3-card "聖三角" (past/present/future), handles per-card flips, and fetches the reading.
