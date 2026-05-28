@@ -20,19 +20,6 @@ const SLOTS = [
   { x: 104, y: 52 },
 ];
 
-async function requestReading(question, drawn) {
-  try {
-    const res = await fetch('/api/reading', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question, cards: drawn }),
-    });
-    const data = await res.json();
-    return data.reading ?? null;
-  } catch {
-    return null;
-  }
-}
 
 function SacredTriangleGuide({ visible }) {
   return (
@@ -111,7 +98,7 @@ function FlipCard({ card, pos, flipped, onFlip }) {
   );
 }
 
-function ReadingPanel({ drawn, reading, loading, onRestart }) {
+function ReadingPanel({ drawn, onRestart }) {
   return (
     <div className="pt-3">
       <div className="mx-auto h-9 w-px bg-gradient-to-b from-transparent to-gold-soft" />
@@ -155,28 +142,13 @@ function ReadingPanel({ drawn, reading, loading, onRestart }) {
 
       {/* Oracle synthesis */}
       <div className="mt-7 px-1">
-        <div className="mb-3 pl-[5px] text-center font-display text-[10px] tracking-[5px] text-gold">
-          ✦  ORACLE  ✦
+        <div className="px-2.5 py-1 text-center text-[13px] leading-[1.9] tracking-[1px] text-muted">
+          三張牌已並列為你的聖三角。
+          <br />
+          讓它們在你心中停留片刻，
+          <br />
+          真正的訊息會在沉默裡浮現。
         </div>
-        {loading && (
-          <div className="py-5 text-center text-xs tracking-[3px] text-muted">
-            星辰正在低語<span className="dotpulse" />
-          </div>
-        )}
-        {!loading && reading && (
-          <div className="animate-fade-up whitespace-pre-wrap px-2.5 py-1 text-sm leading-[2] tracking-[1px] text-parchment opacity-0">
-            {reading}
-          </div>
-        )}
-        {!loading && !reading && (
-          <div className="px-2.5 py-1 text-center text-[13px] leading-[1.9] tracking-[1px] text-muted">
-            三張牌已並列為你的聖三角。
-            <br />
-            讓它們在你心中停留片刻，
-            <br />
-            真正的訊息會在沉默裡浮現。
-          </div>
-        )}
       </div>
 
       <button
@@ -201,8 +173,6 @@ export default function SpreadScreen({ question, onRestart }) {
 
   const [phase, setPhase] = useState('merging');
   const [flipped, setFlipped] = useState([false, false, false]);
-  const [reading, setReading] = useState(null);
-  const [readingLoading, setReadingLoading] = useState(false);
   const [showReading, setShowReading] = useState(false);
 
   useEffect(() => {
@@ -222,14 +192,9 @@ export default function SpreadScreen({ question, onRestart }) {
   const allFlipped = flipped.every(Boolean);
 
   useEffect(() => {
-    if (!allFlipped || readingLoading || reading !== null) return;
-    setReadingLoading(true);
-    requestReading(question, drawn).then((text) => {
-      setReading(text);
-      setReadingLoading(false);
-    });
+    if (!allFlipped) return;
     setTimeout(() => setShowReading(true), 900);
-  }, [allFlipped]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allFlipped]);
 
   return (
     <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
@@ -310,8 +275,6 @@ export default function SpreadScreen({ question, onRestart }) {
         >
           <ReadingPanel
             drawn={drawn}
-            reading={reading}
-            loading={readingLoading}
             onRestart={onRestart}
           />
         </motion.div>
