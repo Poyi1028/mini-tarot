@@ -3,6 +3,7 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_SOFT } from '@/lib/constants';
+import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
 
 function trianglePath(cx, cy, r, rot) {
@@ -56,7 +57,7 @@ function SyncOverlay() {
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 1.2, ease: 'easeOut' }}
+      transition={{ duration: 1.2, ease: EASE.out }}
     >
       <div className="relative mb-9 h-[110px] w-[110px]">
         <SyncSigil />
@@ -65,7 +66,7 @@ function SyncOverlay() {
         className="font-serif text-base font-light leading-[2] tracking-[6px] text-parchment"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1.5, delay: 0.4 }}
+        transition={{ duration: 1.5, delay: 0.4, ease: EASE.out }}
       >
         正在將你的意念
         <br />
@@ -113,27 +114,36 @@ export default function InputScreen({ onSubmit }) {
     if (!container) return;
     const charSpans = container.querySelectorAll('span[data-c]');
     const cBox = container.getBoundingClientRect();
+    // The whole device frame is rendered inside a CSS transform: scale() (see
+    // FitToViewport), so getBoundingClientRect returns *scaled* screen pixels.
+    // The dots' left/top are local pixels that the frame scales again, so we
+    // must divide measured deltas by the live scale to land on each glyph.
+    const scale = container.offsetWidth ? cBox.width / container.offsetWidth : 1;
     const pts = [];
     let pid = 0;
-    charSpans.forEach((el) => {
+    charSpans.forEach((el, idx) => {
       if (el.dataset.c === ' ') return;
       const b = el.getBoundingClientRect();
-      const baseX = b.left - cBox.left + b.width / 2;
-      const baseY = b.top - cBox.top + b.height / 2;
-      // The later a character sits, the later it dissolves — left-to-right sweep.
-      const charDelay = 200 + (b.left - cBox.left) * 2.2;
+      const gw = b.width / scale;
+      const gh = b.height / scale;
+      const baseX = (b.left - cBox.left) / scale + gw / 2;
+      const baseY = (b.top - cBox.top) / scale + gh / 2;
+      // Ignite each glyph's light in lockstep with that glyph's own fade
+      // (same per-character schedule as the spans below), so the dots melt
+      // out of the letter exactly where — and when — it dissolves.
+      const charDelay = 150 + Math.min(idx, 12) * 38;
       // Each glyph bursts into a cluster of light dots.
       const dots = 5 + Math.floor(Math.random() * 4);
       for (let k = 0; k < dots; k++) {
         pts.push({
           id: pid++,
-          x: baseX + (Math.random() - 0.5) * b.width * 0.8,
-          y: baseY + (Math.random() - 0.5) * b.height * 0.8,
+          x: baseX + (Math.random() - 0.5) * gw * 0.6,
+          y: baseY + (Math.random() - 0.5) * gh * 0.6,
           size: 1.5 + Math.random() * 3,
-          dx: (Math.random() - 0.5) * 110,
-          dy: -50 - Math.random() * 160,
-          delay: charDelay + Math.random() * 500,
-          dur: 1600 + Math.random() * 1100,
+          dx: (Math.random() - 0.5) * 50,
+          dy: -16 - Math.random() * 64,
+          delay: charDelay + Math.random() * 180,
+          dur: 850 + Math.random() * 450,
         });
       }
     });
@@ -143,8 +153,10 @@ export default function InputScreen({ onSubmit }) {
   function ignite() {
     if (!q.trim() || phase !== 'input') return;
     setPhase('dissolve');
-    setTimeout(() => setShowSync(true), 1600);
-    setTimeout(() => onSubmit(q.trim()), 4200);
+    // The sync overlay fades in over the tail of the scattering light (so the
+    // sigil forms as the last motes rise — no dead gap), then we advance.
+    setTimeout(() => setShowSync(true), 1500);
+    setTimeout(() => onSubmit(q.trim()), 3000);
   }
 
   const isInput = phase === 'input';
@@ -157,7 +169,7 @@ export default function InputScreen({ onSubmit }) {
       <motion.div
         className="relative z-[2] mt-[30px] text-center"
         animate={{ opacity: isInput ? 1 : 0 }}
-        transition={{ duration: 0.7 }}
+        transition={{ duration: DUR.base, ease: EASE.out }}
       >
         <div className="mb-3.5 pl-2 font-display text-[13px] tracking-[8px] text-gold opacity-90">
           TAROT
@@ -196,7 +208,7 @@ export default function InputScreen({ onSubmit }) {
                   style={{
                     opacity: phase === 'dissolve' ? 0 : 1,
                     filter: phase === 'dissolve' ? 'blur(3px)' : 'blur(0px)',
-                    transition: `opacity 700ms ease-out ${200 + i * 55}ms, filter 700ms ease-out ${200 + i * 55}ms`,
+                    transition: `opacity 600ms ease-out ${150 + Math.min(i, 12) * 38}ms, filter 600ms ease-out ${150 + Math.min(i, 12) * 38}ms`,
                   }}
                 >
                   {ch === ' ' ? ' ' : ch}
@@ -244,7 +256,7 @@ export default function InputScreen({ onSubmit }) {
         disabled={!q.trim() || !isInput}
         className="relative z-[2] mb-[50px] rounded-sm border border-gold bg-transparent py-4 pl-10 pr-8 font-serif text-sm tracking-[8px] text-gold transition-[background,box-shadow] duration-200 disabled:cursor-default"
         animate={{ opacity: !isInput ? 0 : q.trim() ? 1 : 0.35 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: DUR.base, ease: EASE.out }}
         style={{
           cursor: q.trim() ? 'pointer' : 'default',
           boxShadow: q.trim()

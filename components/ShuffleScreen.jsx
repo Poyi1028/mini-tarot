@@ -3,11 +3,22 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { GOLD_SOFT } from '@/lib/constants';
+import { EASE, SPRING_SHUFFLE } from '@/lib/motion';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 
 const N_DECK = 78;
 const SHUFFLE_TARGET = 1800;
+// Half-extent of the "table" the cards are washed across.
+const TABLE_X = 148;
+const TABLE_Y = 76;
+
+// Depth by vertical position — cards nearer the bottom sit on top, like a real
+// face-down spread on a table (avoids z-index flicker while smearing).
+function depthFor(y) {
+  const t = (y + TABLE_Y) / (2 * TABLE_Y);
+  return Math.round(Math.max(0, Math.min(1, t)) * (N_DECK - 1));
+}
 
 function HandSwipeHint() {
   return (
@@ -23,31 +34,39 @@ function HandSwipeHint() {
           <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
         </path>
       </svg>
-      <span>左 右 滑 動</span>
+      <span>左 右 塗 抹</span>
     </div>
   );
 }
 
 export default function ShuffleScreen({ onComplete }) {
   const [cards, setCards] = useState(() =>
-    Array.from({ length: N_DECK }, (_, i) => ({
-      id: i,
-      x: (Math.random() - 0.5) * 6,
-      y: (Math.random() - 0.5) * 4,
-      r: (Math.random() - 0.5) * 4,
-      zi: i,
-      pile: 0,
-    }))
+    Array.from({ length: N_DECK }, (_, i) => {
+      const y = (Math.random() - 0.5) * 2 * TABLE_Y * 0.85;
+      return {
+        id: i,
+        // Start already spread face-down across the table.
+        x: (Math.random() - 0.5) * 2 * TABLE_X * 0.85,
+        y,
+        r: (Math.random() - 0.5) * 46,
+        zi: depthFor(y),
+        pile: 0,
+      };
+    })
   );
   const [phase, setPhase] = useState('shuffle'); // shuffle | settling | piles | merging
   const [progress, setProgress] = useState(0);
   const [hoverPile, setHoverPile] = useState(null);
-  const dragRef = useRef({ on: false, lx: 0, ly: 0, dist: 0, last: 0 });
+  const dragRef = useRef({ on: false, lx: 0, ly: 0, dist: 0, last: 0, adx: 0, ady: 0 });
+  const idleRef = useRef(null);
   const surfaceRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(idleRef.current), []);
 
   useEffect(() => {
     if (phase !== 'shuffle' || progress < 1) return;
     setPhase('settling');
+    clearTimeout(idleRef.current);
     setTimeout(() => {
       setCards((prev) =>
         prev.map((c, i) => ({
@@ -63,14 +82,46 @@ export default function ShuffleScreen({ onComplete }) {
     }, 600);
   }, [progress, phase]);
 
-  function reshuffle() {
+  // Scatter: each card gets its own outward impulse (a random direction plus a
+  // little of the fingertip's travel), so the deck bursts apart and fills the
+  // whole table instead of drifting as one clump. Energy from the swipe speed
+  // makes a fast wash fling them wider. Cards reaching an edge are reflected
+  // back into the field so the spread stays full.
+  function scatter(dx, dy, speed) {
+    const push = 14 + Math.min(60, speed * 0.5);
     setCards((prev) =>
-      prev.map((c) => ({
+      prev.map((c, i) => {
+        const ang = Math.random() * Math.PI * 2;
+        const mag = push * (0.6 + (i % 5) * 0.12);
+        let nx = c.x + Math.cos(ang) * mag + dx * 0.22;
+        let ny = c.y + Math.sin(ang) * mag * 0.6 + dy * 0.14;
+        if (nx > TABLE_X) nx = TABLE_X - Math.random() * 64;
+        else if (nx < -TABLE_X) nx = -TABLE_X + Math.random() * 64;
+        if (ny > TABLE_Y) ny = TABLE_Y - Math.random() * 40;
+        else if (ny < -TABLE_Y) ny = -TABLE_Y + Math.random() * 40;
+        const r = c.r + (Math.random() - 0.5) * 44;
+        return {
+          ...c,
+          x: nx,
+          y: ny,
+          r: Math.max(-60, Math.min(60, r)),
+          zi: depthFor(ny),
+        };
+      })
+    );
+  }
+
+  // Gather: when the fingertip rests, ease every card back into a loose pile
+  // near the center — the "聚攏" half of the scatter-then-gather rhythm.
+  function gather() {
+    if (phase !== 'shuffle') return;
+    setCards((prev) =>
+      prev.map((c, i) => ({
         ...c,
-        x: (Math.random() - 0.5) * 130,
-        y: (Math.random() - 0.5) * 70,
-        r: (Math.random() - 0.5) * 70,
-        zi: Math.floor(Math.random() * N_DECK),
+        x: (Math.random() - 0.5) * 46,
+        y: (Math.random() - 0.5) * 30,
+        r: (Math.random() - 0.5) * 22,
+        zi: i,
       }))
     );
   }
@@ -93,16 +144,26 @@ export default function ShuffleScreen({ onComplete }) {
     dragRef.current.lx = e.clientX;
     dragRef.current.ly = e.clientY;
     dragRef.current.dist += d;
+    dragRef.current.adx += dx;
+    dragRef.current.ady += dy;
     const now = performance.now();
     setProgress(Math.min(1, dragRef.current.dist / SHUFFLE_TARGET));
-    if (now - dragRef.current.last > 70) {
+    if (now - dragRef.current.last > 30) {
+      const adx = dragRef.current.adx;
+      const ady = dragRef.current.ady;
       dragRef.current.last = now;
-      reshuffle();
+      scatter(adx, ady, Math.hypot(adx, ady));
+      dragRef.current.adx = 0;
+      dragRef.current.ady = 0;
+      clearTimeout(idleRef.current);
+      idleRef.current = setTimeout(gather, 150);
     }
   }
 
   function handlePointerUp() {
     dragRef.current.on = false;
+    clearTimeout(idleRef.current);
+    gather();
   }
 
   function selectPile(p) {
@@ -135,7 +196,7 @@ export default function ShuffleScreen({ onComplete }) {
           {phase === 'shuffle' || phase === 'settling' ? 'SHUFFLE' : 'CUT THE DECK'}
         </div>
         <div className="whitespace-pre-line text-[17px] font-light leading-[1.8] tracking-[4px] text-parchment">
-          {phase === 'shuffle' && '以指尖左右滑動或畫圈\n讓牌與你的氣息共振'}
+          {phase === 'shuffle' && '以指尖左右塗抹、推開\n讓牌在桌面流轉、與你共振'}
           {phase === 'settling' && '能量已注入'}
           {(phase === 'piles' || phase === 'merging') && '請憑直覺挑選一疊切牌'}
         </div>
@@ -147,7 +208,7 @@ export default function ShuffleScreen({ onComplete }) {
         style={{ opacity: phase === 'shuffle' ? 1 : 0 }}
       >
         <motion.div
-          className="h-full bg-gold"
+          className="absolute left-1/2 top-0 h-full -translate-x-1/2 bg-gold"
           style={{ boxShadow: '0 0 10px var(--color-gold)' }}
           animate={{ width: `${progress * 100}%` }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -172,10 +233,7 @@ export default function ShuffleScreen({ onComplete }) {
               style={{ zIndex: c.zi }}
               initial={false}
               animate={{ x: c.x, y: c.y, rotate: c.r }}
-              transition={{
-                duration: fast ? 0.28 : 0.9,
-                ease: fast ? [0.3, 0.7, 0.4, 1] : [0.6, 0.05, 0.2, 1],
-              }}
+              transition={fast ? SPRING_SHUFFLE : { duration: 0.9, ease: EASE.reveal }}
             >
               <CardBack w={84} h={148} />
             </motion.div>
@@ -183,13 +241,13 @@ export default function ShuffleScreen({ onComplete }) {
 
           {/* Pile tap zones */}
           {phase === 'piles' && (
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 z-[200]">
               {[0, 1, 2].map((p) => (
                 <button
                   key={p}
                   onClick={() => selectPile(p)}
-                  className="absolute left-1/2 top-1/2 h-[168px] w-[100px] cursor-pointer border-none bg-transparent p-0"
-                  style={{ transform: `translate(${(p - 1) * 88 - 50}px, -84px)` }}
+                  className="absolute left-1/2 top-1/2 h-[156px] w-[92px] cursor-pointer border-none bg-transparent p-0"
+                  style={{ transform: `translate(${(p - 1) * 88 - 46}px, -73px)` }}
                   onMouseEnter={() => setHoverPile(p)}
                   onMouseLeave={() => setHoverPile(null)}
                 >

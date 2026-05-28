@@ -1,12 +1,20 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_SOFT, MUTED } from '@/lib/constants';
+import { EASE, DUR, fadeUp, stagger } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 import CardFront from './CardFront';
+import SuitGlyph from './SuitGlyph';
+
+// Hero-card geometry — single source of truth for the spread. Ratio matches
+// the 300×527 artwork (≈0.5676). Everything below (slots, container height,
+// triangle guide, centering offsets) is derived from these two numbers.
+const CARD_W = 124;
+const CARD_H = 218;
 
 const POSITIONS = [
   { key: 'past', cn: '過 去', en: 'PAST', desc: '根源與所來之路' },
@@ -14,19 +22,21 @@ const POSITIONS = [
   { key: 'future', cn: '未 來', en: 'FUTURE', desc: '正在成形的趨向' },
 ];
 
+// Card centers relative to the spread container's center. Spaced so the three
+// 124-wide cards clear each other (bottom pair sits outside the top card's
+// width, with a vertical gap above) — no overlap.
 const SLOTS = [
-  { x: 0, y: -96 },
-  { x: -104, y: 52 },
-  { x: 104, y: 52 },
+  { x: 0, y: -100 },
+  { x: -130, y: 82 },
+  { x: 130, y: 82 },
 ];
-
 
 function SacredTriangleGuide({ visible }) {
   return (
     <svg
       width="100%"
       height="100%"
-      viewBox="-160 -160 320 320"
+      viewBox="-180 -180 360 360"
       preserveAspectRatio="xMidYMid meet"
       className="pointer-events-none absolute inset-0 transition-opacity duration-[1500ms] [transition-delay:600ms]"
       style={{ opacity: visible ? 0.5 : 0 }}
@@ -37,18 +47,18 @@ function SacredTriangleGuide({ visible }) {
           <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle cx="0" cy="-12" r="120" fill="url(#triGlow)" />
+      <circle cx="0" cy="-10" r="150" fill="url(#triGlow)" />
       <path
-        d="M 0 -100 L -100 60 L 100 60 Z"
+        d={`M 0 ${SLOTS[0].y} L ${SLOTS[1].x} ${SLOTS[1].y} L ${SLOTS[2].x} ${SLOTS[2].y} Z`}
         fill="none"
         stroke={GOLD_SOFT}
         strokeWidth="0.4"
         strokeDasharray="2 4"
         opacity="0.7"
       />
-      <circle cx="0" cy="-100" r="3" fill={GOLD} opacity="0.6" />
-      <circle cx="-100" cy="60" r="3" fill={GOLD} opacity="0.6" />
-      <circle cx="100" cy="60" r="3" fill={GOLD} opacity="0.6" />
+      {SLOTS.map((s, i) => (
+        <circle key={i} cx={s.x} cy={s.y} r="3" fill={GOLD} opacity="0.6" />
+      ))}
     </svg>
   );
 }
@@ -57,7 +67,7 @@ function FlipCard({ card, pos, flipped, onFlip }) {
   return (
     <div className="relative">
       <div
-        className="absolute left-1/2 top-[-22px] -translate-x-1/2 whitespace-nowrap text-[9px] tracking-[4px] transition-colors duration-[600ms]"
+        className="absolute left-1/2 top-[-24px] -translate-x-1/2 whitespace-nowrap text-[10px] tracking-[5px] transition-colors duration-[600ms]"
         style={{ color: flipped ? GOLD : MUTED }}
       >
         {pos.cn}
@@ -65,32 +75,47 @@ function FlipCard({ card, pos, flipped, onFlip }) {
 
       <div
         onClick={onFlip}
-        className="relative h-[169px] w-[96px]"
-        style={{ perspective: 1000, cursor: flipped ? 'default' : 'pointer' }}
+        className="relative"
+        style={{
+          width: CARD_W,
+          height: CARD_H,
+          perspective: 1200,
+          cursor: 'pointer',
+          borderRadius: CARD_W * 0.08,
+          overflow: 'hidden',
+        }}
       >
-        {/* breathing glow */}
+        {/* breathing glow before reveal */}
         <div
           className={`pointer-events-none absolute -inset-2 rounded-xl transition-opacity duration-700 ${
             flipped ? '' : 'animate-breath-glow'
           }`}
           style={{ opacity: flipped ? 0 : 1 }}
         />
+        {/* steady hero glow once revealed */}
+        <div
+          className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
+          style={{
+            opacity: flipped ? 1 : 0,
+            boxShadow: `0 0 34px rgba(201,169,78,0.4), 0 0 60px rgba(201,169,78,0.18)`,
+          }}
+        />
 
         <motion.div
           className="relative h-full w-full"
-          style={{ transformStyle: 'preserve-3d' }}
+          style={{ transformStyle: 'preserve-3d', background: 'transparent', borderRadius: CARD_W * 0.08 }}
           initial={false}
           animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 1.1, ease: [0.6, 0.05, 0.2, 1] }}
+          transition={{ duration: DUR.slow, ease: EASE.reveal }}
         >
-          <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden' }}>
-            <CardBack w={96} h={169} />
+          <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}>
+            <CardBack w={CARD_W} h={CARD_H} />
           </div>
           <div
             className="absolute inset-0"
-            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}
           >
-            <CardFront card={card} w={96} h={169} />
+            <CardFront card={card} w={CARD_W} h={CARD_H} />
           </div>
         </motion.div>
       </div>
@@ -106,22 +131,29 @@ function ReadingPanel({ drawn, onRestart }) {
         THE READING
       </div>
 
-      {/* Per-card panels */}
-      <div className="mt-5 flex flex-col gap-4">
+      {/* Per-card panels — released one after another via the parent stagger */}
+      <motion.div
+        className="mt-5 flex flex-col gap-4"
+        variants={stagger(0.16, 0.1)}
+        initial="hidden"
+        animate="show"
+      >
         {drawn.map((c, i) => (
-          <div
+          <motion.div
             key={c.num}
-            className="relative border-[0.5px] border-gold-dim px-4 pb-[18px] pt-4"
-            style={{
-              background: 'linear-gradient(180deg, rgba(22,21,18,0.5), rgba(7,7,7,0.3))',
-            }}
+            variants={fadeUp}
+            className="relative px-5 pb-[22px] pt-[18px]"
           >
             <div className="absolute -top-2 left-3.5 bg-ink px-2 text-[9px] tracking-[4px] text-gold">
               {POSITIONS[i].cn}　{POSITIONS[i].en}
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-9 text-center font-display text-[22px] tracking-[1px] text-gold opacity-85">
-                {c.roman}
+            <div className="flex items-center gap-3.5">
+              <div className="flex w-9 justify-center text-gold opacity-85">
+                {c.arcana === 'minor' ? (
+                  <SuitGlyph suit={c.suit} />
+                ) : (
+                  <span className="font-display text-[22px] tracking-[1px]">{c.roman}</span>
+                )}
               </div>
               <div>
                 <div className="text-[15px] tracking-[2px] text-parchment">{c.cn}</div>
@@ -133,12 +165,12 @@ function ReadingPanel({ drawn, onRestart }) {
             <div className="mt-2.5 text-xs leading-[1.7] tracking-[1px] text-parchment opacity-70">
               {c.keywords.join('・')}
             </div>
-            <div className="mt-1.5 text-[13px] leading-[1.8] tracking-[0.8px] text-parchment opacity-90">
+            <div className="mt-2.5 text-[13px] leading-[1.9] tracking-[0.8px] text-parchment opacity-90">
               {c.meaning}
             </div>
-          </div>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* Oracle synthesis */}
       <div className="mt-7 px-1">
@@ -161,6 +193,93 @@ function ReadingPanel({ drawn, onRestart }) {
   );
 }
 
+// Full-screen detail for a revealed card: the art fills the frame, with the
+// name set off at top and the meaning below — both on frosted-glass panels with
+// a soft shadow so the text lifts off the artwork. Tap anywhere to dismiss.
+function CardDetail({ card, pos, onClose }) {
+  const textShadow = '0 2px 10px rgba(0,0,0,0.8)';
+  return (
+    <motion.div
+      className="absolute inset-0 z-[100] overflow-hidden"
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: DUR.base, ease: EASE.out }}
+    >
+      <motion.img
+        src={card.img}
+        alt={`${card.cn} ${card.en}`}
+        draggable={false}
+        className="absolute inset-0 h-full w-full object-cover"
+        initial={{ scale: 1.08 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1.1, ease: EASE.reveal }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(7,7,7,0.6) 0%, rgba(7,7,7,0.05) 28%, rgba(7,7,7,0.1) 56%, rgba(7,7,7,0.82) 100%)',
+        }}
+      />
+
+      {/* Name */}
+      <motion.div
+        className="absolute inset-x-0 top-0 px-7 pb-7 pt-[60px] text-center"
+        style={{
+          backdropFilter: 'blur(7px)',
+          WebkitBackdropFilter: 'blur(7px)',
+          maskImage: 'linear-gradient(180deg, #000 70%, transparent)',
+          WebkitMaskImage: 'linear-gradient(180deg, #000 70%, transparent)',
+        }}
+        initial={{ y: -18, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: DUR.base, delay: 0.12, ease: EASE.out }}
+      >
+        <div className="font-display text-[10px] tracking-[5px] text-gold opacity-85">
+          {pos.cn}　{pos.en}
+        </div>
+        <div
+          className="mt-2.5 font-serif text-[27px] font-light tracking-[7px] text-parchment"
+          style={{ textShadow }}
+        >
+          {card.cn}
+        </div>
+        <div className="mt-1.5 font-display text-[11px] tracking-[3px] text-gold-soft opacity-80">
+          {card.en.toUpperCase()}
+        </div>
+      </motion.div>
+
+      {/* Meaning */}
+      <motion.div
+        className="absolute inset-x-0 bottom-0 px-8 pb-[46px] pt-9 text-center"
+        style={{
+          backdropFilter: 'blur(9px)',
+          WebkitBackdropFilter: 'blur(9px)',
+          maskImage: 'linear-gradient(0deg, #000 72%, transparent)',
+          WebkitMaskImage: 'linear-gradient(0deg, #000 72%, transparent)',
+        }}
+        initial={{ y: 18, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: DUR.base, delay: 0.18, ease: EASE.out }}
+      >
+        <div className="mx-auto mb-3.5 h-px w-10 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
+        <div className="text-xs tracking-[2px] text-gold-soft opacity-85" style={{ textShadow }}>
+          {card.keywords.join('・')}
+        </div>
+        <div
+          className="mt-3 text-[14px] leading-[1.95] tracking-[0.8px] text-parchment"
+          style={{ textShadow }}
+        >
+          {card.meaning}
+        </div>
+        <div className="mt-6 text-[10px] tracking-[4px] text-muted opacity-80">輕 觸 任 意 處 關 閉</div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function SpreadScreen({ question, onRestart }) {
   const drawn = useMemo(() => {
     const pool = [...TAROT_CARDS];
@@ -174,6 +293,7 @@ export default function SpreadScreen({ question, onRestart }) {
   const [phase, setPhase] = useState('merging');
   const [flipped, setFlipped] = useState([false, false, false]);
   const [showReading, setShowReading] = useState(false);
+  const [detail, setDetail] = useState(null);
 
   useEffect(() => {
     const t = setTimeout(() => setPhase('spread'), 1100);
@@ -193,19 +313,21 @@ export default function SpreadScreen({ question, onRestart }) {
 
   useEffect(() => {
     if (!allFlipped) return;
-    setTimeout(() => setShowReading(true), 900);
+    const t = setTimeout(() => setShowReading(true), 900);
+    return () => clearTimeout(t);
   }, [allFlipped]);
 
   return (
-    <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-      <Starfield density={45} seed={3} />
+    <div className="absolute inset-0">
+      <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
+        <Starfield density={45} seed={3} />
 
       <div className="relative z-[2] flex min-h-full flex-col px-6 pb-10 pt-[60px]">
         {/* Question */}
         <motion.div
           className="mt-3 text-center"
           animate={{ opacity: phase === 'merging' ? 0 : 1 }}
-          transition={{ duration: 1.2, delay: 0.4 }}
+          transition={{ duration: DUR.slow, delay: 0.4, ease: EASE.out }}
         >
           <div className="mb-2.5 pl-1.5 font-display text-[10px] tracking-[6px] text-gold opacity-85">
             YOUR QUESTION
@@ -216,8 +338,8 @@ export default function SpreadScreen({ question, onRestart }) {
           <div className="mx-auto mt-[18px] h-px w-12 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
         </motion.div>
 
-        {/* Triangle spread */}
-        <div className="relative mt-8 h-[290px] w-full flex-shrink-0">
+        {/* Triangle spread — sized to make the cards the focal point */}
+        <div className="relative mt-7 h-[480px] w-full flex-shrink-0">
           <SacredTriangleGuide visible={phase === 'spread'} />
 
           {drawn.map((card, i) => {
@@ -226,26 +348,26 @@ export default function SpreadScreen({ question, onRestart }) {
             return (
               <motion.div
                 key={card.num}
-                className="absolute left-1/2 top-1/2 -ml-[48px] -mt-[84px]"
-                style={{ zIndex: 10 + i }}
+                className="absolute left-1/2 top-1/2"
+                style={{ zIndex: 10 + i, marginLeft: -CARD_W / 2, marginTop: -CARD_H / 2 }}
                 initial={false}
                 animate={{
                   x: isMerging ? 0 : slot.x,
-                  y: isMerging ? 60 : slot.y,
+                  y: isMerging ? 70 : slot.y,
                   rotate: isMerging ? (i - 1) * 4 : 0,
-                  scale: isMerging ? 0.9 : 1,
+                  scale: isMerging ? 0.82 : 1,
                 }}
                 transition={{
-                  duration: 1.1,
-                  ease: [0.5, 0.05, 0.2, 1],
-                  delay: isMerging ? 0 : i * 0.18,
+                  duration: DUR.slow,
+                  ease: EASE.reveal,
+                  delay: isMerging ? 0 : i * 0.16,
                 }}
               >
                 <FlipCard
                   card={card}
                   pos={POSITIONS[i]}
                   flipped={flipped[i]}
-                  onFlip={() => flipCard(i)}
+                  onFlip={() => (flipped[i] ? setDetail(i) : flipCard(i))}
                 />
               </motion.div>
             );
@@ -270,15 +392,23 @@ export default function SpreadScreen({ question, onRestart }) {
             y: showReading ? 0 : 20,
             marginTop: allFlipped ? 8 : 0,
           }}
-          transition={{ duration: 1.4, ease: 'easeOut' }}
+          transition={{ duration: DUR.slow, ease: EASE.out }}
           style={{ pointerEvents: showReading ? 'auto' : 'none' }}
         >
-          <ReadingPanel
-            drawn={drawn}
-            onRestart={onRestart}
-          />
+          <ReadingPanel drawn={drawn} onRestart={onRestart} />
         </motion.div>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {detail !== null && (
+          <CardDetail
+            card={drawn[detail]}
+            pos={POSITIONS[detail]}
+            onClose={() => setDetail(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

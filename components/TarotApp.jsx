@@ -2,15 +2,10 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { EASE, DUR, fade } from '@/lib/motion';
 import InputScreen from './InputScreen';
 import ShuffleScreen from './ShuffleScreen';
 import SpreadScreen from './SpreadScreen';
-
-const fade = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  exit: { opacity: 0 },
-};
 
 export default function TarotApp() {
   const [screen, setScreen] = useState('input'); // input | shuffle | spread
@@ -26,7 +21,7 @@ export default function TarotApp() {
           initial="initial"
           animate="animate"
           exit="exit"
-          transition={{ duration: 0.7, ease: 'easeInOut' }}
+          transition={{ duration: DUR.base, ease: EASE.inOut }}
         >
           {screen === 'input' && (
             <InputScreen
