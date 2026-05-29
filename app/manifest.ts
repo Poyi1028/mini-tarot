@@ -1,4 +1,6 @@
-export default function manifest() {
+import type { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
   return {
     name: '聖三角塔羅',
     short_name: '塔羅',
@@ -14,7 +16,13 @@ export default function manifest() {
         src: '/icon.svg',
         type: 'image/svg+xml',
         sizes: 'any',
-        purpose: 'any maskable',
+        purpose: 'any',
+      },
+      {
+        src: '/icon.svg',
+        type: 'image/svg+xml',
+        sizes: 'any',
+        purpose: 'maskable',
       },
     ],
   };

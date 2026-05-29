@@ -10,6 +10,10 @@ build/
 *.log
 *.log.*
 
+# TypeScript
+next-env.d.ts
+*.tsbuildinfo
+
 # Environment variables
 .env
 .env.local

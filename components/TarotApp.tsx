@@ -7,8 +7,10 @@ import InputScreen from './InputScreen';
 import ShuffleScreen from './ShuffleScreen';
 import SpreadScreen from './SpreadScreen';
 
+type Screen = 'input' | 'shuffle' | 'spread';
+
 export default function TarotApp() {
-  const [screen, setScreen] = useState('input'); // input | shuffle | spread
+  const [screen, setScreen] = useState<Screen>('input');
   const [question, setQuestion] = useState('');
 
   return (

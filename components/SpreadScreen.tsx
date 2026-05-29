@@ -5,10 +5,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_SOFT, MUTED } from '@/lib/constants';
 import { EASE, DUR, fadeUp, stagger } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
+import type { Card } from '@/lib/tarot-cards';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 import CardFront from './CardFront';
 import SuitGlyph from './SuitGlyph';
+
+interface Position {
+  key: string;
+  cn: string;
+  en: string;
+  desc: string;
+}
 
 // Hero-card geometry — single source of truth for the spread. Ratio matches
 // the 300×527 artwork (≈0.5676). Everything below (slots, container height,
@@ -16,7 +24,7 @@ import SuitGlyph from './SuitGlyph';
 const CARD_W = 124;
 const CARD_H = 218;
 
-const POSITIONS = [
+const POSITIONS: Position[] = [
   { key: 'past', cn: '過 去', en: 'PAST', desc: '根源與所來之路' },
   { key: 'present', cn: '現 在', en: 'PRESENT', desc: '此刻的能量' },
   { key: 'future', cn: '未 來', en: 'FUTURE', desc: '正在成形的趨向' },
@@ -31,7 +39,7 @@ const SLOTS = [
   { x: 130, y: 82 },
 ];
 
-function SacredTriangleGuide({ visible }) {
+function SacredTriangleGuide({ visible }: { visible: boolean }) {
   return (
     <svg
       width="100%"
@@ -63,7 +71,17 @@ function SacredTriangleGuide({ visible }) {
   );
 }
 
-function FlipCard({ card, pos, flipped, onFlip }) {
+function FlipCard({
+  card,
+  pos,
+  flipped,
+  onFlip,
+}: {
+  card: Card;
+  pos: Position;
+  flipped: boolean;
+  onFlip: () => void;
+}) {
   return (
     <div className="relative">
       <div
@@ -123,7 +141,7 @@ function FlipCard({ card, pos, flipped, onFlip }) {
   );
 }
 
-function ReadingPanel({ drawn, onRestart }) {
+function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => void }) {
   return (
     <div className="pt-3">
       <div className="mx-auto h-9 w-px bg-gradient-to-b from-transparent to-gold-soft" />
@@ -196,7 +214,7 @@ function ReadingPanel({ drawn, onRestart }) {
 // Full-screen detail for a revealed card: the art fills the frame, with the
 // name set off at top and the meaning below — both on frosted-glass panels with
 // a soft shadow so the text lifts off the artwork. Tap anywhere to dismiss.
-function CardDetail({ card, pos, onClose }) {
+function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose: () => void }) {
   const textShadow = '0 2px 10px rgba(0,0,0,0.8)';
   return (
     <motion.div
@@ -280,7 +298,7 @@ function CardDetail({ card, pos, onClose }) {
   );
 }
 
-export default function SpreadScreen({ question, onRestart }) {
+export default function SpreadScreen({ question, onRestart }: { question: string; onRestart: () => void }) {
   const drawn = useMemo(() => {
     const pool = [...TAROT_CARDS];
     for (let i = pool.length - 1; i > 0; i--) {
@@ -290,17 +308,17 @@ export default function SpreadScreen({ question, onRestart }) {
     return pool.slice(0, 3);
   }, []);
 
-  const [phase, setPhase] = useState('merging');
-  const [flipped, setFlipped] = useState([false, false, false]);
+  const [phase, setPhase] = useState<'merging' | 'spread'>('merging');
+  const [flipped, setFlipped] = useState<boolean[]>([false, false, false]);
   const [showReading, setShowReading] = useState(false);
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState<number | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setPhase('spread'), 1100);
     return () => clearTimeout(t);
   }, []);
 
-  function flipCard(i) {
+  function flipCard(i: number) {
     if (flipped[i]) return;
     setFlipped((prev) => {
       const next = [...prev];

@@ -1,5 +1,28 @@
+export type Suit = 'cups' | 'pentacles' | 'swords' | 'wands';
+
+interface BaseCard {
+  num: number;
+  roman: string;
+  cn: string;
+  en: string;
+  img: string;
+  keywords: string[];
+  meaning: string;
+}
+
+export interface MajorCard extends BaseCard {
+  arcana: 'major';
+}
+
+export interface MinorCard extends BaseCard {
+  arcana: 'minor';
+  suit: Suit;
+}
+
+export type Card = MajorCard | MinorCard;
+
 // ─── Major Arcana 大阿爾克娜 (0–21) ───
-export const MAJOR_ARCANA = [
+export const MAJOR_ARCANA: MajorCard[] = [
   { num: 0,   roman: '0',     arcana: 'major', cn: '愚者',       en: 'The Fool',           img: '/cards/00-TheFool.png',          keywords: ['新開始', '純粹', '冒險'],         meaning: '一場未知旅程的起點。放下顧慮，順從心中的呼喚向前躍出。' },
   { num: 1,   roman: 'I',     arcana: 'major', cn: '魔術師',     en: 'The Magician',       img: '/cards/01-TheMagician.png',      keywords: ['創造', '意志', '行動'],           meaning: '你已擁有所需的全部工具。集中意念，化想像為現實。' },
   { num: 2,   roman: 'II',    arcana: 'major', cn: '女祭司',     en: 'The High Priestess', img: '/cards/02-TheHighPriestess.png', keywords: ['直覺', '神秘', '潛意識'],         meaning: '答案藏在靜默裡。傾聽內在低語，勿急於以邏輯定奪。' },
@@ -26,7 +49,14 @@ export const MAJOR_ARCANA = [
 
 // ─── Minor Arcana 小阿爾克娜 (四元素 × 一至十 + 宮廷牌) ───
 // 牌序：Ace(1)、2–10、Page(11)侍者、Knight(12)騎士、Queen(13)王后、King(14)國王
-const SUIT_META = {
+interface SuitMeta {
+  cn: string;
+  en: string;
+  symbol: string;
+  base: number;
+}
+
+const SUIT_META: Record<Suit, SuitMeta> = {
   cups:      { cn: '聖杯', en: 'Cups',      symbol: '♥', base: 22 }, // 水 · 情感
   pentacles: { cn: '錢幣', en: 'Pentacles', symbol: '♦', base: 36 }, // 土 · 物質
   swords:    { cn: '寶劍', en: 'Swords',    symbol: '♠', base: 50 }, // 風 · 思緒
@@ -36,8 +66,13 @@ const SUIT_META = {
 const RANK_CN = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '侍者', '騎士', '王后', '國王'];
 const RANK_EN = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Page', 'Knight', 'Queen', 'King'];
 
+interface SuitCardData {
+  keywords: string[];
+  meaning: string;
+}
+
 // 每套花色 14 張的關鍵字與牌義（依牌序排列）
-const SUIT_DATA = {
+const SUIT_DATA: Record<Suit, SuitCardData[]> = {
   cups: [
     { keywords: ['新感情', '豐盈', '直覺'],   meaning: '一只滿溢的杯自天而降，讓心重新被愛與靈感注滿。' },
     { keywords: ['連結', '互愛', '契合'],     meaning: '兩顆心舉杯相映，一段相互滋養的關係正在締結。' },
@@ -104,7 +139,7 @@ const SUIT_DATA = {
   ],
 };
 
-function buildSuit(suit) {
+function buildSuit(suit: Suit): MinorCard[] {
   const meta = SUIT_META[suit];
   return SUIT_DATA[suit].map((card, i) => {
     const rank = i + 1;
@@ -123,7 +158,7 @@ function buildSuit(suit) {
   });
 }
 
-export const MINOR_ARCANA = [
+export const MINOR_ARCANA: MinorCard[] = [
   ...buildSuit('cups'),
   ...buildSuit('pentacles'),
   ...buildSuit('swords'),
@@ -131,4 +166,4 @@ export const MINOR_ARCANA = [
 ];
 
 // 完整 78 張塔羅牌
-export const TAROT_CARDS = [...MAJOR_ARCANA, ...MINOR_ARCANA];
+export const TAROT_CARDS: Card[] = [...MAJOR_ARCANA, ...MINOR_ARCANA];

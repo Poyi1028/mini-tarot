@@ -1,4 +1,5 @@
 import './globals.css';
+import type { Metadata, Viewport } from 'next';
 import { Cinzel, Noto_Serif_TC } from 'next/font/google';
 
 const cinzel = Cinzel({
@@ -15,7 +16,7 @@ const notoSerifTC = Noto_Serif_TC({
   preload: false,
 });
 
-export const metadata = {
+export const metadata: Metadata = {
   title: '聖三角塔羅',
   description: '沉浸式塔羅占卜 App — 深紫×墨黑×金邊',
   manifest: '/manifest.webmanifest',
@@ -30,7 +31,7 @@ export const metadata = {
   },
 };
 
-export const viewport = {
+export const viewport: Viewport = {
   themeColor: '#070707',
   width: 'device-width',
   initialScale: 1,
@@ -39,7 +40,7 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hant" className={`${cinzel.variable} ${notoSerifTC.variable}`}>
       <body>{children}</body>

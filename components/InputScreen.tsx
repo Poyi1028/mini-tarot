@@ -1,12 +1,26 @@
 'use client';
 
 import { useState, useRef, useLayoutEffect } from 'react';
+import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_SOFT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
 
-function trianglePath(cx, cy, r, rot) {
+interface Particle {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  dx: number;
+  dy: number;
+  delay: number;
+  dur: number;
+}
+
+type Phase = 'input' | 'dissolve' | 'sync';
+
+function trianglePath(cx: number, cy: number, r: number, rot: number) {
   const pts = [0, 1, 2].map((i) => {
     const a = rot - Math.PI / 2 + (i * Math.PI * 2) / 3;
     return [cx + Math.cos(a) * r, cy + Math.sin(a) * r];
@@ -79,8 +93,8 @@ function SyncOverlay() {
   );
 }
 
-function CornerFrame({ visible }) {
-  const corner = (className) => (
+function CornerFrame({ visible }: { visible: boolean }) {
+  const corner = (className: string) => (
     <div className={`absolute h-3.5 w-3.5 ${className}`}>
       <div className="absolute left-0 top-0 h-px w-3.5 bg-gold-soft" />
       <div className="absolute left-0 top-0 h-3.5 w-px bg-gold-soft" />
@@ -99,11 +113,11 @@ function CornerFrame({ visible }) {
   );
 }
 
-export default function InputScreen({ onSubmit }) {
+export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => void }) {
   const [q, setQ] = useState('');
-  const [phase, setPhase] = useState('input'); // input | dissolve | sync
-  const measureRef = useRef(null);
-  const [particles, setParticles] = useState([]);
+  const [phase, setPhase] = useState<Phase>('input');
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const [showSync, setShowSync] = useState(false);
 
   // Once the char-span layer is rendered (phase === 'dissolve'), measure each
@@ -112,13 +126,13 @@ export default function InputScreen({ onSubmit }) {
     if (phase !== 'dissolve') return;
     const container = measureRef.current;
     if (!container) return;
-    const charSpans = container.querySelectorAll('span[data-c]');
+    const charSpans = container.querySelectorAll<HTMLSpanElement>('span[data-c]');
     const cBox = container.getBoundingClientRect();
     // getBoundingClientRect returns CSS-pixel deltas relative to offsetWidth, so
     // scale is normally 1; the divide stays as a guard in case an ancestor ever
     // applies a CSS transform that scales this subtree.
     const scale = container.offsetWidth ? cBox.width / container.offsetWidth : 1;
-    const pts = [];
+    const pts: Particle[] = [];
     let pid = 0;
     charSpans.forEach((el, idx) => {
       if (el.dataset.c === ' ') return;
@@ -234,7 +248,7 @@ export default function InputScreen({ onSubmit }) {
                     animation: `motePly ${p.dur}ms cubic-bezier(.15,.6,.3,1) ${p.delay}ms forwards`,
                     '--dx': `${p.dx}px`,
                     '--dy': `${p.dy}px`,
-                  }}
+                  } as CSSProperties}
                 />
               ))}
             </div>

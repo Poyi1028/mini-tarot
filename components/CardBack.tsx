@@ -2,7 +2,7 @@
 
 import { GOLD, GOLD_SOFT, GOLD_DIM } from '@/lib/constants';
 
-export default function CardBack({ w = 84, h = 148, glow = false }) {
+export default function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; glow?: boolean }) {
   return (
     <div
       style={{

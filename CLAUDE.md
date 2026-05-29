@@ -19,7 +19,7 @@ For the Oracle reading feature, copy `.env.local.example` to `.env.local` and se
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · plain JavaScript (no TypeScript) · Tailwind CSS v4 · framer-motion · `@anthropic-ai/sdk`. Import alias `@/*` maps to the project root (`jsconfig.json`).
+Next.js 15 (App Router) · React 19 · TypeScript (strict mode) · Tailwind CSS v4 · framer-motion · `@anthropic-ai/sdk`. Import alias `@/*` maps to the project root (`tsconfig.json`). The card model is a discriminated union (`MajorCard | MinorCard`) exported from `lib/tarot-cards.ts`; narrow on `arcana === 'minor'` to access `suit`.
 
 ## Architecture
 

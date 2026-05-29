@@ -1,4 +1,4 @@
-export function mulberry(a) {
+export function mulberry(a: number): () => number {
   return function () {
     a |= 0; a = a + 0x6D2B79F5 | 0;
     let t = a;

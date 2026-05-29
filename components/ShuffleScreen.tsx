@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import { motion } from 'framer-motion';
 import { GOLD_SOFT } from '@/lib/constants';
 import { EASE, SPRING_SHUFFLE } from '@/lib/motion';
@@ -13,9 +14,20 @@ const SHUFFLE_TARGET = 1800;
 const TABLE_X = 148;
 const TABLE_Y = 76;
 
+interface DeckCard {
+  id: number;
+  x: number;
+  y: number;
+  r: number;
+  zi: number;
+  pile: number;
+}
+
+type Phase = 'shuffle' | 'settling' | 'piles' | 'merging';
+
 // Depth by vertical position — cards nearer the bottom sit on top, like a real
 // face-down spread on a table (avoids z-index flicker while smearing).
-function depthFor(y) {
+function depthFor(y: number) {
   const t = (y + TABLE_Y) / (2 * TABLE_Y);
   return Math.round(Math.max(0, Math.min(1, t)) * (N_DECK - 1));
 }
@@ -39,8 +51,8 @@ function HandSwipeHint() {
   );
 }
 
-export default function ShuffleScreen({ onComplete }) {
-  const [cards, setCards] = useState(() =>
+export default function ShuffleScreen({ onComplete }: { onComplete: (pile: number) => void }) {
+  const [cards, setCards] = useState<DeckCard[]>(() =>
     Array.from({ length: N_DECK }, (_, i) => {
       const y = (Math.random() - 0.5) * 2 * TABLE_Y * 0.85;
       return {
@@ -54,12 +66,12 @@ export default function ShuffleScreen({ onComplete }) {
       };
     })
   );
-  const [phase, setPhase] = useState('shuffle'); // shuffle | settling | piles | merging
+  const [phase, setPhase] = useState<Phase>('shuffle');
   const [progress, setProgress] = useState(0);
-  const [hoverPile, setHoverPile] = useState(null);
+  const [hoverPile, setHoverPile] = useState<number | null>(null);
   const dragRef = useRef({ on: false, lx: 0, ly: 0, dist: 0, last: 0, adx: 0, ady: 0 });
-  const idleRef = useRef(null);
-  const surfaceRef = useRef(null);
+  const idleRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const surfaceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => clearTimeout(idleRef.current), []);
 
@@ -87,7 +99,7 @@ export default function ShuffleScreen({ onComplete }) {
   // whole table instead of drifting as one clump. Energy from the swipe speed
   // makes a fast wash fling them wider. Cards reaching an edge are reflected
   // back into the field so the spread stays full.
-  function scatter(dx, dy, speed) {
+  function scatter(dx: number, dy: number, speed: number) {
     const push = 14 + Math.min(60, speed * 0.5);
     setCards((prev) =>
       prev.map((c, i) => {
@@ -126,7 +138,7 @@ export default function ShuffleScreen({ onComplete }) {
     );
   }
 
-  function handlePointerDown(e) {
+  function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>) {
     if (phase !== 'shuffle') return;
     e.preventDefault();
     dragRef.current.on = true;
@@ -135,7 +147,7 @@ export default function ShuffleScreen({ onComplete }) {
     surfaceRef.current?.setPointerCapture?.(e.pointerId);
   }
 
-  function handlePointerMove(e) {
+  function handlePointerMove(e: ReactPointerEvent<HTMLDivElement>) {
     if (!dragRef.current.on || phase !== 'shuffle') return;
     const dx = e.clientX - dragRef.current.lx;
     const dy = e.clientY - dragRef.current.ly;
@@ -166,7 +178,7 @@ export default function ShuffleScreen({ onComplete }) {
     gather();
   }
 
-  function selectPile(p) {
+  function selectPile(p: number) {
     if (phase !== 'piles') return;
     setHoverPile(p);
     setPhase('merging');

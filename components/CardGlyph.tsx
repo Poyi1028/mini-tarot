@@ -1,8 +1,9 @@
 'use client';
 
+import type { ReactElement } from 'react';
 import { GOLD } from '@/lib/constants';
 
-export default function CardGlyph({ num, size }) {
+export default function CardGlyph({ num, size }: { num: number; size: number }) {
   const props = {
     width: size,
     height: size,
@@ -10,11 +11,11 @@ export default function CardGlyph({ num, size }) {
     fill: 'none',
     stroke: GOLD,
     strokeWidth: 0.7,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
   };
 
-  const G = {
+  const G: Record<number, ReactElement> = {
     0: (
       <g>
         <circle cx="32" cy="32" r="18" />

@@ -4,10 +4,10 @@ import { useMemo } from 'react';
 import { GOLD } from '@/lib/constants';
 import { mulberry } from '@/lib/utils';
 
-export default function Starfield({ density = 60, seed = 1 }) {
+export default function Starfield({ density = 60, seed = 1 }: { density?: number; seed?: number }) {
   const stars = useMemo(() => {
     const rng = mulberry(seed);
-    return Array.from({ length: density }, (_, i) => ({
+    return Array.from({ length: density }, () => ({
       x: rng() * 100,
       y: rng() * 100,
       r: rng() * 1.4 + 0.3,
