@@ -6,11 +6,11 @@ import Starfield from './Starfield';
 import CardBack from './CardBack';
 
 // ── Tunables ────────────────────────────────────────────────────────────────
-const N_DECK = 18; // divisible by 3 → even left/mid/right piles
+const N_DECK = 12; // divisible by 3 → even left/mid/right piles (fewer = smoother on phones)
 const SHUFFLE_MS = 3000; // active rubbing time before the deck gathers itself
 const SCATTER_MS = 140; // re-randomise the spread at most this often while dragging
-const SPREAD_X = 118; // how far cards smear left/right while shuffling
-const SPREAD_Y = 34;
+const SPREAD_X = 144; // how far cards smear left/right while shuffling
+const SPREAD_Y = 46;
 const PILE_GAP = 88; // distance between the three cut piles
 
 // The one spring the user asked for — weighty, slightly settled.
@@ -129,13 +129,14 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
     if (phaseRef.current !== 'cut') return;
     setHoverPile(p);
     setPhaseBoth('merge');
-    // The other two piles slide on top of the chosen one to form one deck.
+    // The other two piles slide in beneath the chosen one, which rises to the top
+    // of the merged deck (chosen z dominates every other card).
     const tx = (p - 1) * PILE_GAP;
     setCards((prev) =>
       prev.map((c, i) =>
         c.pile === p
-          ? { ...c, x: tx + rand(3), y: rand(3), rot: rand(4), z: i }
-          : { ...c, x: tx + rand(3), y: rand(3), rot: rand(7), z: 100 + i }
+          ? { ...c, x: tx + rand(3), y: rand(3), rot: rand(4), z: 200 + i }
+          : { ...c, x: tx + rand(3), y: rand(3), rot: rand(7), z: i }
       )
     );
     timers.current.push(setTimeout(() => onComplete(p), 1100));
@@ -165,7 +166,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           {(phase === 'cut' || phase === 'merge') && (
             <motion.span
               className="text-gold"
-              style={{ textShadow: '0 0 14px rgba(201,169,78,0.55)' }}
+              style={{ textShadow: '0 0 14px rgba(231,215,166,0.55)' }}
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -192,7 +193,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
         {/* Whole pile breathes up and down while idle (hover effect). */}
         <motion.div
           className="relative"
-          style={{ width: 320, height: 300 }}
+          style={{ width: 360, height: 320 }}
           animate={{ y: [0, -7, 0] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
         >
@@ -246,8 +247,8 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                     style={{
                       boxShadow:
                         hoverPile === p
-                          ? '0 0 28px rgba(212,175,55,0.45), inset 0 0 0 1px rgba(212,175,55,0.5)'
-                          : 'inset 0 0 0 1px rgba(212,175,55,0)',
+                          ? '0 0 28px rgba(231,215,166,0.45), inset 0 0 0 1px rgba(231,215,166,0.5)'
+                          : 'inset 0 0 0 1px rgba(231,215,166,0)',
                     }}
                   />
                 </button>

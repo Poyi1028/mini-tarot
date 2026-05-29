@@ -11,9 +11,9 @@ function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; g
         height: h,
         borderRadius: w * 0.08,
         background:
-          'radial-gradient(ellipse at 50% 50%, #16140f 0%, #0d0c0a 60%, #070707 100%)',
+          'radial-gradient(ellipse at 50% 50%, #1a1233 0%, #0d0a16 60%, #070709 100%)',
         boxShadow: glow
-          ? `0 0 ${w * 0.4}px rgba(201, 169, 78, 0.6), 0 0 ${w * 0.18}px rgba(201, 169, 78, 0.4), inset 0 0 0 1px ${GOLD}`
+          ? `0 0 ${w * 0.4}px rgba(231, 215, 166, 0.6), 0 0 ${w * 0.18}px rgba(231, 215, 166, 0.4), inset 0 0 0 1px ${GOLD}`
           : `0 2px 8px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.5), inset 0 0 0 1px ${GOLD_DIM}`,
         position: 'relative',
         overflow: 'hidden',

@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { EASE, DUR, fade } from '@/lib/motion';
+import HomeScreen from './HomeScreen';
 import InputScreen from './InputScreen';
 import ShuffleScreen from './ShuffleScreen';
 import SpreadScreen from './SpreadScreen';
 
-type Screen = 'input' | 'shuffle' | 'spread';
+type Screen = 'home' | 'input' | 'shuffle' | 'spread';
 
 export default function TarotApp() {
-  const [screen, setScreen] = useState<Screen>('input');
+  const [screen, setScreen] = useState<Screen>('home');
   const [question, setQuestion] = useState('');
 
   return (
@@ -25,6 +26,7 @@ export default function TarotApp() {
           exit="exit"
           transition={{ duration: DUR.base, ease: EASE.inOut }}
         >
+          {screen === 'home' && <HomeScreen onStart={() => setScreen('input')} />}
           {screen === 'input' && (
             <InputScreen
               onSubmit={(q) => {

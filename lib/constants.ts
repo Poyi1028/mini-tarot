@@ -1,8 +1,9 @@
-export const GOLD = '#c9a94e';
-export const GOLD_SOFT = '#b8a063';
-export const GOLD_DIM = '#7d6a38';
-export const INK = '#070707';
-export const INK_2 = '#111110';
-export const PURPLE_DEEP = '#161512';
+export const GOLD = '#e7d7a6';
+export const GOLD_SOFT = '#d8c693';
+export const GOLD_DIM = '#9c8a5c';
+export const INK = '#070709';
+export const INK_2 = '#0f0d14';
+export const PURPLE_DEEP = '#15102a';
+export const PURPLE_ACCENT = '#2a2140';
 export const PARCHMENT = '#ece4cf';
-export const MUTED = '#8c8676';
+export const MUTED = '#8d889c';

@@ -17,13 +17,13 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 export const metadata: Metadata = {
-  title: '塔羅',
+  title: 'Mini-Tarot',
   description: '沉浸式塔羅占卜 App',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: '塔羅',
+    title: 'Mini-Tarot',
   },
   icons: {
     icon: '/cards.svg',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#070707',
+  themeColor: '#070709',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

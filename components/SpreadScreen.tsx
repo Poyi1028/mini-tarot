@@ -115,7 +115,7 @@ function FlipCard({
           className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
           style={{
             opacity: flipped ? 1 : 0,
-            boxShadow: `0 0 34px rgba(201,169,78,0.4), 0 0 60px rgba(201,169,78,0.18)`,
+            boxShadow: `0 0 34px rgba(231,215,166,0.4), 0 0 60px rgba(231,215,166,0.18)`,
           }}
         />
 

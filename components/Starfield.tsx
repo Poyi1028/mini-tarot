@@ -25,9 +25,10 @@ export default function Starfield({ density = 60, seed = 1 }: { density?: number
         overflow: 'hidden',
         pointerEvents: 'none',
         background: `
-          radial-gradient(ellipse 80% 60% at 50% 0%, rgba(201, 169, 78, 0.06), transparent 70%),
+          radial-gradient(ellipse 80% 60% at 50% 0%, rgba(231, 215, 166, 0.05), transparent 70%),
+          radial-gradient(ellipse 90% 70% at 50% 40%, rgba(42, 33, 64, 0.35), transparent 70%),
           radial-gradient(ellipse 100% 70% at 50% 110%, rgba(0, 0, 0, 0.6), transparent 60%),
-          linear-gradient(180deg, #050505 0%, #090908 50%, #070707 100%)
+          linear-gradient(180deg, #060509 0%, #0a0810 50%, #070709 100%)
         `,
       }}
     >

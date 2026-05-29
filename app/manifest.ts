@@ -2,14 +2,14 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: '聖三角塔羅',
-    short_name: '塔羅',
-    description: '沉浸式塔羅占卜 — 深紫×墨黑×金邊',
+    name: 'Mini-Tarot',
+    short_name: 'Mini-Tarot',
+    description: '沉浸式塔羅占卜 — 暗紫×墨黑×香檳金',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#070707',
-    theme_color: '#070707',
+    background_color: '#070709',
+    theme_color: '#070709',
     lang: 'zh-Hant',
     icons: [
       {
