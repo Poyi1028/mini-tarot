@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { Cinzel, Noto_Serif_TC } from 'next/font/google';
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -26,8 +27,8 @@ export const metadata: Metadata = {
     title: 'Mini-Tarot',
   },
   icons: {
-    icon: '/cards.svg',
-    apple: '/cards.svg',
+    icon: '/icon-192.png',
+    apple: '/icon-192.png',
   },
 };
 
@@ -43,7 +44,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hant" className={`${cinzel.variable} ${notoSerifTC.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ServiceWorkerRegistration />
+        {children}
+      </body>
     </html>
   );
 }
