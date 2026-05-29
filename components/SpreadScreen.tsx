@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_SOFT, MUTED } from '@/lib/constants';
+import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
 import { EASE, DUR, fadeUp, stagger } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
@@ -39,6 +39,11 @@ const SLOTS = [
   { x: 130, y: 82 },
 ];
 
+// Quiet astrolabe behind the spread: a single soft central glow plus two
+// near-imperceptibly rotating hairline rings (reusing the global sigil-spin
+// keyframes). Replaces the old dashed triangle + corner dots, which read cheap
+// against the black-and-gold theme. The rings pivot around the view-box center
+// (viewBox is symmetric about 0,0), so transform-origin: center is exact.
 function SacredTriangleGuide({ visible }: { visible: boolean }) {
   return (
     <svg
@@ -47,26 +52,47 @@ function SacredTriangleGuide({ visible }: { visible: boolean }) {
       viewBox="-180 -180 360 360"
       preserveAspectRatio="xMidYMid meet"
       className="pointer-events-none absolute inset-0 transition-opacity duration-[1500ms] [transition-delay:600ms]"
-      style={{ opacity: visible ? 0.5 : 0 }}
+      style={{ opacity: visible ? 1 : 0 }}
     >
       <defs>
-        <radialGradient id="triGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={GOLD} stopOpacity="0.18" />
+        <radialGradient id="haloGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={GOLD} stopOpacity="0.1" />
+          <stop offset="50%" stopColor={GOLD} stopOpacity="0.04" />
           <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
         </radialGradient>
       </defs>
-      <circle cx="0" cy="-10" r="150" fill="url(#triGlow)" />
-      <path
-        d={`M 0 ${SLOTS[0].y} L ${SLOTS[1].x} ${SLOTS[1].y} L ${SLOTS[2].x} ${SLOTS[2].y} Z`}
-        fill="none"
-        stroke={GOLD_SOFT}
-        strokeWidth="0.4"
-        strokeDasharray="2 4"
-        opacity="0.7"
-      />
-      {SLOTS.map((s, i) => (
-        <circle key={i} cx={s.x} cy={s.y} r="3" fill={GOLD} opacity="0.6" />
-      ))}
+
+      {/* The spread's single light source */}
+      <circle cx="0" cy="-10" r="170" fill="url(#haloGlow)" />
+
+      {/* Outer ring — turns almost imperceptibly, with three faint star-chart
+          ticks pointing toward the three card slots */}
+      <g
+        style={{
+          transformBox: 'view-box',
+          transformOrigin: 'center',
+          animation: 'sigil-spin 60s linear infinite',
+        }}
+      >
+        <circle cx="0" cy="0" r="150" fill="none" stroke={GOLD_DIM} strokeWidth="0.5" opacity="0.35" />
+        {SLOTS.map((s, i) => {
+          const d = Math.hypot(s.x, s.y) || 1;
+          return (
+            <circle key={i} cx={(s.x / d) * 150} cy={(s.y / d) * 150} r="1.2" fill={GOLD} opacity="0.5" />
+          );
+        })}
+      </g>
+
+      {/* Inner ring — counter-rotates, even slower */}
+      <g
+        style={{
+          transformBox: 'view-box',
+          transformOrigin: 'center',
+          animation: 'sigil-spin-r 90s linear infinite',
+        }}
+      >
+        <circle cx="0" cy="0" r="92" fill="none" stroke={GOLD_DIM} strokeWidth="0.4" opacity="0.18" />
+      </g>
     </svg>
   );
 }
@@ -75,11 +101,13 @@ function FlipCard({
   card,
   pos,
   flipped,
+  isNext,
   onFlip,
 }: {
   card: Card;
   pos: Position;
   flipped: boolean;
+  isNext: boolean;
   onFlip: () => void;
 }) {
   return (
@@ -103,19 +131,28 @@ function FlipCard({
           overflow: 'hidden',
         }}
       >
-        {/* breathing glow before reveal */}
-        <div
-          className={`pointer-events-none absolute -inset-2 rounded-xl transition-opacity duration-700 ${
-            flipped ? '' : 'animate-breath-glow'
-          }`}
-          style={{ opacity: flipped ? 0 : 1 }}
+        {/* Gentle pulse on ONLY the next card to flip — guides the eye one step
+            at a time. Other unflipped cards rest dark; the central halo carries
+            the overall draw. Breathes via opacity (softer, calmer than a
+            box-shadow keyframe). */}
+        <motion.div
+          className="pointer-events-none absolute -inset-2 rounded-xl"
+          style={{ boxShadow: '0 0 18px rgba(231,215,166,0.28), inset 0 0 0 1px rgba(231,215,166,0.3)' }}
+          initial={false}
+          animate={{ opacity: !flipped && isNext ? [0.35, 0.7, 0.35] : 0 }}
+          transition={
+            !flipped && isNext
+              ? { duration: 3.6, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0.7, ease: EASE.out }
+          }
         />
-        {/* steady hero glow once revealed */}
+        {/* Steady hero glow once revealed — slightly restrained so three lit
+            cards don't blow out together. */}
         <div
           className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
           style={{
             opacity: flipped ? 1 : 0,
-            boxShadow: `0 0 34px rgba(231,215,166,0.4), 0 0 60px rgba(231,215,166,0.18)`,
+            boxShadow: `0 0 28px rgba(231,215,166,0.32), 0 0 52px rgba(231,215,166,0.16)`,
           }}
         />
 
@@ -124,7 +161,7 @@ function FlipCard({
           style={{ transformStyle: 'preserve-3d', background: 'transparent', borderRadius: CARD_W * 0.08 }}
           initial={false}
           animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: DUR.slow, ease: EASE.reveal }}
+          transition={{ duration: 1.2, ease: EASE.reveal }}
         >
           <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}>
             <CardBack w={CARD_W} h={CARD_H} />
@@ -141,72 +178,88 @@ function FlipCard({
   );
 }
 
+// Pure-typography "stele" reading: each card is a centred inscription — ritual
+// mark, position eyebrow, large card name (the hero), hairline with a diamond,
+// keywords, then the meaning. No thumbnails: the spread above and the tap-to-open
+// CardDetail already carry the imagery. Hierarchy comes from type scale + token
+// colours, not stacked opacity.
 function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => void }) {
   return (
     <div className="pt-3">
-      <div className="mx-auto h-9 w-px bg-gradient-to-b from-transparent to-gold-soft" />
-      <div className="mt-4 pl-1.5 text-center font-display text-[11px] tracking-[6px] text-gold">
-        THE READING
+      {/* Gold thread falling from the spread into the reading */}
+      <div className="mx-auto h-12 w-px bg-gradient-to-b from-transparent via-gold-soft/30 to-gold-soft/60" />
+      <div className="mt-6 flex flex-col items-center">
+        <div className="font-display text-[11px] tracking-[7px] text-gold">THE READING</div>
+        <div className="mt-2.5 font-serif text-[11px] tracking-[6px] text-muted">聖 三 角 的 訊 息</div>
+        <div className="mt-5 h-px w-14 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
       </div>
 
-      {/* Per-card panels — released one after another via the parent stagger */}
+      {/* Inscriptions — released one after another via the parent stagger */}
       <motion.div
-        className="mt-5 flex flex-col gap-4"
-        variants={stagger(0.16, 0.1)}
+        className="mt-8 flex flex-col gap-12"
+        variants={stagger(0.22, 0.15)}
         initial="hidden"
         animate="show"
       >
         {drawn.map((c, i) => (
-          <motion.div
-            key={c.num}
-            variants={fadeUp}
-            className="relative px-5 pb-[22px] pt-[18px]"
-          >
-            <div className="absolute -top-2 left-3.5 bg-ink px-2 text-[9px] tracking-[4px] text-gold">
+          <motion.article key={c.num} variants={fadeUp} className="flex flex-col items-center text-center">
+            {/* Ritual mark — the major numeral or minor suit glyph, raised above
+                the name instead of crammed into a list column */}
+            <div className="mb-3 flex h-7 items-center justify-center text-gold-soft">
+              {c.arcana === 'minor' ? (
+                <SuitGlyph suit={c.suit} size={22} />
+              ) : (
+                <span className="font-display text-[19px] leading-none tracking-[2px]">{c.roman}</span>
+              )}
+            </div>
+            <div className="font-display text-[10px] tracking-[5px] text-gold">
               {POSITIONS[i].cn}　{POSITIONS[i].en}
             </div>
-            <div className="flex items-center gap-3.5">
-              <div className="flex w-9 justify-center text-gold opacity-85">
-                {c.arcana === 'minor' ? (
-                  <SuitGlyph suit={c.suit} />
-                ) : (
-                  <span className="font-display text-[22px] tracking-[1px]">{c.roman}</span>
-                )}
-              </div>
-              <div>
-                <div className="text-[15px] tracking-[2px] text-parchment">{c.cn}</div>
-                <div className="mt-0.5 text-[9px] tracking-[2px] text-gold-soft opacity-75">
-                  {c.en.toUpperCase()}
-                </div>
-              </div>
+            <h3 className="mt-3 font-serif text-[26px] font-light leading-none tracking-[8px] text-parchment">
+              {c.cn}
+            </h3>
+            <div className="mt-2 font-display text-[10px] tracking-[3px] text-gold-dim">
+              {c.en.toUpperCase()}
             </div>
-            <div className="mt-2.5 text-xs leading-[1.7] tracking-[1px] text-parchment opacity-70">
-              {c.keywords.join('・')}
+            <div className="mt-5 flex w-full items-center justify-center gap-3">
+              <span className="h-px w-16 bg-gradient-to-r from-transparent to-gold-soft/40" />
+              <span className="text-[7px] leading-none text-gold-soft/70">◆</span>
+              <span className="h-px w-16 bg-gradient-to-l from-transparent to-gold-soft/40" />
             </div>
-            <div className="mt-2.5 text-[13px] leading-[1.9] tracking-[0.8px] text-parchment opacity-90">
+            <div className="mt-5 font-serif text-[12px] tracking-[3px] text-gold-soft">
+              {c.keywords.join('  ·  ')}
+            </div>
+            <p className="mt-3.5 max-w-[19rem] text-left font-serif text-[13.5px] leading-[2] tracking-[0.5px] text-parchment/85">
               {c.meaning}
-            </div>
-          </motion.div>
+            </p>
+          </motion.article>
         ))}
       </motion.div>
 
-      {/* Oracle synthesis */}
-      <div className="mt-7 px-1">
-        <div className="px-2.5 py-1 text-center text-[13px] leading-[1.9] tracking-[1px] text-muted">
+      {/* Oracle synthesis — closing whisper, set off by its own hairline */}
+      <div className="mt-14 flex flex-col items-center">
+        <div className="h-px w-10 bg-gradient-to-r from-transparent via-gold-soft/50 to-transparent" />
+        <p className="mt-7 max-w-[18rem] text-center font-serif text-[12.5px] leading-[2.1] tracking-[1.5px] text-muted">
           三張牌已並列為你的聖三角。
           <br />
           讓它們在你心中停留片刻，
           <br />
           真正的訊息會在沉默裡浮現。
-        </div>
+        </p>
       </div>
 
-      <button
-        onClick={onRestart}
-        className="mx-auto mb-2 mt-[38px] block rounded-sm border border-gold-soft bg-transparent py-3 pl-[34px] pr-7 font-serif text-xs tracking-[6px] text-gold"
-      >
-        再 問 一 次
-      </button>
+      {/* Ask again — an underline-link rite, not a form button */}
+      <div className="mb-2 mt-12 flex justify-center">
+        <button
+          onClick={onRestart}
+          className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
+        >
+          <span className="text-[8px] leading-none text-gold-soft/70">○</span>
+          <span className="font-display text-[11px] tracking-[6px] text-gold">ASK AGAIN</span>
+          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">再 問 一 次</span>
+          <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
+        </button>
+      </div>
     </div>
   );
 }
@@ -331,7 +384,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
   const [detail, setDetail] = useState<number | null>(null);
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('spread'), 1100);
+    const t = setTimeout(() => setPhase('spread'), 1400);
     return () => clearTimeout(t);
   }, []);
 
@@ -345,10 +398,12 @@ export default function SpreadScreen({ question, onRestart }: { question: string
   }
 
   const allFlipped = flipped.every(Boolean);
+  // The one unflipped card the eye should go to next (-1 once all are flipped).
+  const nextIndex = flipped.findIndex((f) => !f);
 
   useEffect(() => {
     if (!allFlipped) return;
-    const t = setTimeout(() => setShowReading(true), 900);
+    const t = setTimeout(() => setShowReading(true), 1200);
     return () => clearTimeout(t);
   }, [allFlipped]);
 
@@ -361,20 +416,30 @@ export default function SpreadScreen({ question, onRestart }: { question: string
         {/* Question */}
         <motion.div
           className="mt-3 text-center"
-          animate={{ opacity: phase === 'merging' ? 0 : 1 }}
+          animate={{ opacity: phase === 'merging' ? 0.35 : 1 }}
           transition={{ duration: DUR.slow, delay: 0.4, ease: EASE.out }}
         >
-          <div className="mb-2.5 pl-1.5 font-display text-[10px] tracking-[6px] text-gold opacity-85">
+          <div className="mb-3.5 pl-1.5 font-display text-[10px] tracking-[7px] text-gold-soft opacity-70">
             YOUR QUESTION
           </div>
-          <div className="px-6 text-sm leading-[1.7] tracking-[1px] text-parchment opacity-90">
+          <div className="px-6 text-[15px] leading-[1.9] tracking-[1.5px] text-parchment opacity-90">
             「{question}」
           </div>
-          <div className="mx-auto mt-[18px] h-px w-12 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
+          <div className="mx-auto mt-[22px] h-px w-10 bg-gradient-to-r from-transparent via-gold-dim to-transparent" />
         </motion.div>
 
         {/* Triangle spread — sized to make the cards the focal point */}
         <div className="relative mt-7 h-[480px] w-full flex-shrink-0">
+          {/* Soft altar light + vignette: lifts the centre, sinks the edges into
+              black so the three cards read as lit on a dark altar */}
+          <div
+            className="pointer-events-none absolute inset-0 transition-opacity duration-[1500ms]"
+            style={{
+              opacity: phase === 'spread' ? 1 : 0,
+              background:
+                'radial-gradient(ellipse 60% 45% at 50% 42%, rgba(231,215,166,0.05), transparent 70%), radial-gradient(ellipse 80% 70% at 50% 45%, transparent 55%, rgba(7,7,7,0.5) 100%)',
+            }}
+          />
           <SacredTriangleGuide visible={phase === 'spread'} />
 
           {drawn.map((card, i) => {
@@ -393,15 +458,16 @@ export default function SpreadScreen({ question, onRestart }: { question: string
                   scale: isMerging ? 0.82 : 1,
                 }}
                 transition={{
-                  duration: DUR.slow,
+                  duration: 1.3,
                   ease: EASE.reveal,
-                  delay: isMerging ? 0 : i * 0.16,
+                  delay: isMerging ? 0 : i * 0.22,
                 }}
               >
                 <FlipCard
                   card={card}
                   pos={POSITIONS[i]}
                   flipped={flipped[i]}
+                  isNext={phase === 'spread' && i === nextIndex}
                   onFlip={() => (flipped[i] ? setDetail(i) : flipCard(i))}
                 />
               </motion.div>
