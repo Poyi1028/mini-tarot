@@ -144,7 +144,7 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
       // Ignite each glyph's light in lockstep with that glyph's own fade
       // (same per-character schedule as the spans below), so the dots melt
       // out of the letter exactly where — and when — it dissolves.
-      const charDelay = 150 + Math.min(idx, 12) * 38;
+      const charDelay = 200 + Math.min(idx, 12) * 52;
       // Each glyph bursts into a cluster of light dots.
       const dots = 5 + Math.floor(Math.random() * 4);
       for (let k = 0; k < dots; k++) {
@@ -155,8 +155,8 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
           size: 1.5 + Math.random() * 3,
           dx: (Math.random() - 0.5) * 50,
           dy: -16 - Math.random() * 64,
-          delay: charDelay + Math.random() * 180,
-          dur: 850 + Math.random() * 450,
+          delay: charDelay + Math.random() * 260,
+          dur: 1500 + Math.random() * 700,
         });
       }
     });
@@ -168,15 +168,15 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
     setPhase('dissolve');
     // The sync overlay fades in over the tail of the scattering light (so the
     // sigil forms as the last motes rise — no dead gap), then we advance.
-    setTimeout(() => setShowSync(true), 1500);
-    setTimeout(() => onSubmit(q.trim()), 3000);
+    setTimeout(() => setShowSync(true), 2400);
+    setTimeout(() => onSubmit(q.trim()), 5400);
   }
 
   const isInput = phase === 'input';
 
   return (
     <div className="absolute inset-0 flex flex-col items-center px-7 pb-10 pt-[60px]">
-      <Starfield density={70} seed={7} />
+      <Starfield density={36} seed={7} />
 
       {/* Title */}
       <motion.div
@@ -221,7 +221,7 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
                   style={{
                     opacity: phase === 'dissolve' ? 0 : 1,
                     filter: phase === 'dissolve' ? 'blur(3px)' : 'blur(0px)',
-                    transition: `opacity 600ms ease-out ${150 + Math.min(i, 12) * 38}ms, filter 600ms ease-out ${150 + Math.min(i, 12) * 38}ms`,
+                    transition: `opacity 950ms ease-out ${200 + Math.min(i, 12) * 52}ms, filter 950ms ease-out ${200 + Math.min(i, 12) * 52}ms`,
                   }}
                 >
                   {ch === ' ' ? ' ' : ch}

@@ -211,34 +211,51 @@ function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => vo
   );
 }
 
-// Full-screen detail for a revealed card: the art fills the frame, with the
-// name set off at top and the meaning below — both on frosted-glass panels with
-// a soft shadow so the text lifts off the artwork. Tap anywhere to dismiss.
+// Full-screen detail for a revealed card: the artwork fills the whole screen as
+// a ghostly, full-bleed backdrop — blended into the starfield (mix-blend lighten
+// drops its grey card-stock, leaving only the bright figure/robes/wands) and
+// feathered softly on every edge so it dissolves into pure black. The name sits
+// at top and the meaning below. Tap anywhere to dismiss.
 function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose: () => void }) {
   const textShadow = '0 2px 10px rgba(0,0,0,0.8)';
   return (
     <motion.div
-      className="absolute inset-0 z-[100] overflow-hidden"
+      className="absolute inset-0 z-[100] overflow-hidden bg-ink"
       onClick={onClose}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: DUR.base, ease: EASE.out }}
+      style={{ isolation: 'isolate' }}
     >
+      <Starfield density={26} seed={7} />
+
+      {/* Full-bleed hero artwork. `mix-blend-mode: lighten` makes the grey card
+          stock vanish into the dark starfield, leaving the luminous figure to
+          float over the cosmos. Held at low opacity and scaled past full-bleed
+          (~120%, nudged right) with a soft radial mask that feathers all four
+          edges gently into the surrounding black. */}
       <motion.img
         src={card.img}
         alt={`${card.cn} ${card.en}`}
         draggable={false}
-        className="absolute inset-0 h-full w-full object-cover"
-        initial={{ scale: 1.08 }}
-        animate={{ scale: 1 }}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        style={{
+          mixBlendMode: 'lighten',
+          maskImage:
+            'radial-gradient(ellipse 72% 80% at 58% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
+          WebkitMaskImage:
+            'radial-gradient(ellipse 72% 80% at 58% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
+        }}
+        initial={{ scale: 1.32, opacity: 0, x: '6%', y: '7%' }}
+        animate={{ scale: 1.15, opacity: 0.9, x: '6%', y: '7%' }}
         transition={{ duration: 1.1, ease: EASE.reveal }}
       />
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgba(7,7,7,0.6) 0%, rgba(7,7,7,0.05) 28%, rgba(7,7,7,0.1) 56%, rgba(7,7,7,0.82) 100%)',
+            'linear-gradient(180deg, rgba(7,7,7,0.45) 0%, rgba(7,7,7,0) 30%, rgba(7,7,7,0) 55%, rgba(7,7,7,0.85) 100%)',
         }}
       />
 
@@ -259,7 +276,7 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
           {pos.cn}　{pos.en}
         </div>
         <div
-          className="mt-2.5 font-serif text-[27px] font-light tracking-[7px] text-parchment"
+          className="mt-2.5 font-serif text-[27px] font-light tracking-[11px] text-parchment"
           style={{ textShadow }}
         >
           {card.cn}
@@ -287,7 +304,7 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
           {card.keywords.join('・')}
         </div>
         <div
-          className="mt-3 text-[14px] leading-[1.95] tracking-[0.8px] text-parchment"
+          className="mt-3 text-[14px] leading-relaxed tracking-[0.8px] text-white/80"
           style={{ textShadow }}
         >
           {card.meaning}
@@ -338,7 +355,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
   return (
     <div className="absolute inset-0">
       <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-        <Starfield density={45} seed={3} />
+        <Starfield density={24} seed={3} />
 
       <div className="relative z-[2] flex min-h-full flex-col px-6 pb-10 pt-[60px]">
         {/* Question */}

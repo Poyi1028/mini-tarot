@@ -1,8 +1,9 @@
 'use client';
 
+import { memo } from 'react';
 import { GOLD, GOLD_SOFT, GOLD_DIM } from '@/lib/constants';
 
-export default function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; glow?: boolean }) {
+function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; glow?: boolean }) {
   return (
     <div
       style={{
@@ -79,3 +80,7 @@ export default function CardBack({ w = 84, h = 148, glow = false }: { w?: number
     </div>
   );
 }
+
+// Props are primitive and constant per card, so memo lets the 78 SVG card backs
+// skip reconciliation when the shuffle re-targets card positions every frame.
+export default memo(CardBack);

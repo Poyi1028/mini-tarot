@@ -17,8 +17,8 @@ const notoSerifTC = Noto_Serif_TC({
 });
 
 export const metadata: Metadata = {
-  title: '聖三角塔羅',
-  description: '沉浸式塔羅占卜 App — 深紫×墨黑×金邊',
+  title: '塔羅',
+  description: '沉浸式塔羅占卜 App',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
@@ -26,8 +26,8 @@ export const metadata: Metadata = {
     title: '塔羅',
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
+    icon: '/cards.svg',
+    apple: '/cards.svg',
   },
 };
 

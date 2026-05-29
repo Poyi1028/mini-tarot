@@ -1,265 +1,243 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import type { PointerEvent as ReactPointerEvent } from 'react';
-import { motion } from 'framer-motion';
-import { GOLD_SOFT } from '@/lib/constants';
-import { EASE, SPRING_SHUFFLE } from '@/lib/motion';
+import { motion, useAnimationFrame } from 'framer-motion';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 
-const N_DECK = 78;
-const SHUFFLE_TARGET = 1800;
-// Half-extent of the "table" the cards are washed across.
-const TABLE_X = 148;
-const TABLE_Y = 76;
+// ── Tunables ────────────────────────────────────────────────────────────────
+const N_DECK = 18; // divisible by 3 → even left/mid/right piles
+const SHUFFLE_MS = 3000; // active rubbing time before the deck gathers itself
+const SCATTER_MS = 140; // re-randomise the spread at most this often while dragging
+const SPREAD_X = 118; // how far cards smear left/right while shuffling
+const SPREAD_Y = 34;
+const PILE_GAP = 88; // distance between the three cut piles
 
-interface DeckCard {
+// The one spring the user asked for — weighty, slightly settled.
+const SPRING = { type: 'spring', stiffness: 100, damping: 20 } as const;
+
+type Phase = 'shuffle' | 'gather' | 'cut' | 'merge';
+
+interface Card {
   id: number;
   x: number;
   y: number;
-  r: number;
-  zi: number;
+  rot: number;
+  z: number;
   pile: number;
 }
 
-type Phase = 'shuffle' | 'settling' | 'piles' | 'merging';
+const rand = (n: number) => (Math.random() - 0.5) * 2 * n;
 
-// Depth by vertical position — cards nearer the bottom sit on top, like a real
-// face-down spread on a table (avoids z-index flicker while smearing).
-function depthFor(y: number) {
-  const t = (y + TABLE_Y) / (2 * TABLE_Y);
-  return Math.round(Math.max(0, Math.min(1, t)) * (N_DECK - 1));
-}
-
-function HandSwipeHint() {
-  return (
-    <div className="flex items-center gap-2.5 text-[11px] tracking-[3px] text-muted">
-      <svg width="24" height="14" viewBox="0 0 24 14" fill="none">
-        <path
-          d="M2 7 H22 M2 7 L6 3 M2 7 L6 11 M22 7 L18 3 M22 7 L18 11"
-          stroke={GOLD_SOFT}
-          strokeWidth="0.8"
-          strokeLinecap="round"
-          opacity="0.7"
-        >
-          <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite" />
-        </path>
-      </svg>
-      <span>左 右 塗 抹</span>
-    </div>
-  );
+// A neat face-down stack at center, with tiny per-card offsets so it reads as a
+// real pile rather than one flat card.
+function stack(): Card[] {
+  return Array.from({ length: N_DECK }, (_, i) => ({
+    id: i,
+    x: rand(4),
+    y: rand(4) - i * 0.3,
+    rot: rand(3),
+    z: i,
+    pile: 0,
+  }));
 }
 
 export default function ShuffleScreen({ onComplete }: { onComplete: (pile: number) => void }) {
-  const [cards, setCards] = useState<DeckCard[]>(() =>
-    Array.from({ length: N_DECK }, (_, i) => {
-      const y = (Math.random() - 0.5) * 2 * TABLE_Y * 0.85;
-      return {
-        id: i,
-        // Start already spread face-down across the table.
-        x: (Math.random() - 0.5) * 2 * TABLE_X * 0.85,
-        y,
-        r: (Math.random() - 0.5) * 46,
-        zi: depthFor(y),
-        pile: 0,
-      };
-    })
-  );
+  const [cards, setCards] = useState<Card[]>(stack);
   const [phase, setPhase] = useState<Phase>('shuffle');
-  const [progress, setProgress] = useState(0);
+  const [moved, setMoved] = useState(false);
   const [hoverPile, setHoverPile] = useState<number | null>(null);
-  const dragRef = useRef({ on: false, lx: 0, ly: 0, dist: 0, last: 0, adx: 0, ady: 0 });
-  const idleRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-  const surfaceRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => () => clearTimeout(idleRef.current), []);
+  const phaseRef = useRef<Phase>('shuffle');
+  const draggingRef = useRef(false);
+  const doneRef = useRef(false);
+  const elapsedRef = useRef(0);
+  const lastMoveRef = useRef(0);
+  const lastScatterRef = useRef(0);
+  const barRef = useRef<HTMLDivElement>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => {
-    if (phase !== 'shuffle' || progress < 1) return;
-    setPhase('settling');
-    clearTimeout(idleRef.current);
-    setTimeout(() => {
-      setCards((prev) =>
-        prev.map((c, i) => ({
-          ...c,
-          pile: i % 3,
-          x: ((i % 3) - 1) * 88 + (Math.random() - 0.5) * 4,
-          y: Math.floor(i / 3) * 0.4 + (Math.random() - 0.5) * 3,
-          r: (Math.random() - 0.5) * 4,
-          zi: i,
-        }))
-      );
-      setTimeout(() => setPhase('piles'), 900);
-    }, 600);
-  }, [progress, phase]);
-
-  // Scatter: each card gets its own outward impulse (a random direction plus a
-  // little of the fingertip's travel), so the deck bursts apart and fills the
-  // whole table instead of drifting as one clump. Energy from the swipe speed
-  // makes a fast wash fling them wider. Cards reaching an edge are reflected
-  // back into the field so the spread stays full.
-  function scatter(dx: number, dy: number, speed: number) {
-    const push = 14 + Math.min(60, speed * 0.5);
-    setCards((prev) =>
-      prev.map((c, i) => {
-        const ang = Math.random() * Math.PI * 2;
-        const mag = push * (0.6 + (i % 5) * 0.12);
-        let nx = c.x + Math.cos(ang) * mag + dx * 0.22;
-        let ny = c.y + Math.sin(ang) * mag * 0.6 + dy * 0.14;
-        if (nx > TABLE_X) nx = TABLE_X - Math.random() * 64;
-        else if (nx < -TABLE_X) nx = -TABLE_X + Math.random() * 64;
-        if (ny > TABLE_Y) ny = TABLE_Y - Math.random() * 40;
-        else if (ny < -TABLE_Y) ny = -TABLE_Y + Math.random() * 40;
-        const r = c.r + (Math.random() - 0.5) * 44;
-        return {
-          ...c,
-          x: nx,
-          y: ny,
-          r: Math.max(-60, Math.min(60, r)),
-          zi: depthFor(ny),
-        };
-      })
-    );
+  function setPhaseBoth(next: Phase) {
+    phaseRef.current = next;
+    setPhase(next);
   }
 
-  // Gather: when the fingertip rests, ease every card back into a loose pile
-  // near the center — the "聚攏" half of the scatter-then-gather rhythm.
-  function gather() {
-    if (phase !== 'shuffle') return;
+  // Smear: fling every card to a fresh random spot, rotated within ±15°.
+  function scatter() {
     setCards((prev) =>
       prev.map((c, i) => ({
         ...c,
-        x: (Math.random() - 0.5) * 46,
-        y: (Math.random() - 0.5) * 30,
-        r: (Math.random() - 0.5) * 22,
-        zi: i,
+        x: rand(SPREAD_X),
+        y: rand(SPREAD_Y),
+        rot: rand(15),
+        z: i,
       }))
     );
   }
 
-  function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>) {
-    if (phase !== 'shuffle') return;
-    e.preventDefault();
-    dragRef.current.on = true;
-    dragRef.current.lx = e.clientX;
-    dragRef.current.ly = e.clientY;
-    surfaceRef.current?.setPointerCapture?.(e.pointerId);
+  // Count only *active* rubbing toward the 3s; stop the clock if the finger
+  // rests. Once full, gather to one pile, then auto-split into three.
+  useAnimationFrame((_, delta) => {
+    if (phaseRef.current !== 'shuffle' || doneRef.current) return;
+    if (!draggingRef.current) return;
+    if (performance.now() - lastMoveRef.current > 160) return; // finger paused
+    elapsedRef.current += delta;
+    const p = Math.min(1, elapsedRef.current / SHUFFLE_MS);
+    if (barRef.current) barRef.current.style.width = `${p * 100}%`;
+    if (p >= 1) finishShuffle();
+  });
+
+  function finishShuffle() {
+    if (doneRef.current) return;
+    doneRef.current = true;
+    draggingRef.current = false;
+    setPhaseBoth('gather');
+    setCards((prev) => prev.map((c, i) => ({ ...c, x: rand(5), y: rand(5) - i * 0.3, rot: rand(4), z: i })));
+    // After the gather settles, fan out into the three cut piles.
+    timers.current.push(
+      setTimeout(() => {
+        setPhaseBoth('cut');
+        setCards((prev) =>
+          prev.map((c, i) => {
+            const pile = i % 3;
+            return {
+              ...c,
+              pile,
+              x: (pile - 1) * PILE_GAP + rand(3),
+              y: rand(3) - Math.floor(i / 3) * 0.5,
+              rot: rand(3),
+              z: i,
+            };
+          })
+        );
+      }, 720)
+    );
   }
 
-  function handlePointerMove(e: ReactPointerEvent<HTMLDivElement>) {
-    if (!dragRef.current.on || phase !== 'shuffle') return;
-    const dx = e.clientX - dragRef.current.lx;
-    const dy = e.clientY - dragRef.current.ly;
-    const d = Math.hypot(dx, dy);
-    if (d < 1) return;
-    dragRef.current.lx = e.clientX;
-    dragRef.current.ly = e.clientY;
-    dragRef.current.dist += d;
-    dragRef.current.adx += dx;
-    dragRef.current.ady += dy;
+  function onDragMove() {
+    if (phaseRef.current !== 'shuffle') return;
+    if (!moved) setMoved(true);
     const now = performance.now();
-    setProgress(Math.min(1, dragRef.current.dist / SHUFFLE_TARGET));
-    if (now - dragRef.current.last > 30) {
-      const adx = dragRef.current.adx;
-      const ady = dragRef.current.ady;
-      dragRef.current.last = now;
-      scatter(adx, ady, Math.hypot(adx, ady));
-      dragRef.current.adx = 0;
-      dragRef.current.ady = 0;
-      clearTimeout(idleRef.current);
-      idleRef.current = setTimeout(gather, 150);
+    lastMoveRef.current = now;
+    if (now - lastScatterRef.current > SCATTER_MS) {
+      lastScatterRef.current = now;
+      scatter();
     }
   }
 
-  function handlePointerUp() {
-    dragRef.current.on = false;
-    clearTimeout(idleRef.current);
-    gather();
-  }
-
   function selectPile(p: number) {
-    if (phase !== 'piles') return;
+    if (phaseRef.current !== 'cut') return;
     setHoverPile(p);
-    setPhase('merging');
+    setPhaseBoth('merge');
+    // The other two piles slide on top of the chosen one to form one deck.
+    const tx = (p - 1) * PILE_GAP;
     setCards((prev) =>
-      prev.map((c, i) => {
-        if (c.pile === p) {
-          return { ...c, x: 0, y: -6, r: (Math.random() - 0.5) * 3, zi: 100 + i };
-        }
-        return { ...c, x: (c.pile - 1) * 88, y: 240, r: (Math.random() - 0.5) * 20, zi: i };
-      })
+      prev.map((c, i) =>
+        c.pile === p
+          ? { ...c, x: tx + rand(3), y: rand(3), rot: rand(4), z: i }
+          : { ...c, x: tx + rand(3), y: rand(3), rot: rand(7), z: 100 + i }
+      )
     );
-    setTimeout(() => onComplete(p), 1100);
+    timers.current.push(setTimeout(() => onComplete(p), 1100));
   }
 
-  const fast = phase === 'shuffle';
+  // Cleanup pending timers if unmounted mid-sequence.
+  useEffect(() => {
+    const t = timers.current;
+    return () => t.forEach(clearTimeout);
+  }, []);
 
   return (
     <div className="absolute inset-0 flex flex-col">
-      <Starfield density={50} seed={11} />
+      <Starfield density={26} seed={11} />
 
       {/* Header */}
       <div
         className="relative z-[2] px-7 pt-[70px] text-center transition-opacity duration-[600ms]"
-        style={{ opacity: phase === 'merging' ? 0.2 : 1 }}
+        style={{ opacity: phase === 'merge' ? 0.2 : 1 }}
       >
         <div className="mb-3 font-display text-[11px] tracking-[6px] text-gold opacity-85">
-          {phase === 'shuffle' || phase === 'settling' ? 'SHUFFLE' : 'CUT THE DECK'}
+          {phase === 'shuffle' || phase === 'gather' ? 'SHUFFLE' : 'CUT THE DECK'}
         </div>
-        <div className="whitespace-pre-line text-[17px] font-light leading-[1.8] tracking-[4px] text-parchment">
-          {phase === 'shuffle' && '以指尖左右塗抹、推開\n讓牌在桌面流轉、與你共振'}
-          {phase === 'settling' && '能量已注入'}
-          {(phase === 'piles' || phase === 'merging') && '請憑直覺挑選一疊切牌'}
+        <div className="min-h-[62px] whitespace-pre-line text-[17px] font-light leading-[1.8] tracking-[4px] text-parchment">
+          {phase === 'shuffle' && '按住牌堆、左右揉搓\n讓牌在桌面流轉、與你共振'}
+          {phase === 'gather' && '能量已注入'}
+          {(phase === 'cut' || phase === 'merge') && (
+            <motion.span
+              className="text-gold"
+              style={{ textShadow: '0 0 14px rgba(201,169,78,0.55)' }}
+              animate={{ opacity: [0.55, 1, 0.55] }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+            >
+              請直覺選擇其中一疊牌堆
+            </motion.span>
+          )}
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* Progress bar (fills over the 3s of active shuffling) */}
       <div
         className="relative z-[2] mx-auto mt-6 h-px w-[140px] bg-gold/15 transition-opacity duration-[600ms]"
         style={{ opacity: phase === 'shuffle' ? 1 : 0 }}
       >
-        <motion.div
-          className="absolute left-1/2 top-0 h-full -translate-x-1/2 bg-gold"
-          style={{ boxShadow: '0 0 10px var(--color-gold)' }}
-          animate={{ width: `${progress * 100}%` }}
-          transition={{ duration: 0.2, ease: 'easeOut' }}
+        <div
+          ref={barRef}
+          className="absolute left-1/2 top-0 h-full -translate-x-1/2 bg-gold transition-[width] duration-150 ease-out"
+          style={{ width: 0, boxShadow: '0 0 10px var(--color-gold)' }}
         />
       </div>
 
       {/* Card area */}
-      <div
-        ref={surfaceRef}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-        className="relative z-[2] flex flex-1 touch-none select-none items-center justify-center"
-        style={{ cursor: phase === 'shuffle' ? 'grab' : 'default' }}
-      >
-        <div className="relative h-[200px] w-[280px]">
+      <div className="relative z-[2] flex flex-1 touch-none select-none items-center justify-center">
+        {/* Whole pile breathes up and down while idle (hover effect). */}
+        <motion.div
+          className="relative"
+          style={{ width: 320, height: 300 }}
+          animate={{ y: [0, -7, 0] }}
+          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        >
           {cards.map((c) => (
             <motion.div
               key={c.id}
               className="absolute left-1/2 top-1/2 -ml-[42px] -mt-[74px]"
-              style={{ zIndex: c.zi }}
+              style={{ zIndex: c.z }}
               initial={false}
-              animate={{ x: c.x, y: c.y, rotate: c.r }}
-              transition={fast ? SPRING_SHUFFLE : { duration: 0.9, ease: EASE.reveal }}
+              animate={{ x: c.x, y: c.y, rotate: c.rot }}
+              transition={SPRING}
             >
               <CardBack w={84} h={148} />
             </motion.div>
           ))}
 
-          {/* Pile tap zones */}
-          {phase === 'piles' && (
+          {/* Drag-to-shuffle gesture surface (only while shuffling) */}
+          {phase === 'shuffle' && (
+            <motion.div
+              className="absolute inset-0 z-[150]"
+              style={{ cursor: 'grab' }}
+              whileTap={{ cursor: 'grabbing' }}
+              drag
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              dragElastic={0.35}
+              dragSnapToOrigin
+              onDragStart={() => {
+                draggingRef.current = true;
+              }}
+              onDrag={onDragMove}
+              onDragEnd={() => {
+                draggingRef.current = false;
+              }}
+            />
+          )}
+
+          {/* Pile tap zones (only while cutting) */}
+          {phase === 'cut' && (
             <div className="absolute inset-0 z-[200]">
               {[0, 1, 2].map((p) => (
                 <button
                   key={p}
                   onClick={() => selectPile(p)}
                   className="absolute left-1/2 top-1/2 h-[156px] w-[92px] cursor-pointer border-none bg-transparent p-0"
-                  style={{ transform: `translate(${(p - 1) * 88 - 46}px, -73px)` }}
+                  style={{ transform: `translate(${(p - 1) * PILE_GAP - 46}px, -73px)` }}
                   onMouseEnter={() => setHoverPile(p)}
                   onMouseLeave={() => setHoverPile(null)}
                 >
@@ -276,13 +254,15 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Hint */}
       <div className="relative z-[2] flex h-16 items-center justify-center">
-        {phase === 'shuffle' && progress < 0.05 && <HandSwipeHint />}
-        {phase === 'piles' && (
+        {phase === 'shuffle' && !moved && (
+          <div className="text-[11px] tracking-[4px] text-muted">按 住 ・ 左 右 揉 搓</div>
+        )}
+        {phase === 'cut' && (
           <div className="flex gap-[88px]">
             {[0, 1, 2].map((p) => (
               <div

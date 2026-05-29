@@ -13,13 +13,13 @@ export default function manifest(): MetadataRoute.Manifest {
     lang: 'zh-Hant',
     icons: [
       {
-        src: '/icon.svg',
+        src: '/cards.svg',
         type: 'image/svg+xml',
         sizes: 'any',
         purpose: 'any',
       },
       {
-        src: '/icon.svg',
+        src: '/cards.svg',
         type: 'image/svg+xml',
         sizes: 'any',
         purpose: 'maskable',
