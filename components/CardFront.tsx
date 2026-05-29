@@ -1,6 +1,8 @@
 'use client';
 
-export default function CardFront({ card, w = 84, h = 148 }) {
+import type { Card } from '@/lib/tarot-cards';
+
+export default function CardFront({ card, w = 84, h = 148 }: { card: Card; w?: number; h?: number }) {
   return (
     <img
       src={card.img}

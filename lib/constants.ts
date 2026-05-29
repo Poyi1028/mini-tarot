@@ -1,0 +1,9 @@
+export const GOLD = '#e7d7a6';
+export const GOLD_SOFT = '#d8c693';
+export const GOLD_DIM = '#9c8a5c';
+export const INK = '#070709';
+export const INK_2 = '#0f0d14';
+export const PURPLE_DEEP = '#15102a';
+export const PURPLE_ACCENT = '#2a2140';
+export const PARCHMENT = '#ece4cf';
+export const MUTED = '#8d889c';

@@ -3,7 +3,10 @@
 // against the classical theme. Stroke uses currentColor so the parent sets the
 // gold tint; sized to sit where the major-arcana numeral does.
 
-const PATHS = {
+import type { ReactElement } from 'react';
+import type { Suit } from '@/lib/tarot-cards';
+
+const PATHS: Record<Suit, ReactElement> = {
   // Chalice — rounded bowl on a stem and foot.
   cups: (
     <>
@@ -41,7 +44,7 @@ const PATHS = {
   ),
 };
 
-export default function SuitGlyph({ suit, size = 26 }) {
+export default function SuitGlyph({ suit, size = 26 }: { suit: Suit; size?: number }) {
   const glyph = PATHS[suit];
   if (!glyph) return null;
   return (

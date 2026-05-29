@@ -2,14 +2,15 @@
 
 @theme {
   /* Palette */
-  --color-gold: #c9a94e;
-  --color-gold-soft: #b8a063;
-  --color-gold-dim: #7d6a38;
-  --color-ink: #070707;
-  --color-ink-2: #111110;
-  --color-purple-deep: #161512;
+  --color-gold: #e7d7a6;
+  --color-gold-soft: #d8c693;
+  --color-gold-dim: #9c8a5c;
+  --color-ink: #070709;
+  --color-ink-2: #0f0d14;
+  --color-purple-deep: #15102a;
+  --color-purple-accent: #2a2140;
   --color-parchment: #ece4cf;
-  --color-muted: #8c8676;
+  --color-muted: #8d889c;
 
   /* Typography — wired to next/font css variables in layout.js */
   --font-display: var(--font-cinzel), serif;
@@ -131,12 +132,12 @@
 @keyframes breath-glow {
   0%,
   100% {
-    box-shadow: 0 0 12px rgba(212, 175, 55, 0.18), 0 0 22px rgba(212, 175, 55, 0.1),
-      inset 0 0 0 1px rgba(212, 175, 55, 0.2);
+    box-shadow: 0 0 12px rgba(231, 215, 166, 0.18), 0 0 22px rgba(231, 215, 166, 0.1),
+      inset 0 0 0 1px rgba(231, 215, 166, 0.2);
   }
   50% {
-    box-shadow: 0 0 26px rgba(212, 175, 55, 0.55), 0 0 44px rgba(212, 175, 55, 0.32),
-      inset 0 0 0 1px rgba(212, 175, 55, 0.55);
+    box-shadow: 0 0 26px rgba(231, 215, 166, 0.55), 0 0 44px rgba(231, 215, 166, 0.32),
+      inset 0 0 0 1px rgba(231, 215, 166, 0.55);
   }
 }
 

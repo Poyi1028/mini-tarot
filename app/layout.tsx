@@ -1,5 +1,7 @@
 import './globals.css';
+import type { Metadata, Viewport } from 'next';
 import { Cinzel, Noto_Serif_TC } from 'next/font/google';
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -15,23 +17,23 @@ const notoSerifTC = Noto_Serif_TC({
   preload: false,
 });
 
-export const metadata = {
-  title: '聖三角塔羅',
-  description: '沉浸式塔羅占卜 App — 深紫×墨黑×金邊',
+export const metadata: Metadata = {
+  title: 'Mini-Tarot',
+  description: '沉浸式塔羅占卜 App',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: '塔羅',
+    title: 'Mini-Tarot',
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
+    icon: '/icon-192.png',
+    apple: '/icon-192.png',
   },
 };
 
-export const viewport = {
-  themeColor: '#070707',
+export const viewport: Viewport = {
+  themeColor: '#070709',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -39,10 +41,13 @@ export const viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-Hant" className={`${cinzel.variable} ${notoSerifTC.variable}`}>
-      <body>{children}</body>
+      <body>
+        <ServiceWorkerRegistration />
+        {children}
+      </body>
     </html>
   );
 }

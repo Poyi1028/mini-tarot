@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 回應語言
+
+**一律使用繁體中文回應使用者**，無論使用者以何種語言提問。程式碼、檔案路徑、指令、識別字維持原文即可，但所有說明、解釋與對話內容都以繁體中文撰寫。
+
 ## Commands
 
 Package manager is **pnpm** (see `pnpm-lock.yaml`).
@@ -9,17 +13,22 @@ Package manager is **pnpm** (see `pnpm-lock.yaml`).
 ```bash
 pnpm install      # install deps
 pnpm dev          # dev server at http://localhost:3000
-pnpm build        # production build — also runs lint + type checking; use this to verify changes
 pnpm start        # serve the production build
 ```
 
-There is no separate lint/test script and no test suite. `pnpm build` is the verification gate (it lints and type-checks).
+**請勿執行 `pnpm build`。** 它會寫入 `.next/` 產出，與 `pnpm dev` 使用的 `.next` 快取衝突，導致快取毀損、dev server 無法啟動。要驗證變更時，改用型別檢查：
+
+```bash
+npx tsc --noEmit  # 型別檢查（驗證的主要關卡，取代 pnpm build）
+```
+
+There is no separate lint/test script and no test suite. `tsc --noEmit` is the verification gate.
 
 For the Oracle reading feature, copy `.env.local.example` to `.env.local` and set `ANTHROPIC_API_KEY`. Without it the app still runs and shows a static fallback reading.
 
 ## Stack
 
-Next.js 15 (App Router) · React 19 · plain JavaScript (no TypeScript) · Tailwind CSS v4 · framer-motion · `@anthropic-ai/sdk`. Import alias `@/*` maps to the project root (`jsconfig.json`).
+Next.js 15 (App Router) · React 19 · TypeScript (strict mode) · Tailwind CSS v4 · framer-motion · `@anthropic-ai/sdk`. Import alias `@/*` maps to the project root (`tsconfig.json`). The card model is a discriminated union (`MajorCard | MinorCard`) exported from `lib/tarot-cards.ts`; narrow on `arcana === 'minor'` to access `suit`.
 
 ## Architecture
 
