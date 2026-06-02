@@ -18,6 +18,12 @@ interface Position {
   desc: string;
 }
 
+// 一次抽牌的結果：牌本身 + 是否逆位
+interface DrawnCard {
+  card: Card;
+  reversed: boolean;
+}
+
 // Hero-card geometry — single source of truth for the spread. Ratio matches
 // the 300×527 artwork (≈0.5676). Everything below (slots, container height,
 // triangle guide, centering offsets) is derived from these two numbers.
@@ -99,12 +105,14 @@ function SacredTriangleGuide({ visible }: { visible: boolean }) {
 
 function FlipCard({
   card,
+  reversed,
   pos,
   flipped,
   isNext,
   onFlip,
 }: {
   card: Card;
+  reversed: boolean;
   pos: Position;
   flipped: boolean;
   isNext: boolean;
@@ -170,7 +178,7 @@ function FlipCard({
             className="absolute inset-0"
             style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}
           >
-            <CardFront card={card} w={CARD_W} h={CARD_H} />
+            <CardFront card={card} w={CARD_W} h={CARD_H} reversed={reversed} />
           </div>
         </motion.div>
       </div>
@@ -183,7 +191,7 @@ function FlipCard({
 // keywords, then the meaning. No thumbnails: the spread above and the tap-to-open
 // CardDetail already carry the imagery. Hierarchy comes from type scale + token
 // colours, not stacked opacity.
-function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => void }) {
+function ReadingPanel({ drawn, onRestart }: { drawn: DrawnCard[]; onRestart: () => void }) {
   return (
     <div className="pt-3">
       {/* Gold thread falling from the spread into the reading */}
@@ -201,7 +209,7 @@ function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => vo
         initial="hidden"
         animate="show"
       >
-        {drawn.map((c, i) => (
+        {drawn.map(({ card: c, reversed }, i) => (
           <motion.article key={c.num} variants={fadeUp} className="flex flex-col items-center text-center">
             {/* Ritual mark — the major numeral or minor suit glyph, raised above
                 the name instead of crammed into a list column */}
@@ -221,16 +229,23 @@ function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => vo
             <div className="mt-2 font-display text-[10px] tracking-[3px] text-gold-dim">
               {c.en.toUpperCase()}
             </div>
+            {/* 正逆位標記 */}
+            <div
+              className="mt-2.5 font-serif text-[10px] tracking-[4px]"
+              style={{ color: reversed ? GOLD_DIM : GOLD }}
+            >
+              {reversed ? '逆 位 · REVERSED' : '正 位 · UPRIGHT'}
+            </div>
             <div className="mt-5 flex w-full items-center justify-center gap-3">
               <span className="h-px w-16 bg-gradient-to-r from-transparent to-gold-soft/40" />
               <span className="text-[7px] leading-none text-gold-soft/70">◆</span>
               <span className="h-px w-16 bg-gradient-to-l from-transparent to-gold-soft/40" />
             </div>
             <div className="mt-5 font-serif text-[12px] tracking-[3px] text-gold-soft">
-              {c.keywords.join('  ·  ')}
+              {(reversed ? c.reversedKeywords : c.keywords).join('  ·  ')}
             </div>
             <p className="mt-3.5 max-w-[19rem] text-left font-serif text-[13.5px] leading-[2] tracking-[0.5px] text-parchment/85">
-              {c.meaning}
+              {reversed ? c.reversedMeaning : c.meaning}
             </p>
           </motion.article>
         ))}
@@ -269,7 +284,17 @@ function ReadingPanel({ drawn, onRestart }: { drawn: Card[]; onRestart: () => vo
 // drops its grey card-stock, leaving only the bright figure/robes/wands) and
 // feathered softly on every edge so it dissolves into pure black. The name sits
 // at top and the meaning below. Tap anywhere to dismiss.
-function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose: () => void }) {
+function CardDetail({
+  card,
+  reversed,
+  pos,
+  onClose,
+}: {
+  card: Card;
+  reversed: boolean;
+  pos: Position;
+  onClose: () => void;
+}) {
   const textShadow = '0 2px 10px rgba(0,0,0,0.8)';
   return (
     <motion.div
@@ -286,8 +311,8 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
       {/* Full-bleed hero artwork. `mix-blend-mode: lighten` makes the grey card
           stock vanish into the dark starfield, leaving the luminous figure to
           float over the cosmos. Held at low opacity and scaled past full-bleed
-          (~120%, nudged right) with a soft radial mask that feathers all four
-          edges gently into the surrounding black. */}
+          (~120%, horizontally centred) with a soft radial mask that feathers all
+          four edges gently into the surrounding black. */}
       <motion.img
         src={card.img}
         alt={`${card.cn} ${card.en}`}
@@ -296,12 +321,12 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
         style={{
           mixBlendMode: 'lighten',
           maskImage:
-            'radial-gradient(ellipse 72% 80% at 58% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
+            'radial-gradient(ellipse 72% 80% at 50% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
           WebkitMaskImage:
-            'radial-gradient(ellipse 72% 80% at 58% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
+            'radial-gradient(ellipse 72% 80% at 50% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
         }}
-        initial={{ scale: 1.32, opacity: 0, x: '6%', y: '7%' }}
-        animate={{ scale: 1.15, opacity: 0.9, x: '6%', y: '7%' }}
+        initial={{ scale: 1.32, opacity: 0, x: '0%', y: '7%' }}
+        animate={{ scale: 1.15, opacity: 0.9, x: '0%', y: '7%' }}
         transition={{ duration: 1.1, ease: EASE.reveal }}
       />
       <div
@@ -337,6 +362,12 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
         <div className="mt-1.5 font-display text-[11px] tracking-[3px] text-gold-soft opacity-80">
           {card.en.toUpperCase()}
         </div>
+        <div
+          className="mt-2 font-serif text-[10px] tracking-[4px]"
+          style={{ color: reversed ? GOLD_DIM : GOLD, textShadow }}
+        >
+          {reversed ? '逆 位 · REVERSED' : '正 位 · UPRIGHT'}
+        </div>
       </motion.div>
 
       {/* Meaning */}
@@ -354,13 +385,13 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
       >
         <div className="mx-auto mb-3.5 h-px w-10 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
         <div className="text-xs tracking-[2px] text-gold-soft opacity-85" style={{ textShadow }}>
-          {card.keywords.join('・')}
+          {(reversed ? card.reversedKeywords : card.keywords).join('・')}
         </div>
         <div
           className="mt-3 text-[14px] leading-relaxed tracking-[0.8px] text-white/80"
           style={{ textShadow }}
         >
-          {card.meaning}
+          {reversed ? card.reversedMeaning : card.meaning}
         </div>
         <div className="mt-6 text-[10px] tracking-[4px] text-muted opacity-80">輕 觸 任 意 處 關 閉</div>
       </motion.div>
@@ -369,13 +400,14 @@ function CardDetail({ card, pos, onClose }: { card: Card; pos: Position; onClose
 }
 
 export default function SpreadScreen({ question, onRestart }: { question: string; onRestart: () => void }) {
-  const drawn = useMemo(() => {
+  const drawn = useMemo<DrawnCard[]>(() => {
     const pool = [...TAROT_CARDS];
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    return pool.slice(0, 3);
+    // 每張牌各有 50% 機率逆位
+    return pool.slice(0, 3).map((card) => ({ card, reversed: Math.random() < 0.5 }));
   }, []);
 
   const [phase, setPhase] = useState<'merging' | 'spread'>('merging');
@@ -442,7 +474,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
           />
           <SacredTriangleGuide visible={phase === 'spread'} />
 
-          {drawn.map((card, i) => {
+          {drawn.map(({ card, reversed }, i) => {
             const slot = SLOTS[i];
             const isMerging = phase === 'merging';
             return (
@@ -465,6 +497,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
               >
                 <FlipCard
                   card={card}
+                  reversed={reversed}
                   pos={POSITIONS[i]}
                   flipped={flipped[i]}
                   isNext={phase === 'spread' && i === nextIndex}
@@ -504,7 +537,8 @@ export default function SpreadScreen({ question, onRestart }: { question: string
       <AnimatePresence>
         {detail !== null && (
           <CardDetail
-            card={drawn[detail]}
+            card={drawn[detail].card}
+            reversed={drawn[detail].reversed}
             pos={POSITIONS[detail]}
             onClose={() => setDetail(null)}
           />
