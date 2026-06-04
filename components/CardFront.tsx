@@ -1,5 +1,6 @@
 'use client';
 
+import { GOLD } from '@/lib/constants';
 import type { Card } from '@/lib/tarot-cards';
 
 export default function CardFront({
@@ -14,20 +15,40 @@ export default function CardFront({
   reversed?: boolean;
 }) {
   return (
-    <img
-      src={card.img}
-      alt={`${card.cn} ${card.en}`}
-      draggable={false}
+    <div
       style={{
         width: w,
         height: h,
-        objectFit: 'cover',
+        position: 'relative',
         borderRadius: w * 0.08,
-        display: 'block',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.5)',
-        // 逆位牌將圖面上下顛倒
-        transform: reversed ? 'rotate(180deg)' : undefined,
+        overflow: 'hidden',
+        border: `1.5px solid ${GOLD}`,
+        boxShadow: '0 6px 20px rgba(0,0,0,0.5), 0 0 22px rgba(216,189,143,0.28)',
       }}
-    />
+    >
+      <img
+        src={card.img}
+        alt={`${card.cn} ${card.en}`}
+        draggable={false}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+          // 逆位牌將圖面上下顛倒（外框不轉）
+          transform: reversed ? 'rotate(180deg)' : undefined,
+        }}
+      />
+      {/* inner gold hairline */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: w * 0.08,
+          boxShadow: 'inset 0 0 0 3px rgba(216,189,143,0.25)',
+          pointerEvents: 'none',
+        }}
+      />
+    </div>
   );
 }

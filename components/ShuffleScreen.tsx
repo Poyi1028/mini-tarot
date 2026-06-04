@@ -1,17 +1,19 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { motion, useAnimationFrame } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { EASE } from '@/lib/motion';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 
 // ── Tunables ────────────────────────────────────────────────────────────────
 const N_DECK = 12; // divisible by 3 → even left/mid/right piles (fewer = smoother on phones)
-const SHUFFLE_MS = 3000; // active rubbing time before the deck gathers itself
 const SCATTER_MS = 140; // re-randomise the spread at most this often while dragging
-const SPREAD_X = 144; // how far cards smear left/right while shuffling
-const SPREAD_Y = 46;
+const SPREAD_X = 210; // how far cards smear left/right while shuffling
+const SPREAD_Y = 96;
 const PILE_GAP = 88; // distance between the three cut piles
+const STAGE_W = 440; // card-stage box (drag/cut surface) — a touch narrower
+const STAGE_H = 460; // …and taller, for a roomier shuffle
 
 // The one spring the user asked for — weighty, slightly settled.
 const SPRING = { type: 'spring', stiffness: 100, damping: 20 } as const;
@@ -51,10 +53,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
   const phaseRef = useRef<Phase>('shuffle');
   const draggingRef = useRef(false);
   const doneRef = useRef(false);
-  const elapsedRef = useRef(0);
-  const lastMoveRef = useRef(0);
   const lastScatterRef = useRef(0);
-  const barRef = useRef<HTMLDivElement>(null);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   function setPhaseBoth(next: Phase) {
@@ -62,30 +61,18 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
     setPhase(next);
   }
 
-  // Smear: fling every card to a fresh random spot, rotated within ±15°.
+  // Smear: fling every card to a fresh random spot, rotated within ±28°.
   function scatter() {
     setCards((prev) =>
       prev.map((c, i) => ({
         ...c,
         x: rand(SPREAD_X),
         y: rand(SPREAD_Y),
-        rot: rand(15),
+        rot: rand(28),
         z: i,
       }))
     );
   }
-
-  // Count only *active* rubbing toward the 3s; stop the clock if the finger
-  // rests. Once full, gather to one pile, then auto-split into three.
-  useAnimationFrame((_, delta) => {
-    if (phaseRef.current !== 'shuffle' || doneRef.current) return;
-    if (!draggingRef.current) return;
-    if (performance.now() - lastMoveRef.current > 160) return; // finger paused
-    elapsedRef.current += delta;
-    const p = Math.min(1, elapsedRef.current / SHUFFLE_MS);
-    if (barRef.current) barRef.current.style.width = `${p * 100}%`;
-    if (p >= 1) finishShuffle();
-  });
 
   function finishShuffle() {
     if (doneRef.current) return;
@@ -118,11 +105,17 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
     if (phaseRef.current !== 'shuffle') return;
     if (!moved) setMoved(true);
     const now = performance.now();
-    lastMoveRef.current = now;
     if (now - lastScatterRef.current > SCATTER_MS) {
       lastScatterRef.current = now;
       scatter();
     }
+  }
+
+  // Release-to-finish: once the deck has actually been rubbed, letting go gathers
+  // it and moves on to the cut. A bare tap (no movement) does nothing.
+  function onDragRelease() {
+    draggingRef.current = false;
+    if (phaseRef.current === 'shuffle' && moved) finishShuffle();
   }
 
   function selectPile(p: number) {
@@ -149,12 +142,12 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
   }, []);
 
   return (
-    <div className="absolute inset-0 flex flex-col">
+    <div className="absolute inset-0">
       <Starfield density={26} seed={11} />
 
-      {/* Header */}
+      {/* Header — floats at the top so the card stage can sit dead-center */}
       <div
-        className="relative z-[2] px-7 pt-[70px] text-center transition-opacity duration-[600ms]"
+        className="absolute left-0 right-0 top-0 z-[3] px-7 pt-[70px] text-center transition-opacity duration-[600ms]"
         style={{ opacity: phase === 'merge' ? 0.2 : 1 }}
       >
         <div className="mb-3 font-display text-[11px] tracking-[6px] text-gold opacity-85">
@@ -166,7 +159,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           {(phase === 'cut' || phase === 'merge') && (
             <motion.span
               className="text-gold"
-              style={{ textShadow: '0 0 14px rgba(231,215,166,0.55)' }}
+              style={{ textShadow: '0 0 14px rgba(216,189,143,0.55)' }}
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -176,27 +169,25 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
         </div>
       </div>
 
-      {/* Progress bar (fills over the 3s of active shuffling) */}
-      <div
-        className="relative z-[2] mx-auto mt-6 h-px w-[140px] bg-gold/15 transition-opacity duration-[600ms]"
-        style={{ opacity: phase === 'shuffle' ? 1 : 0 }}
-      >
-        <div
-          ref={barRef}
-          className="absolute left-1/2 top-0 h-full -translate-x-1/2 bg-gold transition-[width] duration-150 ease-out"
-          style={{ width: 0, boxShadow: '0 0 10px var(--color-gold)' }}
-        />
-      </div>
-
-      {/* Card area */}
-      <div className="relative z-[2] flex flex-1 touch-none select-none items-center justify-center">
-        {/* Whole pile breathes up and down while idle (hover effect). */}
+      {/* Card area — pinned to the full screen so the pile (and the cut piles)
+          land at the true center, with the header/hint floating over the edges */}
+      <div className="absolute inset-0 z-[2] flex touch-none select-none items-center justify-center">
+        {/* Deck lands softly: a one-time scale+fade on mount, wrapping (not
+            replacing) the idle breathing container so it never fights the
+            y-loop — picks up where the sync overlay's dark hand-off leaves off. */}
         <motion.div
-          className="relative"
-          style={{ width: 360, height: 320 }}
-          animate={{ y: [0, -7, 0] }}
-          transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: EASE.out }}
+          style={{ transformOrigin: 'center' }}
         >
+          {/* Whole pile breathes up and down while idle (hover effect). */}
+          <motion.div
+            className="relative"
+            style={{ width: STAGE_W, height: STAGE_H }}
+            animate={{ y: [0, -7, 0] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          >
           {cards.map((c) => (
             <motion.div
               key={c.id}
@@ -224,9 +215,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                 draggingRef.current = true;
               }}
               onDrag={onDragMove}
-              onDragEnd={() => {
-                draggingRef.current = false;
-              }}
+              onDragEnd={onDragRelease}
             />
           )}
 
@@ -247,21 +236,24 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                     style={{
                       boxShadow:
                         hoverPile === p
-                          ? '0 0 28px rgba(231,215,166,0.45), inset 0 0 0 1px rgba(231,215,166,0.5)'
-                          : 'inset 0 0 0 1px rgba(231,215,166,0)',
+                          ? '0 0 28px rgba(216,189,143,0.45), inset 0 0 0 1px rgba(216,189,143,0.5)'
+                          : 'inset 0 0 0 1px rgba(216,189,143,0)',
                     }}
                   />
                 </button>
               ))}
             </div>
           )}
+          </motion.div>
         </motion.div>
       </div>
 
-      {/* Hint */}
-      <div className="relative z-[2] flex h-16 items-center justify-center">
-        {phase === 'shuffle' && !moved && (
-          <div className="text-[11px] tracking-[4px] text-muted">按 住 ・ 左 右 揉 搓</div>
+      {/* Hint — floats along the bottom edge */}
+      <div className="absolute bottom-7 left-0 right-0 z-[3] flex h-16 items-center justify-center">
+        {phase === 'shuffle' && (
+          <div className="text-[11px] tracking-[4px] text-muted">
+            {moved ? '放 開 即 完 成 洗 牌' : '按 住 ・ 左 右 揉 搓'}
+          </div>
         )}
         {phase === 'cut' && (
           <div className="flex gap-[88px]">

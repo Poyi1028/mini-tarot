@@ -1,12 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { PURPLE_ACCENT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, LILAC, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
+import Motes from './decor/Motes';
 import CrystalBall from './CrystalBall';
+import OrnDivider from './decor/OrnDivider';
 
-export default function HomeScreen({ onStart }: { onStart: () => void }) {
+export default function HomeScreen({
+  onStart,
+  onOpenDeck,
+}: {
+  onStart: () => void;
+  onOpenDeck: () => void;
+}) {
   return (
     <div
       role="button"
@@ -21,49 +29,80 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
       }}
       className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center px-8 outline-none"
     >
-      <Starfield density={44} seed={3} />
+      <Starfield density={40} seed={4} />
+      <Motes count={10} seed={6} color={GOLD_BRIGHT} area={{ x: 50, y: 44, w: 46, h: 36 }} />
 
-      {/* Purple back-glow pooled behind the crystal */}
+      {/* header — 牌庫 entry, top-right */}
+      <div className="absolute left-0 right-0 top-[34px] z-[6] flex items-center justify-end px-7">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenDeck();
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+          aria-label="開啟牌庫"
+          className="flex flex-col items-center gap-1.5 px-1 py-1"
+        >
+          <img
+            src="/cards.svg"
+            alt=""
+            width={60}
+            height={60}
+            draggable={false}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
+          />
+          <span className="text-[10px] tracking-[3px]" style={{ color: LILAC }}>
+            牌 庫
+          </span>
+        </button>
+      </div>
+
+      {/* lilac back-glow pooled behind the crystal */}
       <div
-        className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2"
         style={{
-          width: 340,
-          height: 340,
-          background: `radial-gradient(circle, ${PURPLE_ACCENT} 0%, rgba(42,33,64,0.25) 38%, transparent 70%)`,
+          width: 240,
+          height: 240,
+          background: 'radial-gradient(circle, rgba(150,144,186,0.08), transparent 65%)',
         }}
       />
 
-      {/* Crystal — slow float + breathing glow */}
+      {/* crystal ball — slow float */}
       <motion.div
-        className="relative z-[2] mb-12"
+        className="animate-floaty relative z-[2]"
         initial={{ opacity: 0, scale: 0.94 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
       >
-        <CrystalBall size={188} />
+        <CrystalBall size={170} />
       </motion.div>
 
-      {/* Title */}
+      {/* title */}
       <motion.div
-        className="relative z-[2] text-center"
-        initial={{ opacity: 0, y: 16 }}
+        className="relative z-[2] mt-[30px] text-center"
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: DUR.base, delay: 0.45, ease: EASE.out }}
+        transition={{ duration: DUR.slow, delay: 0.3, ease: EASE.out }}
       >
-        <div className="pl-3 font-display text-[34px] font-medium tracking-[10px] text-gold">
-          Mini-Tarot
+        <div
+          className="italic"
+          style={{
+            fontFamily: 'var(--font-cormorant)',
+            fontSize: 40,
+            fontWeight: 500,
+            letterSpacing: 4,
+            color: PARCHMENT,
+          }}
+        >
+          Mini Tarot
         </div>
-        <div className="mx-auto my-6 h-px w-[60px] bg-gradient-to-r from-transparent via-gold to-transparent" />
-      </motion.div>
-
-      {/* Tap-to-start hint */}
-      <motion.div
-        className="relative z-[2] font-serif text-xs tracking-[6px] text-muted"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0.4, 0.9, 0.4] }}
-        transition={{ opacity: { duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 1 } }}
-      >
-        輕 觸 開 始
+        <OrnDivider w={50} color={GOLD} style={{ margin: '16px auto 0' }} />
+        <div
+          className="animate-breath-text mt-[18px] text-[11px] tracking-[6px]"
+          style={{ color: MUTED }}
+        >
+          輕 觸 開 始
+        </div>
       </motion.div>
     </div>
   );

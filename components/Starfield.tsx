@@ -1,10 +1,29 @@
 'use client';
 
 import { useMemo } from 'react';
-import { GOLD } from '@/lib/constants';
+import { GOLD, LILAC } from '@/lib/constants';
 import { mulberry } from '@/lib/utils';
 
-export default function Starfield({ density = 60, seed = 1 }: { density?: number; seed?: number }) {
+// Twinkling starfield over the deep, matte Violet Mist backdrop. The violet is
+// kept dark and desaturated (low gloss) so it reads as a near-black night with
+// only a faint purple cast. Pass bg="transparent" to layer it over a backdrop
+// the caller already painted (e.g. the immersive card detail's own cosmos).
+const DEFAULT_BG = `
+  radial-gradient(ellipse 80% 60% at 50% 0%, rgba(216, 189, 143, 0.035), transparent 70%),
+  radial-gradient(ellipse 92% 58% at 50% 22%, #181626 0%, #121019 52%, transparent 80%),
+  radial-gradient(ellipse 100% 70% at 50% 110%, rgba(3, 2, 8, 0.82), transparent 60%),
+  linear-gradient(180deg, #100e16 0%, #0d0c13 50%, #0b0a10 100%)
+`;
+
+export default function Starfield({
+  density = 60,
+  seed = 1,
+  bg = DEFAULT_BG,
+}: {
+  density?: number;
+  seed?: number;
+  bg?: string;
+}) {
   const stars = useMemo(() => {
     const rng = mulberry(seed);
     return Array.from({ length: density }, () => ({
@@ -24,12 +43,7 @@ export default function Starfield({ density = 60, seed = 1 }: { density?: number
         inset: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
-        background: `
-          radial-gradient(ellipse 80% 60% at 50% 0%, rgba(231, 215, 166, 0.05), transparent 70%),
-          radial-gradient(ellipse 90% 70% at 50% 40%, rgba(42, 33, 64, 0.35), transparent 70%),
-          radial-gradient(ellipse 100% 70% at 50% 110%, rgba(0, 0, 0, 0.6), transparent 60%),
-          linear-gradient(180deg, #060509 0%, #0a0810 50%, #070709 100%)
-        `,
+        background: bg,
       }}
     >
       {stars.map((s, i) => (
@@ -42,7 +56,7 @@ export default function Starfield({ density = 60, seed = 1 }: { density?: number
             width: s.r * 2,
             height: s.r * 2,
             borderRadius: '50%',
-            background: i % 7 === 0 ? GOLD : '#ece4cf',
+            background: i % 7 === 0 ? GOLD : i % 5 === 0 ? LILAC : '#ece6d8',
             opacity: s.o,
             boxShadow: i % 11 === 0 ? `0 0 ${s.r * 4}px ${GOLD}` : 'none',
             animation: `twinkle ${s.d}s ease-in-out ${s.t}s infinite`,

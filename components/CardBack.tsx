@@ -1,86 +1,53 @@
 'use client';
 
 import { memo } from 'react';
-import { GOLD, GOLD_SOFT, GOLD_DIM } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT } from '@/lib/constants';
+import Sunburst from './decor/Sunburst';
+import Crescent from './decor/Crescent';
+import Sparkle from './decor/Sparkle';
 
+// Violet Mist card back — deep-indigo geometric back: a static gold sunburst +
+// crescent at the heart, sparkles in two corners, framed in gold. No rotation
+// (per the chosen design). Sizes derive from w/h so it scales across the app.
 function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; glow?: boolean }) {
+  const pad = Math.round(w * 0.11);
   return (
     <div
       style={{
         width: w,
         height: h,
-        borderRadius: w * 0.08,
-        background:
-          'radial-gradient(ellipse at 50% 50%, #1a1233 0%, #0d0a16 60%, #070709 100%)',
-        boxShadow: glow
-          ? `0 0 ${w * 0.4}px rgba(231, 215, 166, 0.6), 0 0 ${w * 0.18}px rgba(231, 215, 166, 0.4), inset 0 0 0 1px ${GOLD}`
-          : `0 2px 8px rgba(0,0,0,0.7), 0 8px 24px rgba(0,0,0,0.5), inset 0 0 0 1px ${GOLD_DIM}`,
+        borderRadius: w * 0.09,
         position: 'relative',
         overflow: 'hidden',
+        background: 'linear-gradient(160deg, #221f44, #15132c)',
+        border: `1px solid ${GOLD}`,
+        boxShadow: glow
+          ? `0 0 ${w * 0.4}px rgba(216, 189, 143, 0.6), 0 0 ${w * 0.18}px rgba(216, 189, 143, 0.4), inset 0 0 0 ${Math.max(2, w * 0.04)}px rgba(216,189,143,0.2)`
+          : `0 2px 8px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45), inset 0 0 0 ${Math.max(2, w * 0.04)}px rgba(216,189,143,0.14)`,
       }}
     >
-      {/* inner gold frame */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: w * 0.045,
-          border: `0.6px solid ${GOLD_SOFT}`,
-          borderRadius: w * 0.05,
-          opacity: 0.85,
-        }}
+      <Sunburst
+        size={w * 0.6}
+        color={GOLD}
+        sw={0.8}
+        rays={18}
+        style={{ position: 'absolute', left: '50%', top: '38%', transform: 'translate(-50%, -50%)' }}
       />
-      {/* center ornament */}
-      <svg
-        viewBox="0 0 84 148"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-      >
-        <defs>
-          <radialGradient id={`g-${w}`} cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor={GOLD} stopOpacity="0.7" />
-            <stop offset="60%" stopColor={GOLD} stopOpacity="0.15" />
-            <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="42" cy="74" r="22" fill={`url(#g-${w})`} />
-        <g
-          transform="translate(42 74)"
-          stroke={GOLD}
-          strokeWidth="0.6"
-          fill="none"
-          opacity="0.85"
-        >
-          <path
-            d="M 0 -18 L 2.5 -2.5 L 18 0 L 2.5 2.5 L 0 18 L -2.5 2.5 L -18 0 L -2.5 -2.5 Z"
-            fill={GOLD}
-            fillOpacity="0.5"
-          />
-          <path d="M 0 -26 L 4 -4 L 26 0 L 4 4 L 0 26 L -4 4 L -26 0 L -4 -4 Z" />
-          <circle r="3" fill={GOLD} fillOpacity="0.9" />
-          <circle r="10" />
-        </g>
-        {[
-          [12, 16],
-          [72, 16],
-          [12, 132],
-          [72, 132],
-        ].map(([cx, cy], i) => (
-          <g
-            key={i}
-            transform={`translate(${cx} ${cy})`}
-            stroke={GOLD_SOFT}
-            strokeWidth="0.5"
-            fill="none"
-            opacity="0.7"
-          >
-            <path d="M -4 0 L 4 0 M 0 -4 L 0 4" />
-            <circle r="1.5" fill={GOLD} />
-          </g>
-        ))}
-      </svg>
+      <Crescent
+        size={w * 0.28}
+        color={GOLD_BRIGHT}
+        style={{ position: 'absolute', left: '50%', top: '38%', transform: 'translate(-50%, -50%)' }}
+      />
+      <Sparkle size={w * 0.09} color={GOLD} style={{ position: 'absolute', top: pad, left: pad }} />
+      <Sparkle
+        size={w * 0.09}
+        color={GOLD}
+        style={{ position: 'absolute', bottom: pad, right: pad }}
+      />
     </div>
   );
 }
 
-// Props are primitive and constant per card, so memo lets the 78 SVG card backs
-// skip reconciliation when the shuffle re-targets card positions every frame.
+// Props are primitive and constant per card, so memo lets the card backs skip
+// reconciliation when the shuffle re-targets card positions every frame.
 export default memo(CardBack);
