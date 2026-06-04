@@ -45,7 +45,7 @@ export default function TarotApp() {
               question={question}
               onRestart={() => {
                 setQuestion('');
-                setScreen('input');
+                setScreen('home');
               }}
             />
           )}

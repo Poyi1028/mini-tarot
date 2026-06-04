@@ -118,13 +118,14 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
   function ignite() {
     if (!q.trim() || phase !== 'input') return;
     setPhase('dissolve');
-    // One continuous ~4s arc: the words gather into light (mote-gather), the
-    // constellation wires itself up, the centre blooms ("synced"), then the
-    // overlay sinks to near-black and we hand off dark→dark to the shuffle.
+    // One continuous ~4.3s arc: the words gather into light (mote-gather), the
+    // constellation unhurriedly wires itself up, the centre blooms ("synced"),
+    // then the overlay sinks to near-black and we hand off dark→dark to the
+    // shuffle. The bloom waits for the (now slower) crown to finish drawing.
     setTimeout(() => setShowSync(true), 1300);
-    setTimeout(() => setStage('bloom'), 3000);
-    setTimeout(() => setStage('exit'), 3500);
-    setTimeout(() => onSubmit(q.trim()), 4000);
+    setTimeout(() => setStage('bloom'), 3300);
+    setTimeout(() => setStage('exit'), 3800);
+    setTimeout(() => onSubmit(q.trim()), 4300);
   }
 
   const isInput = phase === 'input';
@@ -133,15 +134,18 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
       <Starfield density={32} seed={8} />
 
-      {/* Input area — AI-style composer, centred on screen */}
+      {/* Input area — AI-style composer. Bar + box live in one flex column so
+          the GROUP's midline lands on the screen centre (the outer wrapper's
+          justify-center), instead of the box being centred with the bar
+          floating off above it. */}
       <div
-        className="relative z-[2] w-full max-w-[360px]"
+        className="relative z-[2] flex w-full max-w-[360px] flex-col items-center"
         style={{ pointerEvents: isInput ? 'auto' : 'none' }}
       >
-        {/* Focal bar — floats above the box without pushing it off-centre. Its
-            central sun animates from inside the SVG (see public/bar.svg). */}
+        {/* Focal bar — sits in flow above the box and counts toward centring.
+            Its central sun animates from inside the SVG (see public/bar.svg). */}
         <motion.div
-          className="pointer-events-none absolute bottom-full left-0 right-0 mb-7 flex justify-center"
+          className="pointer-events-none mb-7 flex w-full justify-center"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: isInput ? 0.95 : 0, y: 0 }}
           transition={{ duration: DUR.base, delay: 0.1, ease: EASE.out }}
@@ -156,7 +160,7 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
         </motion.div>
 
         <div
-          className="relative rounded-[26px] transition-shadow duration-300"
+          className="relative w-full rounded-[26px] transition-shadow duration-300"
           style={{
             border: `1px solid rgba(216,189,143,${focused ? 0.55 : 0.32})`,
             background:
