@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
+import { GOLD, GOLD_DIM, MUTED, LILAC } from '@/lib/constants';
 import { EASE, DUR, fadeUp, stagger } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
@@ -10,6 +10,7 @@ import Starfield from './Starfield';
 import CardBack from './CardBack';
 import CardFront from './CardFront';
 import SuitGlyph from './SuitGlyph';
+import CardDetailImmersive from './CardDetailImmersive';
 
 interface Position {
   key: string;
@@ -62,9 +63,9 @@ function SacredTriangleGuide({ visible }: { visible: boolean }) {
     >
       <defs>
         <radialGradient id="haloGlow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor={GOLD} stopOpacity="0.1" />
-          <stop offset="50%" stopColor={GOLD} stopOpacity="0.04" />
-          <stop offset="100%" stopColor={GOLD} stopOpacity="0" />
+          <stop offset="0%" stopColor={LILAC} stopOpacity="0.16" />
+          <stop offset="50%" stopColor={LILAC} stopOpacity="0.06" />
+          <stop offset="100%" stopColor={LILAC} stopOpacity="0" />
         </radialGradient>
       </defs>
 
@@ -145,7 +146,7 @@ function FlipCard({
             box-shadow keyframe). */}
         <motion.div
           className="pointer-events-none absolute -inset-2 rounded-xl"
-          style={{ boxShadow: '0 0 18px rgba(231,215,166,0.28), inset 0 0 0 1px rgba(231,215,166,0.3)' }}
+          style={{ boxShadow: '0 0 18px rgba(216,189,143,0.28), inset 0 0 0 1px rgba(216,189,143,0.3)' }}
           initial={false}
           animate={{ opacity: !flipped && isNext ? [0.35, 0.7, 0.35] : 0 }}
           transition={
@@ -160,7 +161,7 @@ function FlipCard({
           className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
           style={{
             opacity: flipped ? 1 : 0,
-            boxShadow: `0 0 28px rgba(231,215,166,0.32), 0 0 52px rgba(231,215,166,0.16)`,
+            boxShadow: `0 0 28px rgba(216,189,143,0.32), 0 0 52px rgba(216,189,143,0.16)`,
           }}
         />
 
@@ -279,126 +280,6 @@ function ReadingPanel({ drawn, onRestart }: { drawn: DrawnCard[]; onRestart: () 
   );
 }
 
-// Full-screen detail for a revealed card: the artwork fills the whole screen as
-// a ghostly, full-bleed backdrop — blended into the starfield (mix-blend lighten
-// drops its grey card-stock, leaving only the bright figure/robes/wands) and
-// feathered softly on every edge so it dissolves into pure black. The name sits
-// at top and the meaning below. Tap anywhere to dismiss.
-function CardDetail({
-  card,
-  reversed,
-  pos,
-  onClose,
-}: {
-  card: Card;
-  reversed: boolean;
-  pos: Position;
-  onClose: () => void;
-}) {
-  const textShadow = '0 2px 10px rgba(0,0,0,0.8)';
-  return (
-    <motion.div
-      className="absolute inset-0 z-[100] overflow-hidden bg-ink"
-      onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: DUR.base, ease: EASE.out }}
-      style={{ isolation: 'isolate' }}
-    >
-      <Starfield density={26} seed={7} />
-
-      {/* Full-bleed hero artwork. `mix-blend-mode: lighten` makes the grey card
-          stock vanish into the dark starfield, leaving the luminous figure to
-          float over the cosmos. Held at low opacity and scaled past full-bleed
-          (~120%, horizontally centred) with a soft radial mask that feathers all
-          four edges gently into the surrounding black. */}
-      <motion.img
-        src={card.img}
-        alt={`${card.cn} ${card.en}`}
-        draggable={false}
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-        style={{
-          mixBlendMode: 'lighten',
-          maskImage:
-            'radial-gradient(ellipse 72% 80% at 50% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
-          WebkitMaskImage:
-            'radial-gradient(ellipse 72% 80% at 50% 56%, #000 38%, rgba(0,0,0,0.6) 64%, transparent 90%)',
-        }}
-        initial={{ scale: 1.32, opacity: 0, x: '0%', y: '7%' }}
-        animate={{ scale: 1.15, opacity: 0.9, x: '0%', y: '7%' }}
-        transition={{ duration: 1.1, ease: EASE.reveal }}
-      />
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'linear-gradient(180deg, rgba(7,7,7,0.45) 0%, rgba(7,7,7,0) 30%, rgba(7,7,7,0) 55%, rgba(7,7,7,0.85) 100%)',
-        }}
-      />
-
-      {/* Name */}
-      <motion.div
-        className="absolute inset-x-0 top-0 px-7 pb-7 pt-[60px] text-center"
-        style={{
-          backdropFilter: 'blur(7px)',
-          WebkitBackdropFilter: 'blur(7px)',
-          maskImage: 'linear-gradient(180deg, #000 70%, transparent)',
-          WebkitMaskImage: 'linear-gradient(180deg, #000 70%, transparent)',
-        }}
-        initial={{ y: -18, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: DUR.base, delay: 0.12, ease: EASE.out }}
-      >
-        <div className="font-display text-[10px] tracking-[5px] text-gold opacity-85">
-          {pos.cn}　{pos.en}
-        </div>
-        <div
-          className="mt-2.5 font-serif text-[27px] font-light tracking-[11px] text-parchment"
-          style={{ textShadow }}
-        >
-          {card.cn}
-        </div>
-        <div className="mt-1.5 font-display text-[11px] tracking-[3px] text-gold-soft opacity-80">
-          {card.en.toUpperCase()}
-        </div>
-        <div
-          className="mt-2 font-serif text-[10px] tracking-[4px]"
-          style={{ color: reversed ? GOLD_DIM : GOLD, textShadow }}
-        >
-          {reversed ? '逆 位 · REVERSED' : '正 位 · UPRIGHT'}
-        </div>
-      </motion.div>
-
-      {/* Meaning */}
-      <motion.div
-        className="absolute inset-x-0 bottom-0 px-8 pb-[46px] pt-9 text-center"
-        style={{
-          backdropFilter: 'blur(9px)',
-          WebkitBackdropFilter: 'blur(9px)',
-          maskImage: 'linear-gradient(0deg, #000 72%, transparent)',
-          WebkitMaskImage: 'linear-gradient(0deg, #000 72%, transparent)',
-        }}
-        initial={{ y: 18, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: DUR.base, delay: 0.18, ease: EASE.out }}
-      >
-        <div className="mx-auto mb-3.5 h-px w-10 bg-gradient-to-r from-transparent via-gold-soft to-transparent" />
-        <div className="text-xs tracking-[2px] text-gold-soft opacity-85" style={{ textShadow }}>
-          {(reversed ? card.reversedKeywords : card.keywords).join('・')}
-        </div>
-        <div
-          className="mt-3 text-[14px] leading-relaxed tracking-[0.8px] text-white/80"
-          style={{ textShadow }}
-        >
-          {reversed ? card.reversedMeaning : card.meaning}
-        </div>
-        <div className="mt-6 text-[10px] tracking-[4px] text-muted opacity-80">輕 觸 任 意 處 關 閉</div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
 export default function SpreadScreen({ question, onRestart }: { question: string; onRestart: () => void }) {
   const drawn = useMemo<DrawnCard[]>(() => {
     const pool = [...TAROT_CARDS];
@@ -469,7 +350,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
             style={{
               opacity: phase === 'spread' ? 1 : 0,
               background:
-                'radial-gradient(ellipse 60% 45% at 50% 42%, rgba(231,215,166,0.05), transparent 70%), radial-gradient(ellipse 80% 70% at 50% 45%, transparent 55%, rgba(7,7,7,0.5) 100%)',
+                'radial-gradient(ellipse 60% 45% at 50% 42%, rgba(188,182,220,0.08), transparent 70%), radial-gradient(ellipse 80% 70% at 50% 45%, transparent 55%, rgba(14,12,30,0.55) 100%)',
             }}
           />
           <SacredTriangleGuide visible={phase === 'spread'} />
@@ -536,10 +417,10 @@ export default function SpreadScreen({ question, onRestart }: { question: string
 
       <AnimatePresence>
         {detail !== null && (
-          <CardDetail
+          <CardDetailImmersive
             card={drawn[detail].card}
             reversed={drawn[detail].reversed}
-            pos={POSITIONS[detail]}
+            pos={{ cn: POSITIONS[detail].cn, en: POSITIONS[detail].en }}
             onClose={() => setDetail(null)}
           />
         )}

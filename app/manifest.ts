@@ -4,12 +4,12 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Mini-Tarot',
     short_name: 'Mini-Tarot',
-    description: '沉浸式塔羅占卜 — 暗紫×墨黑×香檳金',
+    description: '沉浸式塔羅占卜 — 紫霧靛藍×丁香紫×香檳金',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#070709',
-    theme_color: '#070709',
+    background_color: '#141228',
+    theme_color: '#141228',
     lang: 'zh-Hant',
     icons: [
       {

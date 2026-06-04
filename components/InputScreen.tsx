@@ -3,10 +3,13 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_SOFT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
-import BallIcon from './BallIcon';
+import Sunburst from './decor/Sunburst';
+import Sparkle from './decor/Sparkle';
+import Crescent from './decor/Crescent';
+import OrnDivider from './decor/OrnDivider';
 
 interface Particle {
   id: number;
@@ -29,6 +32,7 @@ function trianglePath(cx: number, cy: number, r: number, rot: number) {
   return `M ${pts[0][0]} ${pts[0][1]} L ${pts[1][0]} ${pts[1][1]} L ${pts[2][0]} ${pts[2][1]} Z`;
 }
 
+// Celestial sigil that forms while the intention syncs with the stars.
 function SyncSigil() {
   return (
     <svg viewBox="0 0 110 110" width="110" height="110" className="overflow-visible">
@@ -39,7 +43,7 @@ function SyncSigil() {
           cy="55"
           r="40"
           fill="none"
-          stroke={GOLD_SOFT}
+          stroke={GOLD_BRIGHT}
           strokeWidth="0.4"
           strokeDasharray="2 3"
           opacity="0.6"
@@ -68,7 +72,7 @@ function SyncOverlay() {
       className="absolute inset-0 z-[5] flex flex-col items-center justify-center p-10 text-center backdrop-blur-[2px]"
       style={{
         background:
-          'radial-gradient(ellipse at center, rgba(26, 18, 51, 0.55) 0%, rgba(7, 7, 9, 0.95) 70%)',
+          'radial-gradient(ellipse at center, rgba(46,42,82,0.6) 0%, rgba(20,18,40,0.96) 70%)',
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -94,98 +98,6 @@ function SyncOverlay() {
   );
 }
 
-// Ornate gilded corners bracketing the altar slab — fading gold L-strokes with a
-// small diamond at each elbow. Overlaid on (not inside) the slab so its rounded
-// clip never trims them.
-function GildedCorners({ visible }: { visible: boolean }) {
-  const corner = (className: string) => (
-    <div className={`absolute h-5 w-5 ${className}`}>
-      <div className="absolute left-0 top-0 h-px w-5 bg-gradient-to-r from-gold to-transparent" />
-      <div className="absolute left-0 top-0 h-5 w-px bg-gradient-to-b from-gold to-transparent" />
-      <div className="absolute left-[2px] top-[2px] h-[3px] w-[3px] rotate-45 bg-gold/80" />
-    </div>
-  );
-  return (
-    <div
-      className="pointer-events-none absolute inset-[7px] transition-opacity duration-[600ms]"
-      style={{ opacity: visible ? 0.9 : 0 }}
-    >
-      {corner('left-0 top-0')}
-      {corner('right-0 top-0 rotate-90')}
-      {corner('bottom-0 right-0 rotate-180')}
-      {corner('bottom-0 left-0 -rotate-90')}
-    </div>
-  );
-}
-
-// Idle celestial disc — the ritual's focal point above the slab. Same vocabulary
-// as SyncSigil but gentler, and it keeps turning while the questioner types.
-function AltarSigil() {
-  return (
-    <svg viewBox="0 0 88 88" width="74" height="74" className="overflow-visible">
-      <g className="animate-sigil-spin" style={{ transformOrigin: '44px 44px' }}>
-        <circle cx="44" cy="44" r="40" fill="none" stroke={GOLD} strokeWidth="0.4" opacity="0.4" />
-        <circle
-          cx="44"
-          cy="44"
-          r="31"
-          fill="none"
-          stroke={GOLD_SOFT}
-          strokeWidth="0.4"
-          strokeDasharray="1.5 4"
-          opacity="0.55"
-        />
-        {Array.from({ length: 12 }).map((_, i) => {
-          const a = (i * Math.PI) / 6;
-          return (
-            <circle
-              key={i}
-              cx={44 + Math.cos(a) * 40}
-              cy={44 + Math.sin(a) * 40}
-              r="0.9"
-              fill={GOLD}
-              opacity="0.7"
-            />
-          );
-        })}
-      </g>
-      <g className="animate-sigil-spin-r" style={{ transformOrigin: '44px 44px' }}>
-        <path d={trianglePath(44, 44, 22, 0)} fill="none" stroke={GOLD} strokeWidth="0.5" opacity="0.75" />
-        <path
-          d={trianglePath(44, 44, 22, Math.PI)}
-          fill="none"
-          stroke={GOLD}
-          strokeWidth="0.5"
-          opacity="0.75"
-        />
-      </g>
-      <g transform="translate(44 44)">
-        <path
-          d="M 0 -9 L 1.5 -1.5 L 9 0 L 1.5 1.5 L 0 9 L -1.5 1.5 L -9 0 L -1.5 -1.5 Z"
-          fill={GOLD}
-          fillOpacity="0.55"
-          stroke={GOLD}
-          strokeWidth="0.5"
-        />
-        <circle r="1.6" fill={GOLD}>
-          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.6s" repeatCount="indefinite" />
-        </circle>
-      </g>
-    </svg>
-  );
-}
-
-// Classical divider — a gilded diamond flanked by fading gold rules.
-function OrnDivider() {
-  return (
-    <div className="mt-5 flex items-center justify-center gap-2.5">
-      <span className="h-px w-12 bg-gradient-to-r from-transparent to-gold/70" />
-      <span className="block h-[5px] w-[5px] rotate-45 border border-gold/80" />
-      <span className="h-px w-12 bg-gradient-to-l from-transparent to-gold/70" />
-    </div>
-  );
-}
-
 export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => void }) {
   const [q, setQ] = useState('');
   const [phase, setPhase] = useState<Phase>('input');
@@ -201,9 +113,6 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
     if (!container) return;
     const charSpans = container.querySelectorAll<HTMLSpanElement>('span[data-c]');
     const cBox = container.getBoundingClientRect();
-    // getBoundingClientRect returns CSS-pixel deltas relative to offsetWidth, so
-    // scale is normally 1; the divide stays as a guard in case an ancestor ever
-    // applies a CSS transform that scales this subtree.
     const scale = container.offsetWidth ? cBox.width / container.offsetWidth : 1;
     const pts: Particle[] = [];
     let pid = 0;
@@ -214,11 +123,7 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
       const gh = b.height / scale;
       const baseX = (b.left - cBox.left) / scale + gw / 2;
       const baseY = (b.top - cBox.top) / scale + gh / 2;
-      // Ignite each glyph's light in lockstep with that glyph's own fade
-      // (same per-character schedule as the spans below), so the dots melt
-      // out of the letter exactly where — and when — it dissolves.
       const charDelay = 200 + Math.min(idx, 12) * 52;
-      // Each glyph bursts into a cluster of light dots.
       const dots = 5 + Math.floor(Math.random() * 4);
       for (let k = 0; k < dots; k++) {
         pts.push({
@@ -249,130 +154,134 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
-      <Starfield density={36} seed={7} />
+      <Starfield density={32} seed={8} />
 
-      {/* Focal sigil + title */}
+      {/* Focal sunburst + title */}
       <motion.div
         className="relative z-[2] flex flex-col items-center text-center"
         animate={{ opacity: isInput ? 1 : 0 }}
         transition={{ duration: DUR.base, ease: EASE.out }}
       >
-        <AltarSigil />
-        <div className="mt-6 flex items-center justify-center gap-3">
-          <span className="h-px w-7 bg-gradient-to-r from-transparent to-gold/70" />
-          <span className="pl-2 font-display text-[12px] tracking-[8px] text-gold opacity-90">
-            TAROT
-          </span>
-          <span className="h-px w-7 bg-gradient-to-l from-transparent to-gold/70" />
+        <Sunburst size={74} color={PARCHMENT} sw={0.9} rays={24} className="animate-spin360-slow" />
+        <div className="mt-5 pl-2 font-display text-[11px] tracking-[8px] text-gold">
+          YOUR INTENTION
         </div>
-        <div className="mt-4 pl-3 font-serif text-[22px] font-light tracking-[8px] text-parchment">
+        <div className="mt-3.5 pl-2 font-serif text-[22px] font-light tracking-[6px] text-parchment">
           寫下你心中的疑問
         </div>
-        <OrnDivider />
+        <OrnDivider w={46} color={GOLD} style={{ marginTop: 16 }} />
       </motion.div>
 
       {/* Input area — altar slab */}
       <div className="relative z-[2] mt-9 w-full max-w-[330px]">
         {/* spotlight pooled behind the slab */}
+        <div
+          className="pointer-events-none absolute -inset-7"
+          style={{
+            background:
+              'radial-gradient(ellipse 72% 64% at 50% 45%, rgba(188,182,220,0.14) 0%, transparent 70%)',
+          }}
+        />
+        <div
+          className="relative overflow-hidden rounded-2xl"
+          style={{
+            border: '1px solid rgba(216,189,143,0.4)',
+            background:
+              'linear-gradient(160deg, rgba(46,42,82,0.55) 0%, rgba(20,18,40,0.6) 100%)',
+            backdropFilter: 'blur(7px)',
+            WebkitBackdropFilter: 'blur(7px)',
+            boxShadow:
+              '0 0 40px rgba(20,18,40,0.6), inset 0 1px 0 rgba(216,189,143,0.12), inset 0 0 26px rgba(216,189,143,0.04)',
+          }}
+        >
+          {/* inner hairline */}
           <div
-            className="pointer-events-none absolute -inset-7"
-            style={{
-              background:
-                'radial-gradient(ellipse 72% 64% at 50% 45%, rgba(231,215,166,0.10) 0%, rgba(42,33,64,0.20) 42%, transparent 72%)',
-            }}
+            className="pointer-events-none absolute inset-[6px] rounded-xl"
+            style={{ border: '1px solid rgba(216,189,143,0.16)' }}
           />
+          {/* sparkle corners */}
+          <Sparkle size={12} color={GOLD} style={{ position: 'absolute', top: 12, left: 12 }} />
+          <Sparkle size={12} color={GOLD} style={{ position: 'absolute', bottom: 12, right: 12 }} />
+
           <div
-            className="relative overflow-hidden rounded-2xl border border-gold/35"
-            style={{
-              background:
-                'linear-gradient(160deg, rgba(42,33,64,0.34) 0%, rgba(13,10,22,0.42) 100%)',
-              backdropFilter: 'blur(7px)',
-              WebkitBackdropFilter: 'blur(7px)',
-              boxShadow:
-                '0 0 44px rgba(42,33,64,0.6), inset 0 1px 0 rgba(231,215,166,0.10), inset 0 0 26px rgba(231,215,166,0.05)',
-            }}
+            ref={measureRef}
+            className="relative min-h-[150px] px-7 py-[30px] font-serif text-[17px] leading-[1.8] tracking-[1.5px] text-parchment"
           >
-            {/* inner hairline — the second gilded line */}
-            <div className="pointer-events-none absolute inset-[6px] rounded-xl border border-gold/15" />
+            {isInput ? (
+              <textarea
+                autoFocus
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="例：我此刻最該專注的是什麼？"
+                maxLength={60}
+                rows={3}
+                className="h-[100px] w-full resize-none border-none bg-transparent text-center font-serif text-[17px] leading-[1.8] tracking-[1.5px] text-parchment caret-gold outline-none"
+              />
+            ) : (
+              <div className="whitespace-pre-wrap break-words text-center">
+                {Array.from(q).map((ch, i) => (
+                  <span
+                    key={i}
+                    data-c={ch}
+                    style={{
+                      opacity: phase === 'dissolve' ? 0 : 1,
+                      filter: phase === 'dissolve' ? 'blur(3px)' : 'blur(0px)',
+                      transition: `opacity 950ms ease-out ${200 + Math.min(i, 12) * 52}ms, filter 950ms ease-out ${200 + Math.min(i, 12) * 52}ms`,
+                    }}
+                  >
+                    {ch === ' ' ? ' ' : ch}
+                  </span>
+                ))}
+              </div>
+            )}
 
-            <div
-              ref={measureRef}
-              className="relative min-h-[150px] px-7 py-[30px] font-serif text-[17px] leading-[1.8] tracking-[1.5px] text-parchment"
-            >
-          {isInput ? (
-            <textarea
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="例：我此刻最該專注的是什麼？"
-              maxLength={60}
-              rows={3}
-              className="h-[100px] w-full resize-none border-none bg-transparent text-center font-serif text-[17px] leading-[1.8] tracking-[1.5px] text-parchment caret-gold outline-none"
-            />
-          ) : (
-            <div className="whitespace-pre-wrap break-words text-center">
-              {Array.from(q).map((ch, i) => (
-                <span
-                  key={i}
-                  data-c={ch}
-                  style={{
-                    opacity: phase === 'dissolve' ? 0 : 1,
-                    filter: phase === 'dissolve' ? 'blur(3px)' : 'blur(0px)',
-                    transition: `opacity 950ms ease-out ${200 + Math.min(i, 12) * 52}ms, filter 950ms ease-out ${200 + Math.min(i, 12) * 52}ms`,
-                  }}
-                >
-                  {ch === ' ' ? ' ' : ch}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Light-dot particles */}
-          {!isInput && (
-            <div className="pointer-events-none absolute inset-0">
-              {particles.map((p) => (
-                <span
-                  key={p.id}
-                  className="absolute rounded-full"
-                  style={{
-                    left: p.x,
-                    top: p.y,
-                    width: p.size,
-                    height: p.size,
-                    background: GOLD,
-                    boxShadow: `0 0 ${p.size * 2}px ${p.size}px ${GOLD}`,
-                    transform: 'translate(-50%,-50%)',
-                    animation: `motePly ${p.dur}ms cubic-bezier(.15,.6,.3,1) ${p.delay}ms forwards`,
-                    '--dx': `${p.dx}px`,
-                    '--dy': `${p.dy}px`,
-                  } as CSSProperties}
-                />
-              ))}
-            </div>
-          )}
-            </div>
+            {/* Light-dot particles */}
+            {!isInput && (
+              <div className="pointer-events-none absolute inset-0">
+                {particles.map((p) => (
+                  <span
+                    key={p.id}
+                    className="absolute rounded-full"
+                    style={
+                      {
+                        left: p.x,
+                        top: p.y,
+                        width: p.size,
+                        height: p.size,
+                        background: GOLD,
+                        boxShadow: `0 0 ${p.size * 2}px ${p.size}px ${GOLD}`,
+                        transform: 'translate(-50%,-50%)',
+                        animation: `motePly ${p.dur}ms cubic-bezier(.15,.6,.3,1) ${p.delay}ms forwards`,
+                        '--dx': `${p.dx}px`,
+                        '--dy': `${p.dy}px`,
+                      } as CSSProperties
+                    }
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        {/* ornate corners overlaid so the slab's rounded clip never trims them */}
-        <GildedCorners visible={isInput} />
+        </div>
       </div>
 
-      {/* Submit — flanked by gilded stars */}
+      {/* Submit — gilded pill with a crescent */}
       <motion.button
         onClick={ignite}
         disabled={!q.trim() || !isInput}
-        className="relative z-[2] mt-10 flex items-center justify-center rounded-sm border border-gold/80 bg-transparent py-4 pl-7 pr-7 font-serif text-sm tracking-[8px] text-gold transition-[background,box-shadow] duration-200 disabled:cursor-default"
+        className="relative z-[2] mt-10 flex items-center justify-center rounded-full font-serif text-[13px] tracking-[6px] text-gold-bright transition-[background,box-shadow] duration-200 disabled:cursor-default"
         animate={{ opacity: !isInput ? 0 : q.trim() ? 1 : 0.35 }}
         transition={{ duration: DUR.base, ease: EASE.out }}
         style={{
+          border: '1px solid rgba(216,189,143,0.85)',
+          background: 'rgba(216,189,143,0.06)',
+          padding: '14px 34px',
           cursor: q.trim() ? 'pointer' : 'default',
-          boxShadow: q.trim()
-            ? '0 0 24px rgba(231, 215, 166, 0.25), inset 0 0 18px rgba(231, 215, 166, 0.08)'
-            : 'none',
+          boxShadow: q.trim() ? '0 0 24px rgba(216,189,143,0.2)' : 'none',
         }}
-        whileTap={{ backgroundColor: 'rgba(231,215,166,0.08)' }}
+        whileTap={{ backgroundColor: 'rgba(216,189,143,0.12)' }}
       >
-        <BallIcon size={22} />
-        <span className="ml-3 pl-2">注 入 意 念</span>
+        <Crescent size={16} color={GOLD_BRIGHT} style={{ marginRight: 10 }} />
+        <span>注 入 意 念</span>
       </motion.button>
 
       <AnimatePresence>{showSync && <SyncOverlay />}</AnimatePresence>
