@@ -73,6 +73,14 @@ function FlipCard({
           overflow: 'hidden',
         }}
       >
+        {/* Base aura — every card emits a faint gold breath at all times, so the
+            spread feels softly alive (not just the next/flipped card lit). Kept
+            low so three cards together don't blow out; the pulse/hero layers
+            stack on top. */}
+        <div
+          className="pointer-events-none absolute -inset-1 rounded-xl"
+          style={{ boxShadow: '0 0 16px rgba(216,189,143,0.15)' }}
+        />
         {/* Gentle pulse on ONLY the next card to flip — guides the eye one step
             at a time. Other unflipped cards rest dark; the central halo carries
             the overall draw. Breathes via opacity (softer, calmer than a
@@ -120,31 +128,17 @@ function FlipCard({
   );
 }
 
-// Closing rite — no per-card explanations any more (the names surface beneath
-// each card in the spread, and tapping a card opens the full CardDetail). This
-// panel is just the gold thread, a closing whisper, and the ASK AGAIN rite.
+// Closing rite — stripped to its essence: a gold thread leading down from the
+// spread into the single ASK AGAIN return-home rite. All closing reading text
+// has been removed for a quieter, more minimal screen.
 function ReadingPanel({ onRestart }: { onRestart: () => void }) {
   return (
-    <div className="pt-3">
+    <div className="pt-1">
       {/* Gold thread falling from the spread into the close */}
-      <div className="mx-auto h-12 w-px bg-gradient-to-b from-transparent via-gold-soft/30 to-gold-soft/60" />
-
-      <div className="mt-8 flex flex-col items-center">
-        <div className="h-px w-10 bg-gradient-to-r from-transparent via-gold-soft/50 to-transparent" />
-        <p className="mt-7 max-w-[18rem] text-center font-serif text-[12.5px] leading-[2.1] tracking-[1.5px] text-muted">
-          三張牌已並列為你的聖三角。
-          <br />
-          讓它們在你心中停留片刻，
-          <br />
-          真正的訊息會在沉默裡浮現。
-        </p>
-        <p className="mt-6 max-w-[18rem] text-center font-serif text-[11px] leading-[2] tracking-[2px] text-gold-soft/60">
-          輕觸任一張牌，凝視它的細節。
-        </p>
-      </div>
+      <div className="mx-auto h-7 w-px bg-gradient-to-b from-transparent via-gold-soft/30 to-gold-soft/60" />
 
       {/* Ask again — an underline-link rite, not a form button */}
-      <div className="mb-2 mt-12 flex justify-center">
+      <div className="mb-1 mt-5 flex justify-center">
         <button
           onClick={onRestart}
           className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
@@ -204,24 +198,22 @@ export default function SpreadScreen({ question, onRestart }: { question: string
       <Starfield density={26} seed={13} />
 
       <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
-      <div className="relative z-[2] flex min-h-full flex-col px-6 pb-10 pt-[60px]">
-        {/* Question */}
+      <div className="relative z-[2] flex min-h-full flex-col px-6 pb-6 pt-[52px]">
+        {/* The question, quietly restated above the spread — no "YOUR QUESTION"
+            label, just the words themselves. */}
         <motion.div
-          className="mt-3 text-center"
-          animate={{ opacity: phase === 'merging' ? 0.35 : 1 }}
+          className="text-center"
+          animate={{ opacity: phase === 'merging' ? 0.35 : 0.9 }}
           transition={{ duration: DUR.slow, delay: 0.4, ease: EASE.out }}
         >
-          <div className="mb-3.5 pl-1.5 font-display text-[10px] tracking-[7px] text-gold-soft opacity-70">
-            YOUR QUESTION
-          </div>
-          <div className="px-6 text-[15px] leading-[1.9] tracking-[1.5px] text-parchment opacity-90">
+          <div className="px-6 font-serif text-[14px] leading-[1.8] tracking-[1.5px] text-parchment">
             「{question}」
           </div>
-          <div className="mx-auto mt-[22px] h-px w-10 bg-gradient-to-r from-transparent via-gold-dim to-transparent" />
         </motion.div>
 
-        {/* Triangle spread — sized to make the cards the focal point */}
-        <div className="relative mt-7 h-[520px] w-full flex-shrink-0">
+        {/* Triangle spread — the cards are the focal point; closing reading text
+            has been stripped for a quieter, more minimal screen. */}
+        <div className="relative mt-4 h-[520px] w-full flex-shrink-0">
           {/* 背景三角法陣 — connects the three card centres into the 聖三角 sigil,
               with enclosing circles. Behind the cards (z-0); breathes gently. */}
           <motion.svg
@@ -264,7 +256,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
                 }}
               >
                 <div
-                  className="font-display text-[10px] tracking-[5px] transition-colors duration-[600ms]"
+                  className="font-serif text-[11px] font-light tracking-[5px] transition-colors duration-[600ms]"
                   style={{ color: flipped[i] ? GOLD : MUTED }}
                 >
                   {p.cn}
@@ -315,7 +307,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
                 className="pointer-events-none absolute left-1/2 top-1/2 z-[6] flex flex-col items-center whitespace-nowrap text-center transition-all duration-[800ms]"
                 style={{
                   transform: `translate(calc(-50% + ${slot.x}px), calc(-50% + ${
-                    slot.y + CARD_H / 2 + (flipped[i] ? 26 : 38)
+                    slot.y + CARD_H / 2 + (flipped[i] ? 36 : 46)
                   }px))`,
                   opacity: flipped[i] ? 1 : 0,
                 }}
@@ -343,7 +335,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
 
         {/* Flip hint */}
         <div
-          className="mt-2 min-h-[48px] text-center text-xs leading-[2] tracking-[4px] text-muted transition-opacity duration-[600ms]"
+          className="mt-1 min-h-[34px] text-center text-xs leading-[2] tracking-[4px] text-muted transition-opacity duration-[600ms]"
           style={{ opacity: phase === 'spread' && !allFlipped ? 1 : 0 }}
         >
           逐一輕觸卡牌

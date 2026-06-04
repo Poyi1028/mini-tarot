@@ -1,19 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { GOLD, GOLD_BRIGHT, GOLD_DIM, LILAC, MUTED, PARCHMENT } from '@/lib/constants';
+import { EASE } from '@/lib/motion';
 import { DECK, DECK_GROUPS } from '@/lib/deck-groups';
 import type { DeckCard, DeckGroupId } from '@/lib/deck-groups';
 import Starfield from './Starfield';
 import OrnDivider from './decor/OrnDivider';
 import ElementGlyph from './decor/ElementGlyph';
-import CardDetailImmersive from './CardDetailImmersive';
+import SuitGlyph from './SuitGlyph';
+import DeckCardDetail from './DeckCardDetail';
+
+// Grid entrance — a parent that releases its thumbnails in a gentle stagger so
+// the page assembles itself instead of snapping in all at once. Keyed by tab so
+// it replays on each tab switch.
+const GRID_CONTAINER: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.035, delayChildren: 0.04 } },
+};
+const GRID_ITEM: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE.out } },
+};
 
 // Text-underline tab strip (大牌 / 聖杯 / 錢幣 / 寶劍 / 權杖).
 function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId) => void }) {
   return (
-    <div className="flex justify-between px-[22px]">
+    // Left padding clears the back button (sits at left-3.5, ~30px wide) so the
+    // first tab no longer overlaps the arrow; right padding keeps the strip
+    // optically balanced against it.
+    <div className="flex justify-between pl-[46px] pr-[18px]">
       {DECK_GROUPS.map((grp) => {
         const on = tab === grp.id;
         return (
@@ -49,10 +67,12 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
   );
 }
 
-// Framed card thumbnail.
+// Framed card thumbnail. A staggered entrance item (variants inherited from the
+// grid parent); the artwork itself fades in on load so lazy images don't pop.
 function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
+  const [loaded, setLoaded] = useState(false);
   return (
-    <div className="flex flex-col items-center gap-[7px]">
+    <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[7px]">
       <button onClick={onClick} className="block w-full border-none bg-transparent p-0">
         <div
           className="relative w-full overflow-hidden"
@@ -60,6 +80,9 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
             aspectRatio: '300 / 527',
             borderRadius: 5,
             border: `1px solid ${GOLD}`,
+            // Faint placeholder so an unloaded frame reads as a dim card, not a
+            // hard empty rectangle, before the artwork fades in.
+            background: 'linear-gradient(160deg, rgba(40,36,66,0.5), rgba(18,16,34,0.6))',
             boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
           }}
         >
@@ -69,7 +92,9 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
             draggable={false}
             loading="lazy"
             decoding="async"
+            onLoad={() => setLoaded(true)}
             className="block h-full w-full object-cover"
+            style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.55s ease' }}
           />
           <div
             className="pointer-events-none absolute inset-0"
@@ -77,7 +102,7 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
           />
         </div>
       </button>
-      <div className="text-center leading-[1.3]">
+      <div className="flex flex-col items-center text-center leading-[1.3]">
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
           {card.cn}
         </div>
@@ -85,7 +110,7 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
           {card.badge}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -117,9 +142,25 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
 
       {/* scroll body */}
       <div className="absolute bottom-0 left-0 right-0 top-[94px] overflow-y-auto pb-9">
-        {/* element header */}
-        <div className="flex flex-col items-center px-0 pb-3.5 pt-[18px]">
-          <ElementGlyph el={grp.element} size={26} color={GOLD} sw={1.3} />
+        {/* element header — fades in on each tab switch so the change of suit
+            doesn't read as an abrupt content swap. */}
+        <motion.div
+          key={`head-${tab}`}
+          className="flex flex-col items-center px-0 pb-3.5 pt-[18px]"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: EASE.out }}
+        >
+          {/* Section mark — the suit glyph for the minor suits (cup / disc /
+              sword / staff), the alchemical element sparkle for the Major
+              Arcana. This is the suit symbol's home, not the card thumbnails. */}
+          {grp.id === 'major' ? (
+            <ElementGlyph el={grp.element} size={26} color={GOLD} sw={1.3} />
+          ) : (
+            <span style={{ color: GOLD }}>
+              <SuitGlyph suit={grp.id} size={28} />
+            </span>
+          )}
           <div
             className="mt-[11px] italic"
             style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, letterSpacing: 2, color: PARCHMENT }}
@@ -130,14 +171,20 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
             {grp.cn} · {grp.count} 張
           </div>
           <OrnDivider w={40} color={GOLD} style={{ marginTop: 12 }} />
-        </div>
+        </motion.div>
 
-        {/* grid */}
-        <div className="grid grid-cols-3 gap-x-[13px] gap-y-4 px-5 pt-1.5">
+        {/* grid — staggered entrance, replayed per tab via the key */}
+        <motion.div
+          key={`grid-${tab}`}
+          className="grid grid-cols-3 gap-x-[13px] gap-y-4 px-5 pt-1.5"
+          variants={GRID_CONTAINER}
+          initial="hidden"
+          animate="show"
+        >
           {cards.map((c) => (
             <DeckThumb key={c.num} card={c} onClick={() => setDetail(c)} />
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* bottom fade */}
@@ -147,7 +194,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       />
 
       <AnimatePresence>
-        {detail && <CardDetailImmersive card={detail} onClose={() => setDetail(null)} />}
+        {detail && <DeckCardDetail card={detail} onBack={() => setDetail(null)} />}
       </AnimatePresence>
     </div>
   );
