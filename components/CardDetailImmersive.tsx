@@ -33,8 +33,8 @@ export default function CardDetailImmersive({
       [edge]: 0,
       zIndex: 3,
       textAlign: 'center',
-      backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)',
+      backdropFilter: 'blur(14px)',
+      WebkitBackdropFilter: 'blur(14px)',
       maskImage: `linear-gradient(${edge === 'top' ? 180 : 0}deg, #000 60%, transparent)`,
       WebkitMaskImage: `linear-gradient(${edge === 'top' ? 180 : 0}deg, #000 60%, transparent)`,
     }) as const;
@@ -43,10 +43,10 @@ export default function CardDetailImmersive({
     <motion.div
       className="absolute inset-0 z-[100] overflow-hidden"
       onClick={onClose}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: DUR.base, ease: EASE.out }}
+      initial={{ opacity: 0, scale: 1.04 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 1.02 }}
+      transition={{ duration: DUR.slow, ease: EASE.reveal }}
       style={{
         cursor: 'pointer',
         isolation: 'isolate',
@@ -75,7 +75,10 @@ export default function CardDetailImmersive({
           mixBlendMode: 'screen',
           opacity: 0.9,
           filter: 'brightness(1.12)',
-          transform: 'scale(1.12) translateY(3%)',
+          // Nudged down so the subject (faces sit upper-middle on most cards)
+          // settles toward centre. The Hanged Man — inverted — is the accepted
+          // exception the user signed off on.
+          transform: 'scale(1.12) translateY(8%)',
           maskImage:
             'radial-gradient(ellipse 70% 76% at 50% 51%, #000 46%, rgba(0,0,0,0.55) 70%, transparent 92%)',
           WebkitMaskImage:
@@ -83,20 +86,22 @@ export default function CardDetailImmersive({
         }}
       />
 
-      {/* vignette */}
+      {/* vignette — kept smoky rather than near-black so the frame edges read as
+          frosted glass, not a hard black border. */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 88% 82% at 50% 48%, transparent 42%, rgba(10,10,13,0.78) 100%)',
+            'radial-gradient(ellipse 88% 82% at 50% 48%, transparent 46%, rgba(22,22,28,0.5) 100%)',
         }}
       />
-      {/* legibility scrims */}
+      {/* legibility scrims — lifted off pure black; the frost strips carry the
+          glass feel, these only just darken enough to keep text readable. */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgba(10,10,13,0.88) 0%, rgba(10,10,13,0) 26%, rgba(10,10,13,0) 52%, rgba(10,10,13,0.96) 100%)',
+            'linear-gradient(180deg, rgba(16,16,22,0.66) 0%, rgba(16,16,22,0) 26%, rgba(16,16,22,0) 52%, rgba(16,16,22,0.82) 100%)',
         }}
       />
 
