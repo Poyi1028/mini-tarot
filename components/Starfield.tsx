@@ -4,14 +4,15 @@ import { useMemo } from 'react';
 import { GOLD, LILAC } from '@/lib/constants';
 import { mulberry } from '@/lib/utils';
 
-// Twinkling starfield over the deep-indigo Violet Mist backdrop. Pass
-// bg="transparent" to layer it over a backdrop the caller already painted
-// (e.g. the immersive card detail's own indigo cosmos).
+// Twinkling starfield over the deep, matte Violet Mist backdrop. The violet is
+// kept dark and desaturated (low gloss) so it reads as a near-black night with
+// only a faint purple cast. Pass bg="transparent" to layer it over a backdrop
+// the caller already painted (e.g. the immersive card detail's own cosmos).
 const DEFAULT_BG = `
-  radial-gradient(ellipse 80% 60% at 50% 0%, rgba(216, 189, 143, 0.05), transparent 70%),
-  radial-gradient(ellipse 92% 58% at 50% 22%, #25224a 0%, #1a1736 52%, transparent 78%),
-  radial-gradient(ellipse 100% 70% at 50% 110%, rgba(8, 6, 20, 0.7), transparent 60%),
-  linear-gradient(180deg, #16132e 0%, #15132c 50%, #141228 100%)
+  radial-gradient(ellipse 80% 60% at 50% 0%, rgba(216, 189, 143, 0.035), transparent 70%),
+  radial-gradient(ellipse 92% 58% at 50% 22%, #181626 0%, #121019 52%, transparent 80%),
+  radial-gradient(ellipse 100% 70% at 50% 110%, rgba(3, 2, 8, 0.82), transparent 60%),
+  linear-gradient(180deg, #100e16 0%, #0d0c13 50%, #0b0a10 100%)
 `;
 
 export default function Starfield({

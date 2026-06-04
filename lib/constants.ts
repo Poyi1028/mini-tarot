@@ -4,10 +4,10 @@
 export const GOLD = '#d8bd8f';
 export const GOLD_BRIGHT = '#ecd5a3';
 export const GOLD_DIM = '#9a875f';
-export const INK = '#141228';
-export const INK_2 = '#1a1736';
-export const PURPLE_DEEP = '#25224a';
-export const PURPLE_ACCENT = '#221f44';
+export const INK = '#0b0a12';
+export const INK_2 = '#121019';
+export const PURPLE_DEEP = '#181626';
+export const PURPLE_ACCENT = '#161327';
 export const PARCHMENT = '#ece6d8';
 export const MUTED = '#928dad';
 export const LILAC = '#bcb6dc';

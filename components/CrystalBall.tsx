@@ -1,22 +1,18 @@
 'use client';
 
-import { GOLD, PARCHMENT } from '@/lib/constants';
-
-// public/crystal.svg is black-on-white line art (invisible on a dark stage), so
-// we inline it here and remap its 6 style classes to the champagne-gold palette:
-// the ball/hands become a pure gold outline, the engraved detail/base fill gold,
-// and the original white sparkles become bright parchment highlights. The <path>
-// geometry below is copied verbatim from public/crystal.svg — only the colours
-// (the <style> block) change. Injected as raw markup so the class="sN" attributes
-// stay as-is (no class→className rewrite of dozens of nodes).
+// public/crystal.svg is black-on-white line art. The <style> block below is the
+// original palette copied verbatim from that file (white fills + black strokes,
+// black ball/base, white sparkles). The <path> geometry is also copied verbatim;
+// injected as raw markup so the class="sN" attributes stay as-is (no
+// class→className rewrite of dozens of nodes).
 const SVG_MARKUP = `
 <style>
-  .s0 { fill: none; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
-  .s1 { fill: ${GOLD} }
-  .s2 { fill: ${PARCHMENT} }
-  .s3 { fill: none; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
-  .s4 { fill: ${GOLD}; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: .9 }
-  .s5 { fill: ${GOLD}; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
+  .s0 { fill: #ffffff; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
+  .s1 { fill: #000000 }
+  .s2 { fill: #ffffff }
+  .s3 { fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
+  .s4 { fill: #000000; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: .9 }
+  .s5 { fill: #000000; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
 </style>
 <g id="OBJECTS">
   <g>

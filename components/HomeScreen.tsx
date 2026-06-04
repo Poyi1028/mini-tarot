@@ -5,7 +5,7 @@ import { GOLD, GOLD_BRIGHT, LILAC, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
 import Motes from './decor/Motes';
-import CrystalIcon from './decor/CrystalIcon';
+import CrystalBall from './CrystalBall';
 import OrnDivider from './decor/OrnDivider';
 
 export default function HomeScreen({
@@ -32,16 +32,29 @@ export default function HomeScreen({
       <Starfield density={40} seed={4} />
       <Motes count={10} seed={6} color={GOLD_BRIGHT} area={{ x: 50, y: 44, w: 46, h: 36 }} />
 
-      {/* header */}
-      <div className="absolute left-0 right-0 top-[34px] z-[5] flex items-center justify-between px-7">
-        <span className="font-display text-[13px] tracking-[6px]" style={{ color: PARCHMENT }}>
-          MINI · TAROT
-        </span>
-        <div className="flex flex-col gap-1">
-          {[0, 1, 2].map((i) => (
-            <span key={i} className="h-px w-[18px]" style={{ background: PARCHMENT, opacity: 0.85 }} />
-          ))}
-        </div>
+      {/* header — 牌庫 entry, top-right */}
+      <div className="absolute left-0 right-0 top-[34px] z-[6] flex items-center justify-end px-7">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenDeck();
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+          aria-label="開啟牌庫"
+          className="flex flex-col items-center gap-1.5 px-1 py-1"
+        >
+          <img
+            src="/cards.svg"
+            alt=""
+            width={60}
+            height={60}
+            draggable={false}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
+          />
+          <span className="text-[10px] tracking-[3px]" style={{ color: LILAC }}>
+            牌 庫
+          </span>
+        </button>
       </div>
 
       {/* lilac back-glow pooled behind the crystal */}
@@ -50,18 +63,18 @@ export default function HomeScreen({
         style={{
           width: 240,
           height: 240,
-          background: 'radial-gradient(circle, rgba(188,182,220,0.18), transparent 65%)',
+          background: 'radial-gradient(circle, rgba(150,144,186,0.08), transparent 65%)',
         }}
       />
 
-      {/* line crystal — slow float */}
+      {/* crystal ball — slow float */}
       <motion.div
         className="animate-floaty relative z-[2]"
         initial={{ opacity: 0, scale: 0.94 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
       >
-        <CrystalIcon size={132} />
+        <CrystalBall size={170} />
       </motion.div>
 
       {/* title */}
@@ -81,7 +94,7 @@ export default function HomeScreen({
             color: PARCHMENT,
           }}
         >
-          Mini-Tarot
+          Mini Tarot
         </div>
         <OrnDivider w={50} color={GOLD} style={{ margin: '16px auto 0' }} />
         <div
@@ -91,29 +104,6 @@ export default function HomeScreen({
           輕 觸 開 始
         </div>
       </motion.div>
-
-      {/* 牌庫 entry */}
-      <motion.button
-        onClick={(e) => {
-          e.stopPropagation();
-          onOpenDeck();
-        }}
-        onKeyDown={(e) => e.stopPropagation()}
-        aria-label="開啟牌庫"
-        className="absolute bottom-7 left-1/2 z-[6] flex -translate-x-1/2 flex-col items-center gap-1.5 px-4 py-1"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: DUR.base, delay: 0.9, ease: EASE.out }}
-      >
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke={GOLD} strokeWidth="1.2">
-          {/* two stacked cards */}
-          <rect x="6.5" y="4.5" width="9" height="13" rx="1.6" transform="rotate(-9 11 11)" />
-          <rect x="6.5" y="4.5" width="9" height="13" rx="1.6" transform="rotate(9 11 11)" />
-        </svg>
-        <span className="text-[9px] tracking-[3px]" style={{ color: LILAC }}>
-          牌 庫
-        </span>
-      </motion.button>
     </div>
   );
 }

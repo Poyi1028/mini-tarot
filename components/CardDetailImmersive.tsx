@@ -1,14 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, LILAC, MUTED, NAVY_BG, PARCHMENT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { Card } from '@/lib/tarot-cards';
 import Starfield from './Starfield';
 import OrnDivider from './decor/OrnDivider';
 
-// 丙 · 沉浸精修（紫霧）— full-bleed art `screen`-blended over a deep-indigo
-// cosmos so a violet-gold aura floats out of the dark, with frosted name/meaning
+// 丙 · 沉浸精修 — full-bleed art `screen`-blended over a deep, neutral-dark
+// ground so a soft gold aura floats out of the black, with frosted name/meaning
 // strips top and bottom. Tap anywhere to close. Reused by Spread and Deck.
 export default function CardDetailImmersive({
   card,
@@ -50,31 +50,22 @@ export default function CardDetailImmersive({
       style={{
         cursor: 'pointer',
         isolation: 'isolate',
-        background: NAVY_BG,
+        background:
+          'radial-gradient(ellipse 92% 58% at 50% 22%, #17171d 0%, #101014 52%, #0a0a0d 100%)',
       }}
     >
       <Starfield density={22} seed={card.roman.length + 3} bg="transparent" />
 
-      {/* lilac halo — violet mist signature */}
-      <div
-        className="animate-pulse-soft pointer-events-none absolute left-1/2 top-[45%] -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: 300,
-          height: 300,
-          background:
-            'radial-gradient(circle, rgba(188,182,220,0.28), rgba(100,86,180,0.08) 52%, transparent 72%)',
-        }}
-      />
-
-      {/* roman watermark in lilac */}
+      {/* roman watermark */}
       <div
         className="pointer-events-none absolute left-1/2 top-[60px] -translate-x-1/2 whitespace-nowrap font-display"
-        style={{ fontSize: 132, lineHeight: 1, color: LILAC, opacity: 0.07 }}
+        style={{ fontSize: 132, lineHeight: 1, color: GOLD, opacity: 0.05 }}
       >
         {card.roman}
       </div>
 
-      {/* full-bleed art — screen blend over indigo makes a violet-gold aura */}
+      {/* full-bleed art — screen blend over the dark ground makes a soft gold aura.
+          Reversed cards are shown upright here for legibility. */}
       <img
         src={card.img}
         alt={`${card.cn} ${card.en}`}
@@ -82,29 +73,30 @@ export default function CardDetailImmersive({
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         style={{
           mixBlendMode: 'screen',
-          opacity: 0.7,
-          transform: `scale(1.12) translateY(3%)${reversed ? ' rotate(180deg)' : ''}`,
+          opacity: 0.9,
+          filter: 'brightness(1.12)',
+          transform: 'scale(1.12) translateY(3%)',
           maskImage:
-            'radial-gradient(ellipse 70% 76% at 50% 51%, #000 34%, rgba(0,0,0,0.5) 64%, transparent 90%)',
+            'radial-gradient(ellipse 70% 76% at 50% 51%, #000 46%, rgba(0,0,0,0.55) 70%, transparent 92%)',
           WebkitMaskImage:
-            'radial-gradient(ellipse 70% 76% at 50% 51%, #000 34%, rgba(0,0,0,0.5) 64%, transparent 90%)',
+            'radial-gradient(ellipse 70% 76% at 50% 51%, #000 46%, rgba(0,0,0,0.55) 70%, transparent 92%)',
         }}
       />
 
-      {/* indigo vignette */}
+      {/* vignette */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 88% 82% at 50% 48%, transparent 42%, rgba(14,12,30,0.78) 100%)',
+            'radial-gradient(ellipse 88% 82% at 50% 48%, transparent 42%, rgba(10,10,13,0.78) 100%)',
         }}
       />
-      {/* legibility scrims — indigo tinted */}
+      {/* legibility scrims */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'linear-gradient(180deg, rgba(14,12,30,0.88) 0%, rgba(14,12,30,0) 26%, rgba(14,12,30,0) 52%, rgba(14,12,30,0.96) 100%)',
+            'linear-gradient(180deg, rgba(10,10,13,0.88) 0%, rgba(10,10,13,0) 26%, rgba(10,10,13,0) 52%, rgba(10,10,13,0.96) 100%)',
         }}
       />
 
@@ -116,7 +108,7 @@ export default function CardDetailImmersive({
         transition={{ duration: DUR.base, delay: 0.12, ease: EASE.out }}
       >
         {pos && (
-          <div className="font-display" style={{ fontSize: 10, letterSpacing: 5, color: LILAC, textShadow: ts }}>
+          <div className="font-display" style={{ fontSize: 10, letterSpacing: 5, color: GOLD, textShadow: ts }}>
             {pos.cn}　{pos.en}
           </div>
         )}
@@ -208,12 +200,6 @@ export default function CardDetailImmersive({
           輕 觸 任 意 處 關 閉
         </div>
       </motion.div>
-
-      {/* inner frame — lilac tinted */}
-      <div
-        className="pointer-events-none absolute z-[4]"
-        style={{ inset: 11, border: '1px solid rgba(188,182,220,0.15)', borderRadius: 32 }}
-      />
     </motion.div>
   );
 }

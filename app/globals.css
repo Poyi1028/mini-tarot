@@ -6,10 +6,10 @@
   --color-gold-bright: #ecd5a3;
   --color-gold-soft: #ecd5a3;
   --color-gold-dim: #9a875f;
-  --color-ink: #141228;
-  --color-ink-2: #1a1736;
-  --color-purple-deep: #25224a;
-  --color-purple-accent: #221f44;
+  --color-ink: #0b0a12;
+  --color-ink-2: #121019;
+  --color-purple-deep: #181626;
+  --color-purple-accent: #161327;
   --color-parchment: #ece6d8;
   --color-muted: #928dad;
   --color-lilac: #bcb6dc;
@@ -37,6 +37,7 @@
   --animate-breath-text: breath-text 2.8s ease-in-out infinite;
   --animate-caret-blink: caret-blink 1.1s steps(1, end) infinite;
   --animate-fade-in: fade-in 0.5s ease forwards;
+  --animate-star-twinkle: star-twinkle 3.2s ease-in-out infinite;
 }
 
 @layer base {
@@ -100,6 +101,42 @@
   100% {
     transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2);
     opacity: 0;
+  }
+}
+
+/* Dissolved-question light gathering inward toward the constellation that
+   forms in the overlay (--cx/--cy = per-mote offset toward the centre). The
+   mote brightens as it arrives, then contracts to a pinpoint and winks out —
+   reads as "your words drawing together into stars". Distinct from `motePly`
+   (the old scatter-upward), which is left untouched in case anything reuses it. */
+@keyframes mote-gather {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  70% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--cx)), calc(-50% + var(--cy))) scale(0.25);
+    opacity: 0;
+  }
+}
+
+/* Gentle in-place shimmer for the constellation's stars, started only after
+   they've finished their framer-motion fade-in (so the two don't fight over
+   opacity). */
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
   }
 }
 
@@ -234,6 +271,21 @@
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+/* Sunburst rays flaring — each ray scales along its own axis about its fixed
+   inner root (transform-origin: bottom), so the tip shoots far out and retracts
+   while the core stays put. Brightness pulses with it to read as light. */
+@keyframes sun-ray {
+  0%,
+  100% {
+    transform: scaleY(0.8);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1.2);
     opacity: 1;
   }
 }

@@ -143,7 +143,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       {/* bottom fade */}
       <div
         className="pointer-events-none absolute bottom-0 left-0 right-0 z-[5] h-10"
-        style={{ background: 'linear-gradient(to top, rgba(20,18,40,0.85), transparent)' }}
+        style={{ background: 'linear-gradient(to top, rgba(11,10,18,0.9), transparent)' }}
       />
 
       <AnimatePresence>
