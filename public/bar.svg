@@ -1,19 +1,56 @@
 <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="58.99999999999997 351 1089.0000000000002 456" width="1091" height="456">
   <style><![CDATA[
-    .s0 { fill: none; stroke: #ece6d8; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5 }
-    .s1 { fill: none; stroke: #ece6d8; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.2 }
+    .s0 { fill: none; stroke: #d8bd8f; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5 }
+    .s1 { fill: none; stroke: #d8bd8f; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.2 }
     /* Central sun — mirrors the <Sunburst pulseRays> decoration in the app: each
-       ray twinkles on its own offset clock, so the sun shimmers in place rather
-       than pulsing as one block. fill-box + center pivots each ray on its own
-       centre. CSS animation runs even when the file is shown via an <img> tag.
+       ray twinkles on its own offset clock, so the sun shimmers rather than
+       pulsing as one block. Each ray scales from its INNER end (the root touching
+       the sun), so the root stays pinned and only the outer tail extends/retracts.
+       transform-box: fill-box makes transform-origin resolve against each ray's
+       own bounding box; the per-ray origin keyword below picks the bbox corner/
+       edge where that ray's inner end sits (the rays radiate in all directions,
+       so the corner differs per ray). CSS animation runs even when the file is
+       shown via an <img> tag.
        NB: this style block is wrapped in CDATA so the "<" in these comments and
        in the "> path" child selectors can't break the strict XML parse that an
        <img>-loaded SVG goes through. */
     .bar-sun-rays > path {
       transform-box: fill-box;
-      transform-origin: center;
       animation: bar-sun-flare 2.4s ease-in-out infinite;
     }
+    /* Per-ray pivot = the bbox corner/edge at the ray's inner (sun-side) end. */
+    .bar-sun-rays > path:nth-child(1)  { transform-origin: center bottom; }
+    .bar-sun-rays > path:nth-child(2)  { transform-origin: center top; }
+    .bar-sun-rays > path:nth-child(3)  { transform-origin: left center; }
+    .bar-sun-rays > path:nth-child(4)  { transform-origin: right center; }
+    .bar-sun-rays > path:nth-child(5)  { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(6)  { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(7)  { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(8)  { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(9)  { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(10) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(11) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(12) { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(13) { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(14) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(15) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(16) { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(17) { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(18) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(19) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(20) { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(21) { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(22) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(23) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(24) { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(25) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(26) { transform-origin: right bottom; }
+    .bar-sun-rays > path:nth-child(27) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(28) { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(29) { transform-origin: left bottom; }
+    .bar-sun-rays > path:nth-child(30) { transform-origin: right top; }
+    .bar-sun-rays > path:nth-child(31) { transform-origin: left top; }
+    .bar-sun-rays > path:nth-child(32) { transform-origin: right bottom; }
     /* 8 phase buckets across the 32 rays → staggered, organic shimmer. */
     .bar-sun-rays > path:nth-child(8n+1) { animation-duration: 2.05s; animation-delay: -0.10s; }
     .bar-sun-rays > path:nth-child(8n+2) { animation-duration: 2.55s; animation-delay: -0.80s; }
@@ -24,8 +61,8 @@
     .bar-sun-rays > path:nth-child(8n+7) { animation-duration: 2.35s; animation-delay: -1.25s; }
     .bar-sun-rays > path:nth-child(8n+8) { animation-duration: 2.90s; animation-delay: -2.05s; }
     @keyframes bar-sun-flare {
-      0%, 100% { transform: scale(0.74); opacity: 0.6; }
-      50%      { transform: scale(1.18); opacity: 1; }
+      0%, 100% { transform: scale(0.85); opacity: 0.6; }
+      50%      { transform: scale(1.12); opacity: 1; }
     }
   ]]></style>
   <g>
