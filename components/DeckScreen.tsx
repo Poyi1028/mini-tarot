@@ -3,14 +3,15 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, GOLD_DIM, LILAC, MUTED, PARCHMENT } from '@/lib/constants';
+import { GOLD, GOLD_DIM, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE } from '@/lib/motion';
 import { DECK, DECK_GROUPS } from '@/lib/deck-groups';
 import type { DeckCard, DeckGroupId } from '@/lib/deck-groups';
 import Starfield from './Starfield';
 import OrnDivider from './decor/OrnDivider';
-import ElementGlyph from './decor/ElementGlyph';
-import SuitGlyph from './SuitGlyph';
+import BackButton from './decor/BackButton';
+import GroupMark from './decor/GroupMark';
+import FramedCardImg from './decor/FramedCardImg';
 import DeckCardDetail from './DeckCardDetail';
 
 // Grid entrance — a parent that releases its thumbnails in a gentle stagger so
@@ -70,37 +71,17 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
 // Framed card thumbnail. A staggered entrance item (variants inherited from the
 // grid parent); the artwork itself fades in on load so lazy images don't pop.
 function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
-  const [loaded, setLoaded] = useState(false);
   return (
     <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[7px]">
       <button onClick={onClick} className="block w-full border-none bg-transparent p-0">
-        <div
-          className="relative w-full overflow-hidden"
-          style={{
-            aspectRatio: '300 / 527',
-            borderRadius: 5,
-            border: `1px solid ${GOLD}`,
-            // Faint placeholder so an unloaded frame reads as a dim card, not a
-            // hard empty rectangle, before the artwork fades in.
-            background: 'linear-gradient(160deg, rgba(40,36,66,0.5), rgba(18,16,34,0.6))',
-            boxShadow: '0 3px 10px rgba(0,0,0,0.45)',
-          }}
-        >
-          <img
-            src={card.img}
-            alt={`${card.cn} ${card.en}`}
-            draggable={false}
-            loading="lazy"
-            decoding="async"
-            onLoad={() => setLoaded(true)}
-            className="block h-full w-full object-cover"
-            style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.55s ease' }}
-          />
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{ borderRadius: 5, boxShadow: 'inset 0 0 0 2px rgba(216,189,143,0.22)' }}
-          />
-        </div>
+        <FramedCardImg
+          src={card.img}
+          alt={`${card.cn} ${card.en}`}
+          radius={5}
+          ringWidth={2}
+          boxShadow="0 3px 10px rgba(0,0,0,0.45)"
+          lazy
+        />
       </button>
       <div className="flex flex-col items-center text-center leading-[1.3]">
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
@@ -125,15 +106,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       <Starfield density={26} seed={9} />
 
       {/* back */}
-      <button
-        onClick={onBack}
-        aria-label="返回"
-        className="absolute left-3.5 top-[50px] z-20 flex h-[30px] w-[30px] items-center justify-center border-none bg-transparent"
-      >
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke={GOLD_BRIGHT} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 3 L5 9 L11 15" />
-        </svg>
-      </button>
+      <BackButton onClick={onBack} />
 
       {/* tabs */}
       <div className="absolute left-0 right-0 top-[52px] z-10">
@@ -151,16 +124,8 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: EASE.out }}
         >
-          {/* Section mark — the suit glyph for the minor suits (cup / disc /
-              sword / staff), the alchemical element sparkle for the Major
-              Arcana. This is the suit symbol's home, not the card thumbnails. */}
-          {grp.id === 'major' ? (
-            <ElementGlyph el={grp.element} size={26} color={GOLD} sw={1.3} />
-          ) : (
-            <span style={{ color: GOLD }}>
-              <SuitGlyph suit={grp.id} size={28} />
-            </span>
-          )}
+          {/* Section mark — the suit symbol's home (not the card thumbnails). */}
+          <GroupMark grp={grp} />
           <div
             className="mt-[11px] italic"
             style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, letterSpacing: 2, color: PARCHMENT }}

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { DeckCard } from '@/lib/deck-groups';
 import Starfield from './Starfield';
 import OrnDivider from './decor/OrnDivider';
+import BackButton from './decor/BackButton';
+import FramedCardImg from './decor/FramedCardImg';
 import SuitGlyph from './SuitGlyph';
 
 // Deck-library reading view — distinct from the spread's full-bleed
@@ -57,8 +58,6 @@ function MeaningBlock({
 }
 
 export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBack: () => void }) {
-  const [loaded, setLoaded] = useState(false);
-
   return (
     <motion.div
       className="absolute inset-0 z-[100] overflow-y-auto"
@@ -74,15 +73,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
       <Starfield density={20} seed={card.num + 5} bg="transparent" />
 
       {/* back — same affordance as the deck grid */}
-      <button
-        onClick={onBack}
-        aria-label="返回"
-        className="absolute left-3.5 top-[50px] z-20 flex h-[30px] w-[30px] items-center justify-center border-none bg-transparent"
-      >
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke={GOLD_BRIGHT} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M11 3 L5 9 L11 15" />
-        </svg>
-      </button>
+      <BackButton onClick={onBack} />
 
       <div className="relative z-[2] flex flex-col items-center px-7 pb-16 pt-[88px]">
         {/* Card portrait — upper middle, framed (not full-bleed), wrapped in a
@@ -108,32 +99,16 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
             animate={{ opacity: [0.85, 1, 0.85] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
           />
-          <div
-            className="relative"
-            style={{
-              width: 170,
-              aspectRatio: '300 / 527',
-              borderRadius: 8,
-              overflow: 'hidden',
-              border: `1.5px solid ${GOLD}`,
-              background: 'linear-gradient(160deg, rgba(40,36,66,0.5), rgba(18,16,34,0.6))',
-              boxShadow: '0 12px 32px rgba(0,0,0,0.55), 0 0 30px rgba(216,189,143,0.3)',
-            }}
-          >
-            <img
-              src={card.img}
-              alt={`${card.cn} ${card.en}`}
-              draggable={false}
-              decoding="async"
-              onLoad={() => setLoaded(true)}
-              className="block h-full w-full object-cover"
-              style={{ opacity: loaded ? 1 : 0, transition: 'opacity 0.6s ease' }}
-            />
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{ borderRadius: 8, boxShadow: 'inset 0 0 0 3px rgba(216,189,143,0.22)' }}
-            />
-          </div>
+          <FramedCardImg
+            src={card.img}
+            alt={`${card.cn} ${card.en}`}
+            width={170}
+            radius={8}
+            borderWidth={1.5}
+            ringWidth={3}
+            boxShadow="0 12px 32px rgba(0,0,0,0.55), 0 0 30px rgba(216,189,143,0.3)"
+            fadeMs={600}
+          />
         </motion.div>
 
         {/* Name + mark + element */}
