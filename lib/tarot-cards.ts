@@ -28,7 +28,7 @@ export type Card = MajorCard | MinorCard;
 // ─── Major Arcana 大阿爾克娜 (0–21) ───
 export const MAJOR_ARCANA: MajorCard[] = [
   {
-    num: 0, roman: '0', arcana: 'major', cn: '愚者', en: 'The Fool', img: '/cards/00-TheFool.png',
+    num: 0, roman: '0', arcana: 'major', cn: '愚者', en: 'The Fool', img: '/cards/00-TheFool.webp',
     keywords: ['新開始', '純粹', '冒險'],
     meaning: '站在懸崖邊緣，你尚未被經驗教會害怕。這是一段全新旅程的第零步——放下盤算，讓純粹的信任帶你縱身一躍。',
     reversedKeywords: ['魯莽', '猶豫', '失序'],
@@ -36,7 +36,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽塔羅中名為「Le Mat」，源自義大利文 matto（瘋子），描繪四處流浪的乞丐或弄臣，是少數沒有編號的牌，象徵自由無拘。偉特牌中他成了懸崖邊手持白玫瑰、仰望天空的少年，腳邊有一隻小白狗示警。',
   },
   {
-    num: 1, roman: 'I', arcana: 'major', cn: '魔術師', en: 'The Magician', img: '/cards/01-TheMagician.png',
+    num: 1, roman: 'I', arcana: 'major', cn: '魔術師', en: 'The Magician', img: '/cards/01-TheMagician.webp',
     keywords: ['創造', '意志', '行動'],
     meaning: '桌上四元素俱全，你已握有實現所願的一切工具。凝聚意志，把心中的藍圖確實接上行動，無形便化為有形。',
     reversedKeywords: ['操弄', '空談', '渙散'],
@@ -44,7 +44,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽牌中稱「Le Bateleur」，原型是市集中擺攤變戲法的江湖術士。偉特依赫密士哲學將他提升為魔法師，頭頂懸著無限符號，桌上陳列聖杯、錢幣、寶劍、權杖四元素，體現「如其在上，如其在下」。',
   },
   {
-    num: 2, roman: 'II', arcana: 'major', cn: '女祭司', en: 'The High Priestess', img: '/cards/02-TheHighPriestess.png',
+    num: 2, roman: 'II', arcana: 'major', cn: '女祭司', en: 'The High Priestess', img: '/cards/02-TheHighPriestess.webp',
     keywords: ['直覺', '神秘', '潛意識'],
     meaning: '真正的答案不在喧嘩裡，而在兩根石柱之間的靜默。先停止用邏輯逼問，傾聽那個你早已知道、卻還沒承認的直覺。',
     reversedKeywords: ['壓抑', '失聯', '秘密'],
@@ -52,7 +52,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '最早名為「La Papesse」（女教皇），源自中世紀傳說中喬裝為教宗的女子「女教皇瓊安」。黃金黎明會與偉特將她改寫為女祭司，懷抱托拉聖卷，端坐於所羅門聖殿的雙柱 Boaz 與 Jachin 之間，腳邊有新月。',
   },
   {
-    num: 3, roman: 'III', arcana: 'major', cn: '皇后', en: 'The Empress', img: '/cards/03-TheEmpress.png',
+    num: 3, roman: 'III', arcana: 'major', cn: '皇后', en: 'The Empress', img: '/cards/03-TheEmpress.webp',
     keywords: ['豐饒', '滋養', '感性'],
     meaning: '創造與滋養正豐盛地流動，像結實的麥田。允許自己被愛、被照顧，也允許心中的種子順其自然地長成。',
     reversedKeywords: ['耗竭', '失衡', '依賴'],
@@ -60,7 +60,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「L’Impératrice」對應大地之母與愛神維納斯的原型。偉特牌中她身旁立著刻有金星符號的盾、身前麥田結穗、長袍繡滿石榴，處處指向豐饒與生育的女神意象。',
   },
   {
-    num: 4, roman: 'IV', arcana: 'major', cn: '皇帝', en: 'The Emperor', img: '/cards/04-TheEmperor.png',
+    num: 4, roman: 'IV', arcana: 'major', cn: '皇帝', en: 'The Emperor', img: '/cards/04-TheEmperor.webp',
     keywords: ['秩序', '權威', '穩定'],
     meaning: '以結構、紀律與清楚的界線，為混亂建立秩序。你是自己疆域的主宰——穩住框架，安全感便由內生成。',
     reversedKeywords: ['專斷', '失控', '僵化'],
@@ -68,7 +68,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「L’Empereur」是入世的統治者，與教皇／女祭司的靈性權威相對。偉特牌中他端坐於飾有四顆公羊頭的石座——公羊對應牡羊座與火星，象徵戰士般的意志與世俗的主宰權。',
   },
   {
-    num: 5, roman: 'V', arcana: 'major', cn: '教皇', en: 'The Hierophant', img: '/cards/05-TheHierophant.png',
+    num: 5, roman: 'V', arcana: 'major', cn: '教皇', en: 'The Hierophant', img: '/cards/05-TheHierophant.webp',
     keywords: ['傳統', '指引', '信念'],
     meaning: '一位導師、一套傳承已久的智慧正在指引你。傳統不是束縛，而是前人鋪好的橋——先學會規則，再談超越。',
     reversedKeywords: ['叛逆', '教條', '質疑'],
@@ -76,7 +76,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽牌原稱「Le Pape」（教皇），黃金黎明會改名為 Hierophant——這是古希臘埃萊夫西斯祕儀中主持儀典的大祭司頭銜。偉特牌中他高舉祝福手勢，腳前交叉著聖彼得的雙鑰，前方跪著兩名求道的弟子。',
   },
   {
-    num: 6, roman: 'VI', arcana: 'major', cn: '戀人', en: 'The Lovers', img: '/cards/06-TheLovers.png',
+    num: 6, roman: 'VI', arcana: 'major', cn: '戀人', en: 'The Lovers', img: '/cards/06-TheLovers.webp',
     keywords: ['結合', '抉擇', '和諧'],
     meaning: '伊甸園中，這是一場關乎心之所向的結合與抉擇。誠實面對你真正渴望的，價值與情感對齊時，和諧自然降臨。',
     reversedKeywords: ['失和', '猶疑', '錯位'],
@@ -84,7 +84,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽牌「L’Amoureux」原為青年在兩名女子間抉擇、上方有邱比特張弓。偉特改繪為伊甸園中的亞當與夏娃，天使拉斐爾在上方賜福，身後分立知識之樹與生命之樹。',
   },
   {
-    num: 7, roman: 'VII', arcana: 'major', cn: '戰車', en: 'The Chariot', img: '/cards/07-TheChariot.png',
+    num: 7, roman: 'VII', arcana: 'major', cn: '戰車', en: 'The Chariot', img: '/cards/07-TheChariot.webp',
     keywords: ['意志', '前進', '勝利'],
     meaning: '駕馭一黑一白兩股相反的力量，方向已定，便全速前行。憑意志壓住內在的拉扯，勝利屬於穩住韁繩的人。',
     reversedKeywords: ['失向', '內耗', '受阻'],
@@ -92,7 +92,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「Le Chariot」源自古羅馬凱旋遊行，並受佩脫拉克長詩《凱旋》（Trionfi）影響——塔羅的義大利舊名 trionfi 即由此而來。偉特牌中拉車的不是馬，而是一黑一白兩隻人面獅身，象徵須由意志駕馭的對立力量。',
   },
   {
-    num: 8, roman: 'VIII', arcana: 'major', cn: '力量', en: 'Strength', img: '/cards/08-Strength.png',
+    num: 8, roman: 'VIII', arcana: 'major', cn: '力量', en: 'Strength', img: '/cards/08-Strength.webp',
     keywords: ['溫柔', '勇氣', '馴服'],
     meaning: '少女以雙手輕撫獅口——真正的力量是以柔克剛。用慈悲與耐心，而非壓制，去馴服心中那頭猛獸。',
     reversedKeywords: ['自疑', '焦躁', '逞強'],
@@ -100,7 +100,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '舊牌中此牌編號 XI，黃金黎明會與偉特為對應星座，將「力量」與「正義」對調，使其成為 VIII（對應獅子座）。畫面中少女從容地合上獅口，頭頂亦有無限符號，呼應赫丘力士制伏尼米亞猛獅的母題。',
   },
   {
-    num: 9, roman: 'IX', arcana: 'major', cn: '隱者', en: 'The Hermit', img: '/cards/09-TheHermit.png',
+    num: 9, roman: 'IX', arcana: 'major', cn: '隱者', en: 'The Hermit', img: '/cards/09-TheHermit.webp',
     keywords: ['內省', '獨處', '智慧'],
     meaning: '退到人群之外，提起自己的燈。獨處不是逃避，而是讓內在的光照亮那條別人給不了你的方向。',
     reversedKeywords: ['孤立', '逃避', '迷失'],
@@ -108,7 +108,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「L’Ermite」早期手持沙漏、代表「時間」與土星，後演變為提燈的隱士。偉特牌中老者立於雪峰，燈裡藏著一顆六芒星——呼應古希臘哲人第歐根尼提燈尋找誠實之人的典故。',
   },
   {
-    num: 10, roman: 'X', arcana: 'major', cn: '命運之輪', en: 'Wheel of Fortune', img: '/cards/10-WheelOfFortune.png',
+    num: 10, roman: 'X', arcana: 'major', cn: '命運之輪', en: 'Wheel of Fortune', img: '/cards/10-WheelOfFortune.webp',
     keywords: ['轉變', '循環', '時機'],
     meaning: '輪子永遠在轉，此刻的起落都是循環的一部分。順應流動，抓住正在轉來的時機，而非抗拒必然的變化。',
     reversedKeywords: ['停滯', '抗拒', '低潮'],
@@ -116,7 +116,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '源自中世紀的「命運之輪」（Rota Fortunae），即波愛修斯《哲學的慰藉》中命運女神轉動的巨輪。偉特牌的輪上刻有 TARO／ROTA 與希伯來神名 YHVH，四角是對應四福音的人、鷹、獅、牛（四活物）。',
   },
   {
-    num: 11, roman: 'XI', arcana: 'major', cn: '正義', en: 'Justice', img: '/cards/11-Justice.png',
+    num: 11, roman: 'XI', arcana: 'major', cn: '正義', en: 'Justice', img: '/cards/11-Justice.webp',
     keywords: ['平衡', '真相', '因果'],
     meaning: '天秤與劍——萬事都被衡量，因果分明。坦誠面對真相，承擔該負的責任，你種下的因會以恰好的方式回應。',
     reversedKeywords: ['失衡', '推諉', '偏私'],
@@ -124,7 +124,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「La Justice」是中世紀四樞德之一，原型為手持天秤與劍的羅馬正義女神 Justitia（希臘的忒彌斯／阿斯特賴亞）。因偉特將其與「力量」對調，此牌在 RWS 中編號為 VIII 與 XI 互換後的 XI。',
   },
   {
-    num: 12, roman: 'XII', arcana: 'major', cn: '吊人', en: 'The Hanged Man', img: '/cards/12-TheHangedMan.png',
+    num: 12, roman: 'XII', arcana: 'major', cn: '吊人', en: 'The Hanged Man', img: '/cards/12-TheHangedMan.webp',
     keywords: ['暫停', '轉念', '臣服'],
     meaning: '倒懸於樹，他選擇了暫停。此刻不必前進——換一個顛倒的視角，世界會向你顯露原先看不見的另一面。',
     reversedKeywords: ['停滯', '抗拒', '徒勞'],
@@ -132,7 +132,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「Le Pendu」源自義大利的「恥辱畫」（pittura infamante）——將叛徒倒吊單腳示眾的羞辱圖像。後世重新詮釋為甘願的犧牲，呼應北歐神話中奧丁倒懸於世界之樹求取智慧；偉特更為他的頭添上一圈光環。',
   },
   {
-    num: 13, roman: 'XIII', arcana: 'major', cn: '死神', en: 'Death', img: '/cards/13-Death.png',
+    num: 13, roman: 'XIII', arcana: 'major', cn: '死神', en: 'Death', img: '/cards/13-Death.webp',
     keywords: ['終結', '蛻變', '重生'],
     meaning: '白馬上的骷髏不為毀滅而來，而為蛻變。某段過往正在落幕——允許它徹底結束，新的版本才有空間浮現。',
     reversedKeywords: ['抗拒', '滯留', '恐變'],
@@ -140,7 +140,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '源自中世紀「死亡之舞」（Danse Macabre）中持鐮的骷髏死神，在馬賽牌中常無牌名，是「無名之牌」。偉特牌中死神身著盔甲、騎著白馬，手執繪有白玫瑰的黑旗，象徵無分貴賤的終結與更新。',
   },
   {
-    num: 14, roman: 'XIV', arcana: 'major', cn: '節制', en: 'Temperance', img: '/cards/14-Temperance.png',
+    num: 14, roman: 'XIV', arcana: 'major', cn: '節制', en: 'Temperance', img: '/cards/14-Temperance.webp',
     keywords: ['調和', '耐心', '中道'],
     meaning: '天使在兩只杯之間來回調和——不急不躁，不偏不倚。在對立的兩極之間，耐心調出專屬於你的中道。',
     reversedKeywords: ['失衡', '過度', '失耐'],
@@ -148,7 +148,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「La Tempérance」同為四樞德之一，原型是調酒以水的「節制」美德。偉特牌中天使一腳踏水、一腳踏地，在兩只杯間傾倒流動的水，象徵在物質與精神之間調和的煉金過程。',
   },
   {
-    num: 15, roman: 'XV', arcana: 'major', cn: '惡魔', en: 'The Devil', img: '/cards/15-TheDevil.png',
+    num: 15, roman: 'XV', arcana: 'major', cn: '惡魔', en: 'The Devil', img: '/cards/15-TheDevil.webp',
     keywords: ['執著', '陰影', '誘惑'],
     meaning: '鎖鏈其實鬆垮，是你自願戴上的。看清那份執著、成癮或恐懼如何困住你——承認它，就已開始鬆動它。',
     reversedKeywords: ['鬆綁', '覺醒', '掙脫'],
@@ -156,7 +156,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「Le Diable」承襲中世紀基督教的魔鬼圖像，偉特牌中的羊頭半獸造型直接取自法國神祕學家埃利法斯·李維所繪的「巴弗滅」。腳下兩名被鎖的人形，正是「戀人」牌中亞當夏娃的墮落倒影——而鎖鏈其實寬鬆可脫。',
   },
   {
-    num: 16, roman: 'XVI', arcana: 'major', cn: '高塔', en: 'The Tower', img: '/cards/16-TheTower.png',
+    num: 16, roman: 'XVI', arcana: 'major', cn: '高塔', en: 'The Tower', img: '/cards/16-TheTower.webp',
     keywords: ['突變', '崩解', '覺醒'],
     meaning: '閃電擊中虛構的高塔，一場必要的瓦解。建立在謊言上的結構崩落，痛，卻讓真實的地基首次顯露。',
     reversedKeywords: ['延遲', '逃避', '餘震'],
@@ -164,7 +164,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽牌稱「La Maison Dieu」（神之屋）。畫面中高塔遭閃電擊中、王冠墜落、兩人從塔頂跌下，常被連結到《聖經》巴別塔因傲慢而傾覆的故事，象徵虛妄結構的瞬間崩解。',
   },
   {
-    num: 17, roman: 'XVII', arcana: 'major', cn: '星星', en: 'The Star', img: '/cards/17-TheStar.png',
+    num: 17, roman: 'XVII', arcana: 'major', cn: '星星', en: 'The Star', img: '/cards/17-TheStar.webp',
     keywords: ['希望', '療癒', '靈感'],
     meaning: '風暴過後，裸身的女子在星空下為大地注水。一顆星仍在指引你——療癒正在發生，相信宇宙仍站在你這邊。',
     reversedKeywords: ['失望', '自疑', '枯竭'],
@@ -172,7 +172,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「L’Étoile」描繪一名裸女單膝跪於水邊，雙手各持一壺，將水傾入池中與大地。天空一顆碩大的八芒星周圍環繞七顆小星，自古與希望、寶瓶座及指引航行的天狼星相連。',
   },
   {
-    num: 18, roman: 'XVIII', arcana: 'major', cn: '月亮', en: 'The Moon', img: '/cards/18-TheMoon.png',
+    num: 18, roman: 'XVIII', arcana: 'major', cn: '月亮', en: 'The Moon', img: '/cards/18-TheMoon.webp',
     keywords: ['幻象', '潛意識', '迷霧'],
     meaning: '月光下，道路通往迷霧與未知，潛藏的恐懼浮上水面。事物未必如其所現——穿越這片朦朧，要靠直覺，而非眼睛。',
     reversedKeywords: ['澄清', '釋疑', '退潮'],
@@ -180,7 +180,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「La Lune」中，一隻犬與一隻狼對月嗥叫，一隻螯蝦自池水爬出，遠方兩座高塔之間有小徑蜿蜒入山。象徵意識與潛意識的邊界、本能與恐懼，以及通往未知的幽微之路。',
   },
   {
-    num: 19, roman: 'XIX', arcana: 'major', cn: '太陽', en: 'The Sun', img: '/cards/19-TheSun.png',
+    num: 19, roman: 'XIX', arcana: 'major', cn: '太陽', en: 'The Sun', img: '/cards/19-TheSun.webp',
     keywords: ['喜悅', '豐盛', '澄明'],
     meaning: '孩童騎在白馬上，向日葵盛開，光毫無保留地照著你。允許自己被看見、被慶祝——這是純粹的喜悅與澄明。',
     reversedKeywords: ['烏雲', '低落', '遮蔽'],
@@ -188,7 +188,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '馬賽牌「Le Soleil」中常見兩名孩童於陽光下相伴。偉特牌則改繪為一名赤身孩童騎在白馬上、手執紅旗，身後一道向日葵牆——象徵毫無遮掩的喜悅、生命力與重獲的純真。',
   },
   {
-    num: 20, roman: 'XX', arcana: 'major', cn: '審判', en: 'Judgement', img: '/cards/20-Judgement.png',
+    num: 20, roman: 'XX', arcana: 'major', cn: '審判', en: 'Judgement', img: '/cards/20-Judgement.webp',
     keywords: ['召喚', '寬恕', '覺醒'],
     meaning: '天使吹響號角，沉睡者自墳中起身——一個更高的呼喚正在響起。寬恕過去的自己，誠實回應這聲召喚。',
     reversedKeywords: ['自責', '遲疑', '逃避'],
@@ -196,7 +196,7 @@ export const MAJOR_ARCANA: MajorCard[] = [
     story: '「Le Jugement」取材自基督教的「最後審判」與死者復活。偉特牌中大天使加百列自雲端吹響繫著十字旗的號角，男女老幼自開啟的棺木中舉手起身，象徵覺醒、清算與重生的召喚。',
   },
   {
-    num: 21, roman: 'XXI', arcana: 'major', cn: '世界', en: 'The World', img: '/cards/21-TheWorld.png',
+    num: 21, roman: 'XXI', arcana: 'major', cn: '世界', en: 'The World', img: '/cards/21-TheWorld.webp',
     keywords: ['完成', '圓滿', '整合'],
     meaning: '舞者在花環中起舞，四方各有守護——一個循環圓滿收束。你已抵達，整合了沿途的一切，並準備好下一場啟程。',
     reversedKeywords: ['未竟', '滯礙', '收尾'],
@@ -539,7 +539,7 @@ function buildSuit(suit: Suit): MinorCard[] {
       suit,
       cn: `${meta.cn}${RANK_CN[i]}`,
       en: `${RANK_EN[i]} of ${meta.en}`,
-      img: `/cards/${meta.en}${nn}.png`,
+      img: `/cards/${meta.en}${nn}.webp`,
       keywords: card.keywords,
       meaning: card.meaning,
       reversedKeywords: card.reversedKeywords,
