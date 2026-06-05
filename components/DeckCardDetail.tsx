@@ -60,7 +60,7 @@ function MeaningBlock({
 export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBack: () => void }) {
   return (
     <motion.div
-      className="absolute inset-0 z-[100] overflow-y-auto"
+      className="absolute inset-0 z-[100] overflow-y-auto overflow-x-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -146,8 +146,8 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
         <div className="mt-12 w-full text-center">
           <SectionHeading label="牌 面 故 事" accent={GOLD} />
           <p
-            className="mx-auto mt-5 max-w-[19rem] text-left font-serif text-[12.5px] font-light leading-[2.05] tracking-[0.5px]"
-            style={{ color: 'rgba(216,210,196,0.82)' }}
+            className="mx-auto mt-5 max-w-[19rem] text-left font-serif text-[13px] font-light leading-[1.95] tracking-[0.5px]"
+            style={{ color: 'rgba(236,230,216,0.9)' }}
           >
             {card.story}
           </p>
