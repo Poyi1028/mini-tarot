@@ -3,7 +3,7 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD } from '@/lib/constants';
+import { GOLD, LILAC } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
@@ -63,7 +63,15 @@ function SyncOverlay({ stage }: { stage: Stage }) {
   );
 }
 
-export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => void }) {
+export default function InputScreen({
+  onSubmit,
+  onOpenDaily,
+  onBack,
+}: {
+  onSubmit: (q: string) => void;
+  onOpenDaily: () => void;
+  onBack: () => void;
+}) {
   const [q, setQ] = useState('');
   const [phase, setPhase] = useState<Phase>('input');
   const measureRef = useRef<HTMLDivElement>(null);
@@ -133,6 +141,34 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
       <Starfield density={32} seed={8} />
+
+      {/* 今日運勢入口 —— 右上角，與牌庫鈕同款；輸入溶解時淡出。 */}
+      <div
+        className="absolute left-0 right-0 top-[34px] z-[6] flex items-center justify-end px-7"
+        style={{
+          opacity: isInput ? 1 : 0,
+          pointerEvents: isInput ? 'auto' : 'none',
+          transition: 'opacity 300ms ease',
+        }}
+      >
+        <button
+          onClick={onOpenDaily}
+          aria-label="今日運勢"
+          className="flex flex-col items-center gap-1.5 px-1 py-1"
+        >
+          <img
+            src="/book.svg"
+            alt=""
+            width={50}
+            height={50}
+            draggable={false}
+            style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
+          />
+          <span className="text-[10px] tracking-[3px]" style={{ color: LILAC }}>
+            今 日
+          </span>
+        </button>
+      </div>
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
           the GROUP's midline lands on the screen centre (the outer wrapper's
@@ -263,6 +299,28 @@ export default function InputScreen({ onSubmit }: { onSubmit: (q: string) => voi
             </svg>
           </button>
         </div>
+      </div>
+
+      {/* 返回首頁 —— 釘在畫面底部，脫離置中流，讓對話框保持正中。
+          與 SpreadScreen 收束處同款 rite（金線 + ○ + 連結）；
+          輸入溶解時淡出、停用點擊。 */}
+      <div
+        className="absolute bottom-[26px] left-0 right-0 z-[4] flex flex-col items-center"
+        style={{
+          opacity: isInput ? 1 : 0,
+          pointerEvents: isInput ? 'auto' : 'none',
+          transition: 'opacity 300ms ease',
+        }}
+      >
+        <button
+          onClick={onBack}
+          className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
+        >
+          <span className="text-[8px] leading-none text-gold-soft/70">○</span>
+          <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
+          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
+          <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
+        </button>
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>

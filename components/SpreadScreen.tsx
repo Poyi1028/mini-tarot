@@ -11,6 +11,7 @@ import CardFront from './CardFront';
 import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
+import BackButton from './decor/BackButton';
 
 interface Position {
   key: string;
@@ -129,23 +130,23 @@ function FlipCard({
 }
 
 // Closing rite — stripped to its essence: a gold thread leading down from the
-// spread into the single ASK AGAIN return-home rite. All closing reading text
-// has been removed for a quieter, more minimal screen.
+// spread into the single return-home rite. All closing reading text has been
+// removed for a quieter, more minimal screen.
 function ReadingPanel({ onRestart }: { onRestart: () => void }) {
   return (
     <div className="pt-1">
       {/* Gold thread falling from the spread into the close */}
       <div className="mx-auto h-7 w-px bg-gradient-to-b from-transparent via-gold-soft/30 to-gold-soft/60" />
 
-      {/* Ask again — an underline-link rite, not a form button */}
+      {/* Return home — an underline-link rite, not a form button */}
       <div className="mb-1 mt-5 flex justify-center">
         <button
           onClick={onRestart}
           className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
         >
           <span className="text-[8px] leading-none text-gold-soft/70">○</span>
-          <span className="font-display text-[11px] tracking-[6px] text-gold">ASK AGAIN</span>
-          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">再 問 一 次</span>
+          <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
+          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
           <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
         </button>
       </div>
@@ -196,6 +197,9 @@ export default function SpreadScreen({ question, onRestart }: { question: string
   return (
     <div className="absolute inset-0">
       <Starfield density={26} seed={13} />
+
+      {/* 返回首頁 —— 左上角 ‹，與牌庫一致；隨時可離開牌陣。 */}
+      <BackButton onClick={onRestart} />
 
       <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
       <div className="relative z-[2] flex min-h-full flex-col px-6 pb-6 pt-[52px]">
