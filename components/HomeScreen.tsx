@@ -1,20 +1,14 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, LILAC, MUTED, PARCHMENT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import Starfield from './Starfield';
 import Motes from './decor/Motes';
 import CrystalBall from './CrystalBall';
 import OrnDivider from './decor/OrnDivider';
 
-export default function HomeScreen({
-  onStart,
-  onOpenDeck,
-}: {
-  onStart: () => void;
-  onOpenDeck: () => void;
-}) {
+export default function HomeScreen({ onStart }: { onStart: () => void }) {
   return (
     <div
       role="button"
@@ -31,31 +25,6 @@ export default function HomeScreen({
     >
       <Starfield density={40} seed={4} />
       <Motes count={10} seed={6} color={GOLD_BRIGHT} area={{ x: 50, y: 44, w: 46, h: 36 }} />
-
-      {/* header — 牌庫 entry, top-right */}
-      <div className="absolute left-0 right-0 top-[34px] z-[6] flex items-center justify-end px-7">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenDeck();
-          }}
-          onKeyDown={(e) => e.stopPropagation()}
-          aria-label="開啟牌庫"
-          className="flex flex-col items-center gap-1.5 px-1 py-1"
-        >
-          <img
-            src="/cards.svg"
-            alt=""
-            width={60}
-            height={60}
-            draggable={false}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
-          />
-          <span className="text-[10px] tracking-[3px]" style={{ color: LILAC }}>
-            牌 庫
-          </span>
-        </button>
-      </div>
 
       {/* lilac back-glow pooled behind the crystal */}
       <div

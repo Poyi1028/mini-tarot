@@ -28,10 +28,8 @@ export default function TarotApp() {
           exit="exit"
           transition={{ duration: DUR.base, ease: EASE.inOut }}
         >
-          {screen === 'home' && (
-            <HomeScreen onStart={() => setScreen('input')} onOpenDeck={() => setScreen('deck')} />
-          )}
-          {screen === 'deck' && <DeckScreen onBack={() => setScreen('home')} />}
+          {screen === 'home' && <HomeScreen onStart={() => setScreen('input')} />}
+          {screen === 'deck' && <DeckScreen onBack={() => setScreen('input')} />}
           {screen === 'input' && (
             <InputScreen
               onSubmit={(q) => {
@@ -39,10 +37,11 @@ export default function TarotApp() {
                 setScreen('shuffle');
               }}
               onOpenDaily={() => setScreen('daily')}
+              onOpenDeck={() => setScreen('deck')}
               onBack={() => setScreen('home')}
             />
           )}
-          {screen === 'daily' && <DailyScreen onBack={() => setScreen('home')} />}
+          {screen === 'daily' && <DailyScreen onBack={() => setScreen('input')} />}
           {screen === 'shuffle' && <ShuffleScreen onComplete={() => setScreen('spread')} />}
           {screen === 'spread' && (
             <SpreadScreen

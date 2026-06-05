@@ -66,10 +66,12 @@ function SyncOverlay({ stage }: { stage: Stage }) {
 export default function InputScreen({
   onSubmit,
   onOpenDaily,
+  onOpenDeck,
   onBack,
 }: {
   onSubmit: (q: string) => void;
   onOpenDaily: () => void;
+  onOpenDeck: () => void;
   onBack: () => void;
 }) {
   const [q, setQ] = useState('');
@@ -142,9 +144,9 @@ export default function InputScreen({
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
       <Starfield density={32} seed={8} />
 
-      {/* 今日運勢入口 —— 右上角，與牌庫鈕同款；輸入溶解時淡出。 */}
+      {/* 牌庫 + 今日運勢入口 —— 右上角並排；輸入溶解時淡出。 */}
       <div
-        className="absolute left-0 right-0 top-[34px] z-[6] flex items-center justify-end px-7"
+        className="absolute left-0 right-0 top-[34px] z-[6] flex items-start justify-end gap-5 px-7"
         style={{
           opacity: isInput ? 1 : 0,
           pointerEvents: isInput ? 'auto' : 'none',
@@ -152,20 +154,45 @@ export default function InputScreen({
         }}
       >
         <button
+          onClick={onOpenDeck}
+          aria-label="開啟牌庫"
+          className="flex flex-col items-center gap-1.5 px-1 py-1"
+        >
+          <span className="flex h-[42px] w-[48px] items-center justify-center">
+            <img
+              src="/cards.svg"
+              alt=""
+              draggable={false}
+              className="h-full w-full object-contain"
+              style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
+            />
+          </span>
+          <span
+            className="whitespace-nowrap text-[10px] tracking-[2px]"
+            style={{ color: LILAC }}
+          >
+            牌庫
+          </span>
+        </button>
+        <button
           onClick={onOpenDaily}
           aria-label="今日運勢"
           className="flex flex-col items-center gap-1.5 px-1 py-1"
         >
-          <img
-            src="/book.svg"
-            alt=""
-            width={50}
-            height={50}
-            draggable={false}
-            style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
-          />
-          <span className="text-[10px] tracking-[3px]" style={{ color: LILAC }}>
-            今 日
+          <span className="flex h-[42px] w-[48px] items-center justify-center">
+            <img
+              src="/book.svg"
+              alt=""
+              draggable={false}
+              className="h-full w-full object-contain"
+              style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
+            />
+          </span>
+          <span
+            className="whitespace-nowrap text-[10px] tracking-[2px]"
+            style={{ color: LILAC }}
+          >
+            今日運勢
           </span>
         </button>
       </div>
