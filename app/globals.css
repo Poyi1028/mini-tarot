@@ -58,6 +58,9 @@
 
   body {
     min-height: 100dvh;
+    /* extend ink background into bottom safe-area on notched devices */
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: var(--color-ink);
   }
 
   textarea::placeholder {
