@@ -31,12 +31,19 @@ export const SPRING_SHUFFLE: Transition = { type: 'spring', stiffness: 90, dampi
 // Pop spring — for the hero cards snapping to attention as they reveal.
 export const SPRING_POP: Transition = { type: 'spring', stiffness: 220, damping: 20, mass: 0.9 };
 
-// Plain opacity crossfade (used for screen-to-screen transitions).
+// Press feedback — the "give" every tappable surface gets on pointer-down, so
+// taps feel physical like a native control. Pair `whileTap={TAP}` with
+// `transition={SPRING_TAP}` on a motion.button / motion.div.
+export const TAP = { scale: 0.94 } as const;
+export const SPRING_TAP: Transition = { type: 'spring', stiffness: 400, damping: 17 };
+
+// Plain opacity crossfade (kept for overlays that shouldn't carry direction).
 export const fade: Variants = {
   initial: { opacity: 0 },
   animate: { opacity: 1 },
   exit: { opacity: 0 },
 };
+
 
 // Rise + fade, as a variant pair so it can be driven by a parent stagger.
 export const fadeUp: Variants = {

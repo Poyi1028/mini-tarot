@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_DIM } from '@/lib/constants';
-import { EASE, DUR } from '@/lib/motion';
+import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import { getDailyDraw, dateDisplay } from '@/lib/daily';
 import type { Card } from '@/lib/tarot-cards';
 import CardBack from './CardBack';
@@ -242,12 +242,14 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
                 <div className="mt-3.5 font-serif text-[12px] tracking-[2px] text-gold-soft">
                   {keywords.join(' · ')}
                 </div>
-                <button
+                <motion.button
                   onClick={() => setDetail(true)}
+                  whileTap={TAP}
+                  transition={SPRING_TAP}
                   className="mt-4 px-4 py-1 text-[10px] tracking-[3px] text-muted"
                 >
                   輕 觸 卡 牌 · 完 整 牌 義
-                </button>
+                </motion.button>
               </motion.div>
             )}
           </div>

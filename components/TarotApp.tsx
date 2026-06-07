@@ -15,6 +15,7 @@ type Screen = 'home' | 'input' | 'shuffle' | 'spread' | 'deck' | 'daily';
 export default function TarotApp() {
   const [screen, setScreen] = useState<Screen>('home');
   const [question, setQuestion] = useState('');
+  const go = setScreen;
 
   return (
     <div className="absolute inset-0 overflow-hidden bg-ink text-parchment font-serif">
@@ -28,27 +29,27 @@ export default function TarotApp() {
           exit="exit"
           transition={{ duration: DUR.base, ease: EASE.inOut }}
         >
-          {screen === 'home' && <HomeScreen onStart={() => setScreen('input')} />}
-          {screen === 'deck' && <DeckScreen onBack={() => setScreen('input')} />}
+          {screen === 'home' && <HomeScreen onStart={() => go('input')} />}
+          {screen === 'deck' && <DeckScreen onBack={() => go('input')} />}
           {screen === 'input' && (
             <InputScreen
               onSubmit={(q) => {
                 setQuestion(q);
-                setScreen('shuffle');
+                go('shuffle');
               }}
-              onOpenDaily={() => setScreen('daily')}
-              onOpenDeck={() => setScreen('deck')}
-              onBack={() => setScreen('home')}
+              onOpenDaily={() => go('daily')}
+              onOpenDeck={() => go('deck')}
+              onBack={() => go('home')}
             />
           )}
-          {screen === 'daily' && <DailyScreen onBack={() => setScreen('input')} />}
-          {screen === 'shuffle' && <ShuffleScreen onComplete={() => setScreen('spread')} />}
+          {screen === 'daily' && <DailyScreen onBack={() => go('input')} />}
+          {screen === 'shuffle' && <ShuffleScreen onComplete={() => go('spread')} />}
           {screen === 'spread' && (
             <SpreadScreen
               question={question}
               onRestart={() => {
                 setQuestion('');
-                setScreen('home');
+                go('home');
               }}
             />
           )}

@@ -4,7 +4,7 @@ import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, LILAC } from '@/lib/constants';
-import { EASE, DUR } from '@/lib/motion';
+import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
 
@@ -153,9 +153,11 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <button
+        <motion.button
           onClick={onOpenDeck}
           aria-label="開啟牌庫"
+          whileTap={TAP}
+          transition={SPRING_TAP}
           className="flex flex-col items-center gap-1.5 px-1 py-1"
         >
           <span className="flex h-[42px] w-[48px] items-center justify-center">
@@ -173,10 +175,12 @@ export default function InputScreen({
           >
             牌庫
           </span>
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           onClick={onOpenDaily}
           aria-label="今日運勢"
+          whileTap={TAP}
+          transition={SPRING_TAP}
           className="flex flex-col items-center gap-1.5 px-1 py-1"
         >
           <span className="flex h-[42px] w-[48px] items-center justify-center">
@@ -194,7 +198,7 @@ export default function InputScreen({
           >
             今日運勢
           </span>
-        </button>
+        </motion.button>
       </div>
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
@@ -303,10 +307,12 @@ export default function InputScreen({
           </div>
 
           {/* embedded send button (AI composer) */}
-          <button
+          <motion.button
             onClick={ignite}
             disabled={!q.trim() || !isInput}
             aria-label="注入意念"
+            whileTap={q.trim() ? TAP : undefined}
+            transition={SPRING_TAP}
             className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full transition-[opacity,box-shadow,background] duration-200 disabled:cursor-default"
             style={{
               background: q.trim() ? 'rgba(216,189,143,0.95)' : 'rgba(216,189,143,0.1)',
@@ -324,7 +330,7 @@ export default function InputScreen({
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -339,15 +345,17 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <button
+        <motion.button
           onClick={onBack}
+          whileTap={TAP}
+          transition={SPRING_TAP}
           className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
         >
           <span className="text-[8px] leading-none text-gold-soft/70">○</span>
           <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
           <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
           <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
-        </button>
+        </motion.button>
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>

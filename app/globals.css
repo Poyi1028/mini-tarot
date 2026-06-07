@@ -43,6 +43,9 @@
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
+    /* No iOS long-press "copy/share/look up" callout — that menu is the most
+       obvious "this is a web page" tell. */
+    -webkit-touch-callout: none;
   }
 
   html,
@@ -54,6 +57,17 @@
     color: var(--color-parchment);
     font-family: var(--font-serif);
     overscroll-behavior: none;
+    /* App chrome shouldn't be selectable like body text… */
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* …but real text fields stay fully selectable/editable. */
+  textarea,
+  input,
+  [contenteditable='true'] {
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   body {
@@ -61,6 +75,15 @@
     /* extend ink background into bottom safe-area on notched devices */
     padding-bottom: env(safe-area-inset-bottom);
     background-color: var(--color-ink);
+  }
+
+  /* Inner scrollers (deck grid, spread reading) keep native momentum and don't
+     leak their over-scroll to the page, so the screen never rubber-bands as a
+     whole — it reads like a native scroll view. */
+  .overflow-y-auto,
+  .overflow-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 
   textarea::placeholder {

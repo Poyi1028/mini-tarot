@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
-import { EASE, DUR } from '@/lib/motion';
+import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
 import CardBack from './CardBack';
@@ -140,15 +140,17 @@ function ReadingPanel({ onRestart }: { onRestart: () => void }) {
 
       {/* Return home — an underline-link rite, not a form button */}
       <div className="mb-1 mt-5 flex justify-center">
-        <button
+        <motion.button
           onClick={onRestart}
+          whileTap={TAP}
+          transition={SPRING_TAP}
           className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
         >
           <span className="text-[8px] leading-none text-gold-soft/70">○</span>
           <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
           <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
           <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
-        </button>
+        </motion.button>
       </div>
     </div>
   );

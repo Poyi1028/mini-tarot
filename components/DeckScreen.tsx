@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
 import { GOLD, GOLD_DIM, MUTED, PARCHMENT } from '@/lib/constants';
-import { EASE } from '@/lib/motion';
+import { EASE, TAP, SPRING_TAP } from '@/lib/motion';
 import { DECK, DECK_GROUPS } from '@/lib/deck-groups';
 import type { DeckCard, DeckGroupId } from '@/lib/deck-groups';
 import Starfield from './Starfield';
@@ -36,9 +36,11 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
       {DECK_GROUPS.map((grp) => {
         const on = tab === grp.id;
         return (
-          <button
+          <motion.button
             key={grp.id}
             onClick={() => setTab(grp.id)}
+            whileTap={TAP}
+            transition={SPRING_TAP}
             className="flex flex-col items-center gap-[7px] border-none bg-transparent p-0"
           >
             <span
@@ -61,7 +63,7 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
                 boxShadow: on ? `0 0 6px ${GOLD}` : 'none',
               }}
             />
-          </button>
+          </motion.button>
         );
       })}
     </div>
@@ -73,7 +75,12 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
 function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
   return (
     <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[7px]">
-      <button onClick={onClick} className="block w-full border-none bg-transparent p-0">
+      <motion.button
+        onClick={onClick}
+        whileTap={TAP}
+        transition={SPRING_TAP}
+        className="block w-full border-none bg-transparent p-0"
+      >
         <FramedCardImg
           src={card.img}
           alt={`${card.cn} ${card.en}`}
@@ -82,7 +89,7 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
           boxShadow="0 3px 10px rgba(0,0,0,0.45)"
           lazy
         />
-      </button>
+      </motion.button>
       <div className="flex flex-col items-center text-center leading-[1.3]">
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
           {card.cn}
