@@ -143,17 +143,17 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
 
   return (
     <div className="absolute inset-0">
-      <Starfield density={26} seed={11} />
+      <Starfield density={20} seed={11} />
 
       {/* Header — floats at the top so the card stage can sit dead-center */}
       <div
         className="absolute left-0 right-0 top-0 z-[3] px-7 pt-[70px] text-center transition-opacity duration-[600ms]"
         style={{ opacity: phase === 'merge' ? 0.2 : 1 }}
       >
-        <div className="mb-3 font-display text-[11px] tracking-[6px] text-gold opacity-85">
+        <div className="mb-3 font-display text-[10px] tracking-[5px] text-gold/80">
           {phase === 'shuffle' || phase === 'gather' ? 'SHUFFLE' : 'CUT THE DECK'}
         </div>
-        <div className="min-h-[62px] whitespace-pre-line text-[17px] font-light leading-[1.8] tracking-[4px] text-parchment">
+        <div className="min-h-[58px] whitespace-pre-line text-[15px] font-light leading-[1.75] tracking-[3px] text-parchment/88">
           {phase === 'shuffle' && '按住牌堆、左右揉搓\n讓牌在桌面流轉、與你共振'}
           {phase === 'gather' && '能量已注入'}
           {(phase === 'cut' || phase === 'merge') && (
@@ -185,8 +185,8 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           <motion.div
             className="relative"
             style={{ width: STAGE_W, height: STAGE_H }}
-            animate={{ y: [0, -7, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut' }}
           >
           {cards.map((c) => (
             <motion.div

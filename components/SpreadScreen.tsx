@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
-import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
+import { EASE, DUR } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
 import CardBack from './CardBack';
@@ -12,6 +12,7 @@ import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
 import BackButton from './decor/BackButton';
+import TextAction from './decor/TextAction';
 
 interface Position {
   key: string;
@@ -80,7 +81,7 @@ function FlipCard({
             stack on top. */}
         <div
           className="pointer-events-none absolute -inset-1 rounded-xl"
-          style={{ boxShadow: '0 0 16px rgba(216,189,143,0.15)' }}
+          style={{ boxShadow: '0 0 12px rgba(216,189,143,0.10)' }}
         />
         {/* Gentle pulse on ONLY the next card to flip — guides the eye one step
             at a time. Other unflipped cards rest dark; the central halo carries
@@ -88,7 +89,7 @@ function FlipCard({
             box-shadow keyframe). */}
         <motion.div
           className="pointer-events-none absolute -inset-2 rounded-xl"
-          style={{ boxShadow: '0 0 18px rgba(216,189,143,0.28), inset 0 0 0 1px rgba(216,189,143,0.3)' }}
+          style={{ boxShadow: '0 0 16px rgba(216,189,143,0.20), inset 0 0 0 1px rgba(216,189,143,0.22)' }}
           initial={false}
           animate={{ opacity: !flipped && isNext ? [0.35, 0.7, 0.35] : 0 }}
           transition={
@@ -103,7 +104,7 @@ function FlipCard({
           className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
           style={{
             opacity: flipped ? 1 : 0,
-            boxShadow: `0 0 28px rgba(216,189,143,0.32), 0 0 52px rgba(216,189,143,0.16)`,
+            boxShadow: `0 0 22px rgba(216,189,143,0.24), 0 0 42px rgba(216,189,143,0.10)`,
           }}
         />
 
@@ -140,17 +141,7 @@ function ReadingPanel({ onRestart }: { onRestart: () => void }) {
 
       {/* Return home — an underline-link rite, not a form button */}
       <div className="mb-1 mt-5 flex justify-center">
-        <motion.button
-          onClick={onRestart}
-          whileTap={TAP}
-          transition={SPRING_TAP}
-          className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
-        >
-          <span className="text-[8px] leading-none text-gold-soft/70">○</span>
-          <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
-          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
-          <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
-        </motion.button>
+        <TextAction eyebrow="⌂" label="RETURN HOME" sublabel="回到首頁" onClick={onRestart} ariaLabel="回到首頁" />
       </div>
     </div>
   );
@@ -198,7 +189,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
 
   return (
     <div className="absolute inset-0">
-      <Starfield density={26} seed={13} />
+      <Starfield density={20} seed={13} />
 
       {/* 返回首頁 —— 左上角 ‹，與牌庫一致；隨時可離開牌陣。 */}
       <BackButton onClick={onRestart} />
@@ -229,7 +220,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
             viewBox="-190 -190 380 380"
             style={{ overflow: 'visible' }}
             initial={false}
-            animate={{ opacity: phase === 'spread' ? [0.5, 0.8, 0.5] : 0.22 }}
+            animate={{ opacity: phase === 'spread' ? [0.32, 0.52, 0.32] : 0.16 }}
             transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
           >
             <circle cx={0} cy={21} r={162} fill="none" stroke={GOLD} strokeWidth={0.6} opacity={0.22} />
@@ -237,10 +228,10 @@ export default function SpreadScreen({ question, onRestart }: { question: string
             <path
               d="M 0 -100 L -130 82 L 130 82 Z"
               fill={GOLD}
-              fillOpacity={0.03}
+              fillOpacity={0.02}
               stroke={GOLD}
               strokeWidth={0.9}
-              strokeOpacity={0.42}
+              strokeOpacity={0.28}
               strokeLinejoin="round"
             />
             <circle cx={0} cy={-100} r={7} fill="none" stroke={GOLD} strokeWidth={0.6} opacity={0.5} />
