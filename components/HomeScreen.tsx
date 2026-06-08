@@ -23,8 +23,8 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
       }}
       className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center px-8 outline-none"
     >
-      <Starfield density={40} seed={4} />
-      <Motes count={10} seed={6} color={GOLD_BRIGHT} area={{ x: 50, y: 44, w: 46, h: 36 }} />
+      <Starfield density={24} seed={4} />
+      <Motes count={5} seed={6} color={GOLD_BRIGHT} area={{ x: 52, y: 44, w: 40, h: 30 }} />
 
       {/* lilac back-glow pooled behind the crystal */}
       <div
@@ -32,7 +32,7 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
         style={{
           width: 240,
           height: 240,
-          background: 'radial-gradient(circle, rgba(150,144,186,0.08), transparent 65%)',
+          background: 'radial-gradient(circle, rgba(150,144,186,0.045), transparent 65%)',
         }}
       />
 
@@ -66,11 +66,8 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
           Mini Tarot
         </div>
         <OrnDivider w={50} color={GOLD} style={{ margin: '16px auto 0' }} />
-        <div
-          className="animate-breath-text mt-[18px] text-[11px] tracking-[6px]"
-          style={{ color: MUTED }}
-        >
-          輕 觸 開 始
+        <div className="mt-[18px] text-[10px] tracking-[4px]" style={{ color: MUTED }}>
+          點一下開始
         </div>
       </motion.div>
     </div>

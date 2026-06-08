@@ -3,10 +3,12 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, LILAC } from '@/lib/constants';
+import { GOLD } from '@/lib/constants';
 import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
+import IconEntry from './decor/IconEntry';
+import TextAction from './decor/TextAction';
 
 interface Particle {
   id: number;
@@ -146,59 +148,15 @@ export default function InputScreen({
 
       {/* 牌庫 + 今日運勢入口 —— 右上角並排；輸入溶解時淡出。 */}
       <div
-        className="absolute left-0 right-0 top-[34px] z-[6] flex items-start justify-end gap-5 px-7"
+        className="absolute left-0 right-0 top-[34px] z-[6] flex items-start justify-end gap-3 px-7"
         style={{
           opacity: isInput ? 1 : 0,
           pointerEvents: isInput ? 'auto' : 'none',
           transition: 'opacity 300ms ease',
         }}
       >
-        <motion.button
-          onClick={onOpenDeck}
-          aria-label="開啟牌庫"
-          whileTap={TAP}
-          transition={SPRING_TAP}
-          className="flex flex-col items-center gap-1.5 px-1 py-1"
-        >
-          <span className="flex h-[42px] w-[48px] items-center justify-center">
-            <img
-              src="/cards.svg"
-              alt=""
-              draggable={false}
-              className="h-full w-full object-contain"
-              style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
-            />
-          </span>
-          <span
-            className="whitespace-nowrap text-[10px] tracking-[2px]"
-            style={{ color: LILAC }}
-          >
-            牌庫
-          </span>
-        </motion.button>
-        <motion.button
-          onClick={onOpenDaily}
-          aria-label="今日運勢"
-          whileTap={TAP}
-          transition={SPRING_TAP}
-          className="flex flex-col items-center gap-1.5 px-1 py-1"
-        >
-          <span className="flex h-[42px] w-[48px] items-center justify-center">
-            <img
-              src="/book.svg"
-              alt=""
-              draggable={false}
-              className="h-full w-full object-contain"
-              style={{ filter: 'drop-shadow(0 0 6px rgba(216,189,143,0.35))' }}
-            />
-          </span>
-          <span
-            className="whitespace-nowrap text-[10px] tracking-[2px]"
-            style={{ color: LILAC }}
-          >
-            今日運勢
-          </span>
-        </motion.button>
+        <IconEntry icon="/cards.svg" label="牌庫" ariaLabel="開啟牌庫" onClick={onOpenDeck} />
+        <IconEntry icon="/book.svg" label="每日" ariaLabel="開啟今日運勢" onClick={onOpenDaily} />
       </div>
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
@@ -229,14 +187,14 @@ export default function InputScreen({
         <div
           className="relative w-full rounded-[26px] transition-shadow duration-300"
           style={{
-            border: `1px solid rgba(216,189,143,${focused ? 0.55 : 0.32})`,
+            border: `1px solid rgba(216,189,143,${focused ? 0.42 : 0.22})`,
             background:
-              'linear-gradient(160deg, rgba(36,33,66,0.6) 0%, rgba(18,16,34,0.72) 100%)',
+              'linear-gradient(160deg, rgba(28,26,48,0.52) 0%, rgba(14,13,24,0.72) 100%)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
             boxShadow: focused
-              ? '0 10px 34px rgba(0,0,0,0.4), 0 0 26px rgba(216,189,143,0.14)'
-              : '0 8px 24px rgba(0,0,0,0.34)',
+              ? '0 10px 28px rgba(0,0,0,0.36), 0 0 18px rgba(216,189,143,0.10)'
+              : '0 8px 22px rgba(0,0,0,0.3)',
           }}
         >
           <div
@@ -345,17 +303,7 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <motion.button
-          onClick={onBack}
-          whileTap={TAP}
-          transition={SPRING_TAP}
-          className="group relative inline-flex flex-col items-center gap-2.5 px-6 py-2"
-        >
-          <span className="text-[8px] leading-none text-gold-soft/70">○</span>
-          <span className="font-display text-[11px] tracking-[6px] text-gold">RETURN HOME</span>
-          <span className="font-serif text-[12px] tracking-[5px] text-gold-soft">返 回 首 頁</span>
-          <span className="mt-1 h-px w-20 bg-gradient-to-r from-transparent via-gold-soft/60 to-transparent" />
-        </motion.button>
+        <TextAction eyebrow="⌂" label="RETURN HOME" sublabel="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>
