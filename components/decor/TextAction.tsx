@@ -22,6 +22,7 @@ export default function TextAction({
 }: TextActionProps) {
   return (
     <motion.button
+      type="button"
       onClick={onClick}
       aria-label={ariaLabel ?? label}
       whileTap={TAP}

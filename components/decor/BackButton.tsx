@@ -6,6 +6,7 @@ import { TAP, SPRING_TAP } from '@/lib/motion';
 export default function BackButton({ onClick }: { onClick: () => void }) {
   return (
     <motion.button
+      type="button"
       onClick={onClick}
       aria-label="返回"
       whileTap={TAP}

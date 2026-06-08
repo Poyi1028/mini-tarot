@@ -13,6 +13,7 @@ interface IconEntryProps {
 export default function IconEntry({ icon, label, ariaLabel, onClick }: IconEntryProps) {
   return (
     <motion.button
+      type="button"
       onClick={onClick}
       aria-label={ariaLabel}
       whileTap={TAP}
