@@ -43,12 +43,12 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
       >
-        <CrystalBall size={170} />
+        <CrystalBall size={150} />
       </motion.div>
 
       {/* title */}
       <motion.div
-        className="relative z-[2] mt-[30px] text-center"
+        className="relative z-[2] mt-[26px] text-center"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: DUR.slow, delay: 0.3, ease: EASE.out }}
@@ -57,16 +57,19 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
           className="italic"
           style={{
             fontFamily: 'var(--font-cormorant)',
-            fontSize: 40,
+            fontSize: 36,
             fontWeight: 500,
-            letterSpacing: 4,
+            letterSpacing: 2,
             color: PARCHMENT,
           }}
         >
           Mini Tarot
         </div>
-        <OrnDivider w={50} color={GOLD} style={{ margin: '16px auto 0' }} />
-        <div className="mt-[18px] text-[10px] tracking-[4px]" style={{ color: MUTED }}>
+        <OrnDivider w={36} color={GOLD} style={{ margin: '14px auto 0' }} />
+        <div className="mx-auto mt-7 inline-flex h-11 items-center justify-center rounded-full border border-gold/20 bg-purple-deep/30 px-7 font-display text-[10px] tracking-[3px] text-gold-soft shadow-[0_10px_28px_rgba(0,0,0,0.24)] backdrop-blur-[6px]">
+          START READING
+        </div>
+        <div className="mt-3 text-[10px] tracking-[3px]" style={{ color: MUTED }}>
           點一下開始
         </div>
       </motion.div>
