@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GOLD, GOLD_DIM } from '@/lib/constants';
-import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
+import { EASE, DUR } from '@/lib/motion';
 import { getDailyDraw, dateDisplay } from '@/lib/daily';
 import type { Card } from '@/lib/tarot-cards';
 import CardBack from './CardBack';
@@ -12,6 +12,7 @@ import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
 import BackButton from './decor/BackButton';
+import TextAction from './decor/TextAction';
 
 // 單張英雄牌尺寸，比例貼合 300×527 原圖（≈0.5676），不裁切不留邊。
 const CARD_W = 150;
@@ -30,7 +31,7 @@ function DailySigil({ active }: { active: boolean }) {
       className="pointer-events-none absolute left-1/2 top-1/2"
       style={{ width: SIGIL, height: SIGIL, marginLeft: -SIGIL / 2, marginTop: -SIGIL / 2 }}
       initial={false}
-      animate={{ opacity: active ? 0.85 : 0.42 }}
+      animate={{ opacity: active ? 0.55 : 0.28 }}
       transition={{ duration: 2, ease: EASE.out }}
     >
       {/* 恆定呼吸層 —— 與「翻牌增亮」分離，讓增亮平順、明滅持續。 */}
@@ -41,9 +42,9 @@ function DailySigil({ active }: { active: boolean }) {
         transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
       >
       <svg className="absolute inset-0" width={SIGIL} height={SIGIL} viewBox="-180 -180 360 360" style={{ overflow: 'visible' }}>
-        <circle cx={0} cy={0} r={166} fill="none" stroke={GOLD} strokeWidth={0.7} opacity={0.4} />
-        <circle cx={0} cy={0} r={154} fill="none" stroke={GOLD} strokeWidth={0.4} opacity={0.22} />
-        <circle cx={0} cy={0} r={92} fill="none" stroke={GOLD} strokeWidth={0.5} opacity={0.24} />
+        <circle cx={0} cy={0} r={166} fill="none" stroke={GOLD} strokeWidth={0.7} opacity={0.26} />
+        <circle cx={0} cy={0} r={154} fill="none" stroke={GOLD} strokeWidth={0.4} opacity={0.15} />
+        <circle cx={0} cy={0} r={92} fill="none" stroke={GOLD} strokeWidth={0.5} opacity={0.16} />
         {ticks.map((a, i) => (
           <line
             key={i}
@@ -80,7 +81,7 @@ function DailySigil({ active }: { active: boolean }) {
           strokeWidth={0.9}
           strokeDasharray="0.5 10"
           strokeLinecap="round"
-          opacity={0.5}
+          opacity={0.32}
         />
       </motion.svg>
       </motion.div>
@@ -117,11 +118,11 @@ function DailyCard({
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(238,212,160,0.95) 0%, rgba(228,198,150,0.6) 30%, rgba(216,189,143,0.28) 52%, rgba(216,189,143,0.08) 70%, transparent 82%)',
-            filter: 'blur(26px)',
+              'radial-gradient(circle at center, rgba(238,212,160,0.62) 0%, rgba(228,198,150,0.34) 30%, rgba(216,189,143,0.16) 52%, rgba(216,189,143,0.05) 70%, transparent 82%)',
+            filter: 'blur(24px)',
           }}
           initial={false}
-          animate={{ opacity: [0.85, 1, 0.85] }}
+          animate={{ opacity: [0.55, 0.78, 0.55] }}
           transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>
@@ -181,7 +182,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="absolute inset-0">
-      <Starfield density={28} seed={21} />
+      <Starfield density={20} seed={21} />
       <BackButton onClick={onBack} />
 
       <div className="absolute inset-0 flex flex-col items-center px-6 pb-8 pt-[60px]">
@@ -242,14 +243,13 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
                 <div className="mt-3.5 font-serif text-[12px] tracking-[2px] text-gold-soft">
                   {keywords.join(' · ')}
                 </div>
-                <motion.button
+                <TextAction
+                  label="READ MORE"
+                  sublabel="查看牌義"
                   onClick={() => setDetail(true)}
-                  whileTap={TAP}
-                  transition={SPRING_TAP}
-                  className="mt-4 px-4 py-1 text-[10px] tracking-[3px] text-muted"
-                >
-                  輕 觸 卡 牌 · 完 整 牌 義
-                </motion.button>
+                  ariaLabel="查看牌義"
+                  className="mt-3"
+                />
               </motion.div>
             )}
           </div>

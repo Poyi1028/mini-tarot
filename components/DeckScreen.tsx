@@ -47,8 +47,8 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
               style={{
                 fontFamily: 'var(--font-serif)',
                 fontWeight: 300,
-                fontSize: 14,
-                letterSpacing: 2,
+                fontSize: 13,
+                letterSpacing: 1.5,
                 color: on ? PARCHMENT : MUTED,
               }}
             >
@@ -57,10 +57,10 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
             <span
               className="transition-[width] duration-300"
               style={{
-                width: on ? 16 : 0,
+                width: on ? 14 : 0,
                 height: 1.5,
                 background: GOLD,
-                boxShadow: on ? `0 0 6px ${GOLD}` : 'none',
+                boxShadow: on ? `0 0 4px ${GOLD}` : 'none',
               }}
             />
           </motion.button>
@@ -135,11 +135,11 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
           <GroupMark grp={grp} />
           <div
             className="mt-[11px] italic"
-            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 26, letterSpacing: 2, color: PARCHMENT }}
+            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 23, letterSpacing: 2, color: PARCHMENT }}
           >
             {grp.en}
           </div>
-          <div className="font-display mt-1 pl-1 text-[9.5px] tracking-[4px]" style={{ color: MUTED }}>
+          <div className="font-display mt-1 pl-1 text-[9px] tracking-[3px]" style={{ color: MUTED }}>
             {grp.cn} · {grp.count} 張
           </div>
           <OrnDivider w={40} color={GOLD} style={{ marginTop: 12 }} />
