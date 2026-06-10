@@ -4,7 +4,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 ## 回應語言
 
-**一律使用繁體中文回應使用者**，無論使用者以何種語言提問。程式碼、檔案路徑、指令、識別字維持原文即可，但所有說明、解釋與對話內容都以繁體中文撰寫。
+**一律使用繁體中文回應使用者**，無論使用者以何種語言提問。程式碼、檔案路徑、指令、識別字維持原文即可，但所有說明、解釋、對話內容與 commit message 都以繁體中文撰寫。
 
 ## Commands
 
