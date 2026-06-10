@@ -18,7 +18,7 @@ export default function CardDetailImmersive({
 }: {
   card: Card;
   reversed?: boolean;
-  pos?: { cn: string; en: string };
+  pos?: { cn: string };
   onClose: () => void;
 }) {
   const ts = '0 2px 14px rgba(10,8,28,0.95)';
@@ -114,7 +114,7 @@ export default function CardDetailImmersive({
       >
         {pos && (
           <div className="font-display" style={{ fontSize: 10, letterSpacing: 5, color: GOLD, textShadow: ts }}>
-            {pos.cn}　{pos.en}
+            {pos.cn}
           </div>
         )}
         <div
@@ -153,7 +153,7 @@ export default function CardDetailImmersive({
             textShadow: ts,
           }}
         >
-          {reversed ? '逆 位 · REVERSED' : '正 位 · UPRIGHT'}
+          {reversed ? '逆 位' : '正 位'}
         </div>
       </motion.div>
 

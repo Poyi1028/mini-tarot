@@ -36,9 +36,9 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
         }}
       />
 
-      {/* crystal ball — slow float */}
+      {/* crystal ball */}
       <motion.div
-        className="animate-floaty relative z-[2]"
+        className="relative z-[2]"
         initial={{ opacity: 0, scale: 0.94 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
@@ -66,9 +66,6 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
           Mini Tarot
         </div>
         <OrnDivider w={36} color={GOLD} style={{ margin: '14px auto 0' }} />
-        <div className="mx-auto mt-7 inline-flex h-11 items-center justify-center rounded-full border border-gold/20 bg-purple-deep/30 px-7 font-display text-[10px] tracking-[3px] text-gold-soft shadow-[0_10px_28px_rgba(0,0,0,0.24)] backdrop-blur-[6px]">
-          START READING
-        </div>
         <div className="mt-3 text-[10px] tracking-[3px]" style={{ color: MUTED }}>
           點一下開始
         </div>

@@ -32,7 +32,7 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
     // Left padding clears the back button (sits at left-3.5, ~30px wide) so the
     // first tab no longer overlaps the arrow; right padding keeps the strip
     // optically balanced against it.
-    <div className="flex justify-between pl-[46px] pr-[18px]">
+    <div className="flex justify-between pl-[64px] pr-[18px]">
       {DECK_GROUPS.map((grp) => {
         const on = tab === grp.id;
         return (
@@ -94,6 +94,9 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
           {card.cn}
         </div>
+        <div className="italic" style={{ fontFamily: 'var(--font-cormorant)', fontSize: 9, letterSpacing: 0.8, color: MUTED }}>
+          {card.en}
+        </div>
         <div className="font-display" style={{ fontSize: 8, letterSpacing: 1.5, color: GOLD_DIM, marginTop: 2 }}>
           {card.badge}
         </div>
@@ -113,15 +116,15 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       <Starfield density={26} seed={9} />
 
       {/* back */}
-      <BackButton onClick={onBack} />
+      <BackButton onClick={onBack} top={64} />
 
       {/* tabs */}
-      <div className="absolute left-0 right-0 top-[52px] z-10">
+      <div className="absolute left-0 right-0 top-[64px] z-10">
         <DeckTabs tab={tab} setTab={setTab} />
       </div>
 
       {/* scroll body */}
-      <div className="absolute bottom-0 left-0 right-0 top-[94px] overflow-y-auto pb-9">
+      <div className="absolute bottom-0 left-0 right-0 top-[106px] overflow-y-auto pb-9">
         {/* element header — fades in on each tab switch so the change of suit
             doesn't read as an abrupt content swap. */}
         <motion.div
@@ -137,7 +140,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
             className="mt-[11px] italic"
             style={{ fontFamily: 'var(--font-cormorant)', fontSize: 23, letterSpacing: 2, color: PARCHMENT }}
           >
-            {grp.en}
+            {grp.cn}
           </div>
           <div className="font-display mt-1 pl-1 text-[9px] tracking-[3px]" style={{ color: MUTED }}>
             {grp.cn} · {grp.count} 張

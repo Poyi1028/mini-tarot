@@ -35,13 +35,13 @@ const notoSansTC = Noto_Sans_TC({
 });
 
 export const metadata: Metadata = {
-  title: 'Mini-Tarot',
+  title: '迷你塔羅',
   description: '沉浸式塔羅占卜 App',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Mini-Tarot',
+    title: '迷你塔羅',
   },
   icons: {
     icon: '/icon-192.png',

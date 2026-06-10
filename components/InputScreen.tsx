@@ -156,7 +156,7 @@ export default function InputScreen({
         }}
       >
         <IconEntry icon="/cards.svg" label="牌庫" ariaLabel="開啟牌庫" onClick={onOpenDeck} />
-        <IconEntry icon="/book.svg" label="每日" ariaLabel="開啟今日運勢" onClick={onOpenDaily} />
+        <IconEntry icon="/book.svg" label="每日運勢" ariaLabel="開啟今日運勢" onClick={onOpenDaily} />
       </div>
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
@@ -303,7 +303,7 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <TextAction eyebrow="⌂" label="RETURN HOME" sublabel="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
+        <TextAction eyebrow="⌂" label="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>

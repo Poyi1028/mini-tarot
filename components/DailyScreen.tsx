@@ -188,7 +188,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
       <div className="absolute inset-0 flex flex-col items-center px-6 pb-8 pt-[60px]">
         {/* 標題 */}
         <div className="text-center">
-          <div className="font-display text-[11px] tracking-[6px] text-gold">TODAY</div>
+          <div className="font-serif text-[14px] font-light tracking-[6px] text-gold">今日</div>
           <div className="mt-2.5 font-serif text-[18px] font-light tracking-[8px] text-parchment">
             今 日 運 勢
           </div>
@@ -235,6 +235,12 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
                   {card.cn}
                 </div>
                 <div
+                  className="mt-1.5 italic"
+                  style={{ fontFamily: 'var(--font-cormorant)', fontSize: 12, letterSpacing: 1.4, color: GOLD_DIM }}
+                >
+                  {card.en}
+                </div>
+                <div
                   className="mt-2 font-serif text-[9px] tracking-[3px]"
                   style={{ color: reversed ? GOLD_DIM : GOLD }}
                 >
@@ -244,8 +250,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
                   {keywords.join(' · ')}
                 </div>
                 <TextAction
-                  label="READ MORE"
-                  sublabel="查看牌義"
+                  label="查看牌義"
                   onClick={() => setDetail(true)}
                   ariaLabel="查看牌義"
                   className="mt-3"
@@ -269,7 +274,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
           <CardDetailImmersive
             card={card}
             reversed={reversed}
-            pos={{ cn: '今 日', en: 'TODAY' }}
+            pos={{ cn: '今 日' }}
             onClose={() => setDetail(false)}
           />
         )}

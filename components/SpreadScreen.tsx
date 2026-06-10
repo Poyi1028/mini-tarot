@@ -17,7 +17,6 @@ import TextAction from './decor/TextAction';
 interface Position {
   key: string;
   cn: string;
-  en: string;
   desc: string;
 }
 
@@ -34,9 +33,9 @@ const CARD_W = 124;
 const CARD_H = 218;
 
 const POSITIONS: Position[] = [
-  { key: 'past', cn: '過 去', en: 'PAST', desc: '根源與所來之路' },
-  { key: 'present', cn: '現 在', en: 'PRESENT', desc: '此刻的能量' },
-  { key: 'future', cn: '未 來', en: 'FUTURE', desc: '正在成形的趨向' },
+  { key: 'past', cn: '過 去', desc: '根源與所來之路' },
+  { key: 'present', cn: '現 在', desc: '此刻的能量' },
+  { key: 'future', cn: '未 來', desc: '正在成形的趨向' },
 ];
 
 // Card centers relative to the spread container's center. Spaced so the three
@@ -141,7 +140,7 @@ function ReadingPanel({ onRestart }: { onRestart: () => void }) {
 
       {/* Return home — an underline-link rite, not a form button */}
       <div className="mb-1 mt-5 flex justify-center">
-        <TextAction eyebrow="⌂" label="RETURN HOME" sublabel="回到首頁" onClick={onRestart} ariaLabel="回到首頁" />
+        <TextAction eyebrow="⌂" label="回到首頁" onClick={onRestart} ariaLabel="回到首頁" />
       </div>
     </div>
   );
@@ -320,6 +319,12 @@ export default function SpreadScreen({ question, onRestart }: { question: string
                   {c.cn}
                 </div>
                 <div
+                  className="mt-1.5 italic"
+                  style={{ fontFamily: 'var(--font-cormorant)', fontSize: 11, letterSpacing: 1.2, color: MUTED }}
+                >
+                  {c.en}
+                </div>
+                <div
                   className="mt-1.5 font-serif text-[9px] tracking-[3px]"
                   style={{ color: reversed ? GOLD_DIM : GOLD }}
                 >
@@ -361,7 +366,7 @@ export default function SpreadScreen({ question, onRestart }: { question: string
           <CardDetailImmersive
             card={drawn[detail].card}
             reversed={drawn[detail].reversed}
-            pos={{ cn: POSITIONS[detail].cn, en: POSITIONS[detail].en }}
+            pos={{ cn: POSITIONS[detail].cn }}
             onClose={() => setDetail(null)}
           />
         )}
