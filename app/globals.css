@@ -75,6 +75,17 @@
     /* extend ink background into bottom safe-area on notched devices */
     padding-bottom: env(safe-area-inset-bottom);
     background-color: var(--color-ink);
+    /* thin serif strokes on dark ground render cleaner antialiased */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Keyboard focus — a quiet gold hairline instead of the UA's heavy ring.
+     Pointer taps stay clean (focus-visible only fires for keyboard nav). */
+  :focus-visible {
+    outline: 1px solid rgba(216, 189, 143, 0.55);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   /* Inner scrollers (deck grid, spread reading) keep native momentum and don't

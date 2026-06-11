@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { GOLD, LILAC } from '@/lib/constants';
 import { mulberry } from '@/lib/utils';
 
@@ -15,7 +15,8 @@ const DEFAULT_BG = `
   linear-gradient(180deg, #100e16 0%, #0d0c13 50%, #0b0a10 100%)
 `;
 
-export default function Starfield({
+// memo：星空是純裝飾層，props 不變時不需跟著畫面狀態（翻牌等）重渲染。
+function Starfield({
   density = 60,
   seed = 1,
   bg = DEFAULT_BG,
@@ -66,3 +67,5 @@ export default function Starfield({
     </div>
   );
 }
+
+export default memo(Starfield);

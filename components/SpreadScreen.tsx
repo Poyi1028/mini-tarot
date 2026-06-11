@@ -6,8 +6,7 @@ import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
-import CardBack from './CardBack';
-import CardFront from './CardFront';
+import CardFlip from './CardFlip';
 import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
@@ -107,23 +106,7 @@ function FlipCard({
           }}
         />
 
-        <motion.div
-          className="relative h-full w-full"
-          style={{ transformStyle: 'preserve-3d', background: 'transparent', borderRadius: CARD_W * 0.08 }}
-          initial={false}
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 1.2, ease: EASE.reveal }}
-        >
-          <div className="absolute inset-0" style={{ backfaceVisibility: 'hidden', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}>
-            <CardBack w={CARD_W} h={CARD_H} />
-          </div>
-          <div
-            className="absolute inset-0"
-            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}
-          >
-            <CardFront card={card} w={CARD_W} h={CARD_H} reversed={reversed} />
-          </div>
-        </motion.div>
+        <CardFlip card={card} reversed={reversed} flipped={flipped} w={CARD_W} h={CARD_H} />
       </div>
     </div>
   );
