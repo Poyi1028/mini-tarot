@@ -3,7 +3,7 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD } from '@/lib/constants';
+import { GOLD, gold } from '@/lib/constants';
 import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
@@ -187,13 +187,13 @@ export default function InputScreen({
         <div
           className="relative w-full rounded-[26px] transition-shadow duration-300"
           style={{
-            border: `1px solid rgba(216,189,143,${focused ? 0.42 : 0.22})`,
+            border: `1px solid ${gold(focused ? 0.42 : 0.22)}`,
             background:
               'linear-gradient(160deg, rgba(28,26,48,0.52) 0%, rgba(14,13,24,0.72) 100%)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
             boxShadow: focused
-              ? '0 10px 28px rgba(0,0,0,0.36), 0 0 18px rgba(216,189,143,0.10)'
+              ? `0 10px 28px rgba(0,0,0,0.36), 0 0 18px ${gold(0.1)}`
               : '0 8px 22px rgba(0,0,0,0.3)',
           }}
         >
@@ -273,8 +273,8 @@ export default function InputScreen({
             transition={SPRING_TAP}
             className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full transition-[opacity,box-shadow,background] duration-200 disabled:cursor-default"
             style={{
-              background: q.trim() ? 'rgba(216,189,143,0.95)' : 'rgba(216,189,143,0.1)',
-              boxShadow: q.trim() ? '0 0 18px rgba(216,189,143,0.35)' : 'none',
+              background: q.trim() ? gold(0.95) : gold(0.1),
+              boxShadow: q.trim() ? `0 0 18px ${gold(0.35)}` : 'none',
               opacity: q.trim() ? 1 : 0.5,
               cursor: q.trim() ? 'pointer' : 'default',
             }}

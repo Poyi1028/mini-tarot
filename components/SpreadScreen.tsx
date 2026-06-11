@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_DIM, MUTED } from '@/lib/constants';
+import { GOLD, GOLD_DIM, MUTED, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
@@ -79,7 +79,7 @@ function FlipCard({
             stack on top. */}
         <div
           className="pointer-events-none absolute -inset-1 rounded-xl"
-          style={{ boxShadow: '0 0 12px rgba(216,189,143,0.10)' }}
+          style={{ boxShadow: `0 0 12px ${gold(0.1)}` }}
         />
         {/* Gentle pulse on ONLY the next card to flip — guides the eye one step
             at a time. Other unflipped cards rest dark; the central halo carries
@@ -87,7 +87,7 @@ function FlipCard({
             box-shadow keyframe). */}
         <motion.div
           className="pointer-events-none absolute -inset-2 rounded-xl"
-          style={{ boxShadow: '0 0 16px rgba(216,189,143,0.20), inset 0 0 0 1px rgba(216,189,143,0.22)' }}
+          style={{ boxShadow: `0 0 16px ${gold(0.2)}, inset 0 0 0 1px ${gold(0.22)}` }}
           initial={false}
           animate={{ opacity: !flipped && isNext ? [0.35, 0.7, 0.35] : 0 }}
           transition={
@@ -102,7 +102,7 @@ function FlipCard({
           className="pointer-events-none absolute -inset-1.5 rounded-xl transition-opacity duration-1000"
           style={{
             opacity: flipped ? 1 : 0,
-            boxShadow: `0 0 22px rgba(216,189,143,0.24), 0 0 42px rgba(216,189,143,0.10)`,
+            boxShadow: `0 0 22px ${gold(0.24)}, 0 0 42px ${gold(0.1)}`,
           }}
         />
 

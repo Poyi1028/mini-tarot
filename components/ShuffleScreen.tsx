@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { gold } from '@/lib/constants';
 import { EASE } from '@/lib/motion';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
@@ -161,7 +162,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           {(phase === 'cut' || phase === 'merge') && (
             <motion.span
               className="text-gold"
-              style={{ textShadow: '0 0 14px rgba(216,189,143,0.55)' }}
+              style={{ textShadow: `0 0 14px ${gold(0.55)}` }}
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -244,8 +245,8 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                     style={{
                       boxShadow:
                         hoverPile === p
-                          ? '0 0 28px rgba(216,189,143,0.45), inset 0 0 0 1px rgba(216,189,143,0.5)'
-                          : 'inset 0 0 0 1px rgba(216,189,143,0)',
+                          ? `0 0 28px ${gold(0.45)}, inset 0 0 0 1px ${gold(0.5)}`
+                          : `inset 0 0 0 1px ${gold(0)}`,
                     }}
                   />
                 </button>

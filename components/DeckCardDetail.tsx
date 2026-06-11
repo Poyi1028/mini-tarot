@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { DeckCard } from '@/lib/deck-groups';
 import Starfield from './Starfield';
@@ -92,7 +92,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
               width: 400,
               height: 400,
               transform: 'translate(-50%, -50%)',
-              background: 'radial-gradient(circle at center, rgba(238,212,160,0.95) 0%, rgba(228,198,150,0.6) 30%, rgba(216,189,143,0.28) 52%, rgba(216,189,143,0.08) 70%, transparent 82%)',
+              background: `radial-gradient(circle at center, rgba(238,212,160,0.95) 0%, rgba(228,198,150,0.6) 30%, ${gold(0.28)} 52%, ${gold(0.08)} 70%, transparent 82%)`,
               filter: 'blur(26px)',
             }}
             initial={{ opacity: 0 }}
@@ -106,7 +106,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
             radius={8}
             borderWidth={1.5}
             ringWidth={3}
-            boxShadow="0 12px 32px rgba(0,0,0,0.55), 0 0 30px rgba(216,189,143,0.3)"
+            boxShadow={`0 12px 32px rgba(0,0,0,0.55), 0 0 30px ${gold(0.3)}`}
             fadeMs={600}
           />
         </motion.div>

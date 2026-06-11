@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
-import { GOLD } from '@/lib/constants';
+import { GOLD, gold } from '@/lib/constants';
 
 // Framed card artwork at the catalog 300:527 ratio: a gold border over a faint
 // placeholder gradient (so an unloaded frame reads as a dim card, not an empty
@@ -55,7 +55,7 @@ export default function FramedCardImg({
       />
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ borderRadius: radius, boxShadow: `inset 0 0 0 ${ringWidth}px rgba(216,189,143,${ringAlpha})` }}
+        style={{ borderRadius: radius, boxShadow: `inset 0 0 0 ${ringWidth}px ${gold(ringAlpha)}` }}
       />
     </div>
   );

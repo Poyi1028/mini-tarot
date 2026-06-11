@@ -1,7 +1,7 @@
 <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="58.99999999999997 351 1089.0000000000002 456" width="1091" height="456">
   <style><![CDATA[
-    .s0 { fill: none; stroke: #d8bd8f; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5 }
-    .s1 { fill: none; stroke: #d8bd8f; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.2 }
+    .s0 { fill: none; stroke: #e8ddcb; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5 }
+    .s1 { fill: none; stroke: #e8ddcb; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.2 }
     /* Central sun — mirrors the <Sunburst pulseRays> decoration in the app: each
        ray twinkles on its own offset clock, so the sun shimmers rather than
        pulsing as one block. Each ray scales from its INNER end (the root touching

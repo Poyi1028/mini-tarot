@@ -1,18 +1,27 @@
 'use client';
 
-// public/crystal.svg is black-on-white line art. The <style> block below is the
-// original palette copied verbatim from that file (white fills + black strokes,
-// black ball/base, white sparkles). The <path> geometry is also copied verbatim;
-// injected as raw markup so the class="sN" attributes stay as-is (no
-// class→className rewrite of dozens of nodes).
+import { GOLD, GOLD_BRIGHT } from '@/lib/constants';
+
+// Fill for the base's front rim — matches the home backdrop so the rim can be
+// drawn on top of the ball and mask its lower arc (the ball sits *into* the cup).
+const BASE_FILL = '#0b0a10';
+
+// public/crystal.svg is black-on-white line art. The <path> geometry below is
+// copied verbatim and injected as raw markup so the class="sN" attributes stay
+// as-is. The <style> block recolors that palette into a fine gold line drawing:
+// thin gold strokes, gold light-rays/sparkles, and small gold twinkles — no
+// glow. Only the ball's big body disc is reclassed to `.sg` (hollow), so the
+// orb reads as glass while the radiating light lines (s1) stay visible.
 const SVG_MARKUP = `
 <style>
-  .s0 { fill: #ffffff; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
-  .s1 { fill: #000000 }
-  .s2 { fill: #ffffff }
-  .s3 { fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
-  .s4 { fill: #000000; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: .9 }
-  .s5 { fill: #000000; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.9 }
+  .s0 { fill: none; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.1 }
+  .s1 { fill: ${GOLD} }
+  .s2 { fill: ${GOLD_BRIGHT} }
+  .s3 { fill: none; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.1 }
+  .s4 { fill: ${GOLD}; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: .6 }
+  .s5 { fill: none; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.1 }
+  .sg { fill: none }
+  .sb { fill: ${BASE_FILL}; stroke: ${GOLD}; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.1 }
 </style>
 <g id="OBJECTS">
   <g>
@@ -68,20 +77,10 @@ const SVG_MARKUP = `
             </g>
           </g>
           <path class="s0" d="m168.73 395.86l4.94 17.43c0 0-7.98 11.06-39.62 11.06-31.64 0-39.62-11.06-39.62-11.06l4.94-17.43z"/>
-          <g>
-            <path class="s1" d="m104.84 395.86l-6.74 20.58q0.72 0.49 1.61 1l7.08-21.58z"/>
-            <path class="s1" d="m133.13 395.86v28.48q0.46 0 0.92 0.01 0.47-0.01 0.92-0.01v-28.48z"/>
-            <path class="s1" d="m113.87 395.86l-4.83 25.42q0.86 0.26 1.78 0.5l4.92-25.92z"/>
-            <path class="s1" d="m123.17 395.86l-1.68 27.82q0.9 0.11 1.84 0.2l1.69-28.02z"/>
-            <path class="s1" d="m163.26 395.86h-1.95l7.08 21.58q0.89-0.51 1.62-1z"/>
-            <path class="s1" d="m152.36 395.86l4.92 25.92q0.92-0.24 1.79-0.5l-4.83-25.42z"/>
-            <path class="s1" d="m143.08 395.86l1.7 28.02q0.93-0.09 1.83-0.2l-1.68-27.82z"/>
-          </g>
-          <path class="s5" d="m170.26 389.75c1.25 0.27 3.59 4.94 0.71 8.18-2.87 3.23-17.77 12.4-36.92 12.4-19.15 0-34.05-9.17-36.92-12.4-2.88-3.24-0.54-7.91 0.72-8.18z"/>
         </g>
         <g>
           <path class="s0" d="m135.48 290.45c23.5 0 55.3 25.72 54.09 59.75-1.22 34.03-24.31 53.68-54.09 53.68-29.77 0-57.32-18.03-57.32-53.47 0-38.29 28.36-59.96 57.32-59.96z"/>
-          <path class="s1" d="m135.35 293.4c21.59 0 50.81 23.64 49.69 54.9-1.11 31.27-22.33 49.32-49.69 49.32-27.35 0-52.66-16.56-52.66-49.13 0-35.17 26.05-55.09 52.66-55.09z"/>
+          <path class="sg" d="m135.35 293.4c21.59 0 50.81 23.64 49.69 54.9-1.11 31.27-22.33 49.32-49.69 49.32-27.35 0-52.66-16.56-52.66-49.13 0-35.17 26.05-55.09 52.66-55.09z"/>
           <g>
             <path class="s2" d="m154.53 309.08c-8.72 7.52-1.22 15.19 3.03 20.87 4.26 6.07 9 15 7.3 23.09-0.81 3.85 9.74-2.44 7.09-24.11-2.44-19.85-13.77-23-17.42-19.85z"/>
           </g>
@@ -171,6 +170,8 @@ const SVG_MARKUP = `
       <path class="s1" d="m209.98 370.31c-0.99-0.29-1.99-0.42-2.99-0.45q0.02-1.58-0.36-3.18c-0.03-0.13-0.33-0.14-0.38-0.03-0.5 1.04-0.6 2.11-0.55 3.2-0.97 0.01-1.95 0.07-2.94 0.09-0.15 0.01-0.16 0.16-0.01 0.19q1.51 0.3 3.01 0.44c0.1 1.06 0.3 2.13 0.37 3.19 0 0.13 0.27 0.14 0.3 0.02q0.44-1.56 0.54-3.12 1.48 0.07 3-0.11c0.19-0.02 0.19-0.18 0.01-0.24z"/>
       <path class="s1" d="m60.69 330.98c-1.39-0.42-2.74-0.45-4.08-0.31q-0.29-3.36-1.12-6.7c-0.06-0.25-0.45-0.23-0.5 0.02-0.46 2.34-0.38 4.65-0.1 6.94-1.29 0.26-2.59 0.6-3.9 0.86-0.2 0.04-0.18 0.37 0.02 0.4q2.08 0.3 4.1 0.28c0.35 2.24 0.82 4.47 1.12 6.71 0.03 0.27 0.39 0.25 0.41-0.01q0.27-3.43 0.09-6.79 2-0.19 3.98-0.89c0.25-0.1 0.22-0.43-0.02-0.51z"/>
     </g>
+    <!-- base front rim, drawn last so it masks the ball's lower arc (ball sits into the cup) -->
+    <path class="sb" d="m170.26 389.75c1.25 0.27 3.59 4.94 0.71 8.18-2.87 3.23-17.77 12.4-36.92 12.4-19.15 0-34.05-9.17-36.92-12.4-2.88-3.24-0.54-7.91 0.72-8.18z"/>
   </g>
 </g>
 `;
@@ -184,7 +185,7 @@ export default function CrystalBall({ size = 180 }: { size?: number }) {
       width={size}
       height={h}
       className="overflow-visible"
-      style={{ filter: `drop-shadow(0 0 18px rgba(231, 215, 166, 0.35))` }}
+      style={{ opacity: 0.92 }}
       dangerouslySetInnerHTML={{ __html: SVG_MARKUP }}
     />
   );

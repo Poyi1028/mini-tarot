@@ -1,12 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, MUTED, PARCHMENT } from '@/lib/constants';
+import { GOLD, MUTED, PARCHMENT, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
-import Starfield from './Starfield';
-import Motes from './decor/Motes';
+import NightSky from './decor/NightSky';
 import CrystalBall from './CrystalBall';
-import OrnDivider from './decor/OrnDivider';
+
+// 首頁專屬底色：純黑金、無紫色調，只在頂端留一抹極淡暖光。
+const HOME_BG = `
+  radial-gradient(ellipse 80% 55% at 50% 0%, ${gold(0.025)}, transparent 70%),
+  linear-gradient(180deg, #0c0b11 0%, #0a0910 55%, #08070d 100%)
+`;
 
 export default function HomeScreen({ onStart }: { onStart: () => void }) {
   return (
@@ -21,24 +25,14 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
           onStart();
         }
       }}
-      className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center px-8 outline-none"
+      className="absolute inset-0 flex cursor-pointer flex-col items-center px-8 pb-[12vh] pt-[14vh] outline-none"
+      style={{ background: HOME_BG }}
     >
-      <Starfield density={24} seed={4} />
-      <Motes count={5} seed={6} color={GOLD_BRIGHT} area={{ x: 52, y: 44, w: 40, h: 30 }} />
+      <NightSky />
 
-      {/* lilac back-glow pooled behind the crystal */}
-      <div
-        className="pointer-events-none absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2"
-        style={{
-          width: 240,
-          height: 240,
-          background: 'radial-gradient(circle, rgba(150,144,186,0.045), transparent 65%)',
-        }}
-      />
-
-      {/* crystal ball */}
+      {/* crystal ball — occupies the upper space */}
       <motion.div
-        className="relative z-[2]"
+        className="relative z-[2] flex flex-1 items-center justify-center"
         initial={{ opacity: 0, scale: 0.94 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
@@ -46,27 +40,40 @@ export default function HomeScreen({ onStart }: { onStart: () => void }) {
         <CrystalBall size={150} />
       </motion.div>
 
-      {/* title */}
+      {/* title — anchored toward the bottom */}
       <motion.div
-        className="relative z-[2] mt-[26px] text-center"
+        className="relative z-[2] text-center"
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: DUR.slow, delay: 0.3, ease: EASE.out }}
       >
         <div
-          className="italic"
           style={{
             fontFamily: 'var(--font-cormorant)',
-            fontSize: 36,
+            fontSize: 34,
             fontWeight: 500,
-            letterSpacing: 2,
+            lineHeight: 1.28,
+            letterSpacing: 7,
+            paddingLeft: 7,
+            textTransform: 'uppercase',
             color: PARCHMENT,
           }}
         >
-          Mini Tarot
+          Mini
+          <br />
+          Tarot
         </div>
-        <OrnDivider w={36} color={GOLD} style={{ margin: '14px auto 0' }} />
-        <div className="mt-3 text-[10px] tracking-[3px]" style={{ color: MUTED }}>
+
+        {/* plain hairline rule — minimal, in the reference's spirit */}
+        <span
+          className="mx-auto mt-6 block h-px w-14"
+          style={{
+            background: `linear-gradient(to right, transparent, ${GOLD}, transparent)`,
+            opacity: 0.55,
+          }}
+        />
+
+        <div className="mt-5 text-[10px] tracking-[4px]" style={{ color: MUTED }}>
           點一下開始
         </div>
       </motion.div>

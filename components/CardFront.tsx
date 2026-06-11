@@ -1,6 +1,6 @@
 'use client';
 
-import { GOLD } from '@/lib/constants';
+import { GOLD, gold } from '@/lib/constants';
 import type { Card } from '@/lib/tarot-cards';
 
 export default function CardFront({
@@ -23,7 +23,7 @@ export default function CardFront({
         borderRadius: w * 0.08,
         overflow: 'hidden',
         border: `1.5px solid ${GOLD}`,
-        boxShadow: '0 6px 20px rgba(0,0,0,0.5), 0 0 22px rgba(216,189,143,0.28)',
+        boxShadow: `0 6px 20px rgba(0,0,0,0.5), 0 0 22px ${gold(0.28)}`,
       }}
     >
       <img
@@ -45,7 +45,7 @@ export default function CardFront({
           position: 'absolute',
           inset: 0,
           borderRadius: w * 0.08,
-          boxShadow: 'inset 0 0 0 3px rgba(216,189,143,0.25)',
+          boxShadow: `inset 0 0 0 3px ${gold(0.25)}`,
           pointerEvents: 'none',
         }}
       />

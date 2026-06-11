@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_DIM } from '@/lib/constants';
+import { GOLD, GOLD_DIM, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import { getDailyDraw, dateDisplay } from '@/lib/daily';
 import type { Card } from '@/lib/tarot-cards';
@@ -117,7 +117,7 @@ function DailyCard({
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(238,212,160,0.62) 0%, rgba(228,198,150,0.34) 30%, rgba(216,189,143,0.16) 52%, rgba(216,189,143,0.05) 70%, transparent 82%)',
+              `radial-gradient(circle at center, rgba(238,212,160,0.62) 0%, rgba(228,198,150,0.34) 30%, ${gold(0.16)} 52%, ${gold(0.05)} 70%, transparent 82%)`,
             filter: 'blur(24px)',
           }}
           initial={false}
