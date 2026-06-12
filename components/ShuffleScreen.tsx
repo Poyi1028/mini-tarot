@@ -2,12 +2,15 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { gold } from '@/lib/constants';
 import { EASE } from '@/lib/motion';
 import Starfield from './Starfield';
 import CardBack from './CardBack';
 
 // ── Tunables ────────────────────────────────────────────────────────────────
 const N_DECK = 12; // divisible by 3 → even left/mid/right piles (fewer = smoother on phones)
+const CARD_W = 84; // card-back size — ratio matches the 300×527 artwork
+const CARD_H = 148;
 const SCATTER_MS = 140; // re-randomise the spread at most this often while dragging
 const SPREAD_X = 210; // how far cards smear left/right while shuffling
 const SPREAD_Y = 96;
@@ -159,7 +162,7 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           {(phase === 'cut' || phase === 'merge') && (
             <motion.span
               className="text-gold"
-              style={{ textShadow: '0 0 14px rgba(216,189,143,0.55)' }}
+              style={{ textShadow: `0 0 14px ${gold(0.55)}` }}
               animate={{ opacity: [0.55, 1, 0.55] }}
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -191,13 +194,13 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
           {cards.map((c) => (
             <motion.div
               key={c.id}
-              className="absolute left-1/2 top-1/2 -ml-[42px] -mt-[74px]"
-              style={{ zIndex: c.z }}
+              className="absolute left-1/2 top-1/2"
+              style={{ zIndex: c.z, marginLeft: -CARD_W / 2, marginTop: -CARD_H / 2 }}
               initial={false}
               animate={{ x: c.x, y: c.y, rotate: c.rot }}
               transition={SPRING}
             >
-              <CardBack w={84} h={148} />
+              <CardBack w={CARD_W} h={CARD_H} />
             </motion.div>
           ))}
 
@@ -226,8 +229,14 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                 <button
                   key={p}
                   onClick={() => selectPile(p)}
-                  className="absolute left-1/2 top-1/2 h-[156px] w-[92px] cursor-pointer border-none bg-transparent p-0"
-                  style={{ transform: `translate(${(p - 1) * PILE_GAP - 46}px, -73px)` }}
+                  className="absolute left-1/2 top-1/2 cursor-pointer border-none bg-transparent p-0"
+                  style={{
+                    // 8px of slack around the card; nudged 5px up of true centre
+                    // to track the piles' stacked y-offsets.
+                    width: CARD_W + 8,
+                    height: CARD_H + 8,
+                    transform: `translate(${(p - 1) * PILE_GAP - (CARD_W + 8) / 2}px, ${-(CARD_H + 8) / 2 + 5}px)`,
+                  }}
                   onMouseEnter={() => setHoverPile(p)}
                   onMouseLeave={() => setHoverPile(null)}
                 >
@@ -236,8 +245,8 @@ export default function ShuffleScreen({ onComplete }: { onComplete: (pile: numbe
                     style={{
                       boxShadow:
                         hoverPile === p
-                          ? '0 0 28px rgba(216,189,143,0.45), inset 0 0 0 1px rgba(216,189,143,0.5)'
-                          : 'inset 0 0 0 1px rgba(216,189,143,0)',
+                          ? `0 0 28px ${gold(0.45)}, inset 0 0 0 1px ${gold(0.5)}`
+                          : `inset 0 0 0 1px ${gold(0)}`,
                     }}
                   />
                 </button>

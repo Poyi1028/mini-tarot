@@ -1,16 +1,9 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { Cinzel, Cormorant_Garamond, Noto_Serif_TC, Noto_Sans_TC } from 'next/font/google';
+import { Cormorant_Garamond, Noto_Serif_TC } from 'next/font/google';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 
-const cinzel = Cinzel({
-  subsets: ['latin'],
-  weight: ['400', '500', '600'],
-  variable: '--font-cinzel',
-  display: 'swap',
-});
-
-// Elegant italic display face for the Violet Mist hero titles.
+// 全站僅兩種字體：英文／數字一律 Cormorant Garamond，中文一律 Noto Serif TC。
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['400', '500'],
@@ -22,14 +15,6 @@ const cormorant = Cormorant_Garamond({
 const notoSerifTC = Noto_Serif_TC({
   weight: ['200', '300', '400', '500', '600'],
   variable: '--font-noto-serif-tc',
-  display: 'swap',
-  preload: false,
-});
-
-// Sans face for deck tabs / chips.
-const notoSansTC = Noto_Sans_TC({
-  weight: ['400', '500', '700'],
-  variable: '--font-noto-sans-tc',
   display: 'swap',
   preload: false,
 });
@@ -60,10 +45,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="zh-Hant"
-      className={`${cinzel.variable} ${cormorant.variable} ${notoSerifTC.variable} ${notoSansTC.variable}`}
-    >
+    <html lang="zh-Hant" className={`${cormorant.variable} ${notoSerifTC.variable}`}>
       <body>
         <ServiceWorkerRegistration />
         {children}

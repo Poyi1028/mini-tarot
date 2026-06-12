@@ -10,46 +10,51 @@ import { EASE } from '@/lib/motion';
 //   exit    → handled by the parent overlay fading the whole group out
 type Stage = 'forming' | 'bloom' | 'exit';
 
-// Corona Borealis — the Northern Crown, reimagined as a delicate gem-set arc.
-// A graceful open semicircle of stars (no closed blob) reads as elegant ritual
-// rather than a busy sigil; the central jewel (index 3, Alphecca) sits lowest,
-// where the bloom flares. Placed in a 180×140 field, centred ≈ (92, 66).
+// Cygnus — the Swan, a.k.a. the Northern Cross. Chosen over a single open arc
+// because its shape genuinely BRANCHES: a long spine (tail → heart → head) is
+// crossed by an outstretched pair of wings, all four limbs meeting at the
+// central star Sadr. That 4-way junction reads as a cross/swan in flight —
+// recognisable and ritualistic — rather than one unbroken line. Laid out in
+// the 180×140 field as a gently tilted cross, heart (Sadr) ≈ (90, 70).
 const STARS: ReadonlyArray<{ x: number; y: number }> = [
-  { x: 32, y: 56 },
-  { x: 50, y: 70 },
-  { x: 72, y: 80 },
-  { x: 92, y: 83 }, // Alphecca — the crown's jewel
-  { x: 114, y: 78 },
-  { x: 134, y: 66 },
-  { x: 152, y: 50 },
+  { x: 96, y: 18 }, // 0 Deneb — the tail, brightest, high on the spine
+  { x: 90, y: 70 }, // 1 Sadr — the heart, where spine and wings cross (bloom)
+  { x: 82, y: 118 }, // 2 Albireo — the head/beak, low on the spine
+  { x: 30, y: 56 }, // 3 west wing inner (Fawaris / δ Cygni)
+  { x: 150, y: 84 }, // 4 east wing outer (ε Cygni / Gienah) tip
+  { x: 60, y: 62 }, // 5 west wing mid, between Sadr and the tip
+  { x: 120, y: 78 }, // 6 east wing mid, between Sadr and the tip
 ];
 
-// Drawn left→right in order, so the line stagger traces the crown's sweep as
-// one continuous gesture (an open arc — the crown is not closed).
+// Edges fan OUT from the heart (1) along all four limbs, so the draw-in stagger
+// blooms from the centre: first the spine (tail then head), then each wing
+// sweeps outward. Multiple edges share node 1 — this is the branch, not a chain.
 const EDGES: ReadonlyArray<[number, number]> = [
-  [0, 1],
-  [1, 2],
-  [2, 3],
-  [3, 4],
-  [4, 5],
-  [5, 6],
+  [1, 0], // heart → tail (Deneb)
+  [1, 2], // heart → head (Albireo)
+  [1, 5], // heart → west wing mid
+  [5, 3], // west wing mid → inner tip
+  [1, 6], // heart → east wing mid
+  [6, 4], // east wing mid → outer tip
 ];
 
 // Tuned so stars + lines finish just before the bloom beat (~2.0s after the
-// overlay mounts; see ignite() in InputScreen). Slower/longer than before so
-// the wiring-up reads as unhurried rather than a quick snap.
+// overlay mounts; see ignite() in InputScreen). With more edges than the old
+// arc, the per-line stagger is tightened so the full wiring still lands < ~2s,
+// yet each limb still draws as one unhurried outward gesture.
 const STAR_IN = 0.12; // first star appears
-const STAR_STEP = 0.09; // per-star stagger
-const LINE_BASE = 0.75; // first line starts as the stars settle
-const LINE_STEP = 0.12; // per-line stagger
+const STAR_STEP = 0.08; // per-star stagger (7 stars → settle by ~0.7s)
+const LINE_BASE = 0.7; // first line starts as the stars settle
+const LINE_STEP = 0.11; // per-line stagger (6 edges → last starts ~1.25s, ends ~1.8s)
 
 export default function Constellation({ stage }: { stage: Stage }) {
   return (
     <svg viewBox="0 0 180 140" width="180" height="140" className="overflow-visible">
-      {/* Centre bloom — a blurred flare that only swells on the `bloom` beat. */}
+      {/* Centre bloom — a blurred flare that only swells on the `bloom` beat.
+          Sits at Sadr (the heart, where all four limbs cross). */}
       <motion.circle
-        cx={92}
-        cy={80}
+        cx={90}
+        cy={70}
         r={7}
         fill={GOLD_BRIGHT}
         initial={{ opacity: 0, scale: 1 }}
@@ -58,7 +63,7 @@ export default function Constellation({ stage }: { stage: Stage }) {
           scale: stage === 'bloom' ? 2.3 : stage === 'exit' ? 2.8 : 1,
         }}
         transition={{ duration: 0.7, ease: EASE.reveal }}
-        style={{ filter: 'blur(6px)', transformOrigin: '92px 80px' }}
+        style={{ filter: 'blur(6px)', transformOrigin: '90px 70px' }}
       />
 
       {/* Constellation lines — each traces itself on via pathLength. */}

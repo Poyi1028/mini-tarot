@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import { GOLD, GOLD_BRIGHT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, gold } from '@/lib/constants';
 import Sunburst from './decor/Sunburst';
 import Crescent from './decor/Crescent';
 import Sparkle from './decor/Sparkle';
@@ -22,8 +22,8 @@ function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; g
         background: 'linear-gradient(160deg, #221f44, #15132c)',
         border: `1px solid ${GOLD}`,
         boxShadow: glow
-          ? `0 0 ${w * 0.4}px rgba(216, 189, 143, 0.6), 0 0 ${w * 0.18}px rgba(216, 189, 143, 0.4), inset 0 0 0 ${Math.max(2, w * 0.04)}px rgba(216,189,143,0.2)`
-          : `0 2px 8px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45), inset 0 0 0 ${Math.max(2, w * 0.04)}px rgba(216,189,143,0.14)`,
+          ? `0 0 ${w * 0.4}px ${gold(0.6)}, 0 0 ${w * 0.18}px ${gold(0.4)}, inset 0 0 0 ${Math.max(2, w * 0.04)}px ${gold(0.2)}`
+          : `0 2px 8px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45), inset 0 0 0 ${Math.max(2, w * 0.04)}px ${gold(0.14)}`,
       }}
     >
       <Sunburst

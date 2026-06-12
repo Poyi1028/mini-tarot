@@ -2,10 +2,10 @@
 
 @theme {
   /* Palette — 紫霧 Violet Mist (mirrors lib/constants.ts) */
-  --color-gold: #d8bd8f;
-  --color-gold-bright: #ecd5a3;
-  --color-gold-soft: #ecd5a3;
-  --color-gold-dim: #9a875f;
+  --color-gold: #e8ddcb;
+  --color-gold-bright: #f5eede;
+  --color-gold-soft: #f5eede;
+  --color-gold-dim: #bcb097;
   --color-ink: #0b0a12;
   --color-ink-2: #121019;
   --color-purple-deep: #181626;
@@ -14,11 +14,13 @@
   --color-muted: #928dad;
   --color-lilac: #bcb6dc;
 
-  /* Typography — wired to next/font css variables in layout.js */
-  --font-display: var(--font-cinzel), serif;
-  --font-serif: var(--font-noto-serif-tc), serif;
-  --font-cormorant: var(--font-cormorant-garamond), serif;
-  --font-sans: var(--font-noto-sans-tc), sans-serif;
+  /* Typography — two faces only, wired to next/font vars in layout.tsx.
+     Latin/digits resolve to Cormorant Garamond (listed first); Chinese glyphs
+     fall through to Noto Serif TC. All three tokens share the same stack so
+     English is always Garamond and Chinese is always Noto Serif TC. */
+  --font-display: var(--font-cormorant-garamond), var(--font-noto-serif-tc), serif;
+  --font-serif: var(--font-cormorant-garamond), var(--font-noto-serif-tc), serif;
+  --font-cormorant: var(--font-cormorant-garamond), var(--font-noto-serif-tc), serif;
 
   /* Named animations */
   --animate-sigil-spin: sigil-spin 12s linear infinite;
@@ -75,6 +77,17 @@
     /* extend ink background into bottom safe-area on notched devices */
     padding-bottom: env(safe-area-inset-bottom);
     background-color: var(--color-ink);
+    /* thin serif strokes on dark ground render cleaner antialiased */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Keyboard focus — a quiet gold hairline instead of the UA's heavy ring.
+     Pointer taps stay clean (focus-visible only fires for keyboard nav). */
+  :focus-visible {
+    outline: 1px solid rgba(232, 221, 203, 0.55);
+    outline-offset: 3px;
+    border-radius: 2px;
   }
 
   /* Inner scrollers (deck grid, spread reading) keep native momentum and don't
@@ -210,12 +223,12 @@
 @keyframes breath-glow {
   0%,
   100% {
-    box-shadow: 0 0 14px rgba(216, 189, 143, 0.2), 0 0 26px rgba(216, 189, 143, 0.12),
-      inset 0 0 0 1px rgba(216, 189, 143, 0.25);
+    box-shadow: 0 0 14px rgba(232, 221, 203, 0.2), 0 0 26px rgba(232, 221, 203, 0.12),
+      inset 0 0 0 1px rgba(232, 221, 203, 0.25);
   }
   50% {
-    box-shadow: 0 0 30px rgba(216, 189, 143, 0.55), 0 0 50px rgba(216, 189, 143, 0.3),
-      inset 0 0 0 1px rgba(216, 189, 143, 0.6);
+    box-shadow: 0 0 30px rgba(232, 221, 203, 0.55), 0 0 50px rgba(232, 221, 203, 0.3),
+      inset 0 0 0 1px rgba(232, 221, 203, 0.6);
   }
 }
 

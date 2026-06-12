@@ -1,11 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { DeckCard } from '@/lib/deck-groups';
 import Starfield from './Starfield';
-import OrnDivider from './decor/OrnDivider';
 import BackButton from './decor/BackButton';
 import FramedCardImg from './decor/FramedCardImg';
 import SuitGlyph from './SuitGlyph';
@@ -20,7 +19,8 @@ function SectionHeading({ label, accent }: { label: string; accent: string }) {
   return (
     <div className="flex items-center justify-center gap-3">
       <span className="h-px w-6" style={{ background: `linear-gradient(to right, transparent, ${accent})` }} />
-      <span className="font-serif text-[16px] tracking-[7px]" style={{ color: accent }}>
+      {/* paddingLeft balances letter-spacing's trailing gap so the glyphs center true */}
+      <span className="font-serif text-[16px] tracking-[7px]" style={{ color: accent, paddingLeft: 7 }}>
         {label}
       </span>
       <span className="h-px w-6" style={{ background: `linear-gradient(to left, transparent, ${accent})` }} />
@@ -44,7 +44,7 @@ function MeaningBlock({
   return (
     <div className="mt-10 w-full text-center">
       <SectionHeading label={label} accent={accent} />
-      <div className="mt-4 font-serif text-[14px] tracking-[3px]" style={{ color: GOLD_BRIGHT }}>
+      <div className="mt-4 font-serif text-[14px] tracking-[3px]" style={{ color: GOLD_BRIGHT, paddingLeft: 3 }}>
         {keywords.join(' · ')}
       </div>
       <p
@@ -92,7 +92,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
               width: 400,
               height: 400,
               transform: 'translate(-50%, -50%)',
-              background: 'radial-gradient(circle at center, rgba(238,212,160,0.95) 0%, rgba(228,198,150,0.6) 30%, rgba(216,189,143,0.28) 52%, rgba(216,189,143,0.08) 70%, transparent 82%)',
+              background: `radial-gradient(circle at center, rgba(238,212,160,0.95) 0%, rgba(228,198,150,0.6) 30%, ${gold(0.28)} 52%, ${gold(0.08)} 70%, transparent 82%)`,
               filter: 'blur(26px)',
             }}
             initial={{ opacity: 0 }}
@@ -102,11 +102,11 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
           <FramedCardImg
             src={card.img}
             alt={`${card.cn} ${card.en}`}
-            width={170}
+            width={200}
             radius={8}
             borderWidth={1.5}
             ringWidth={3}
-            boxShadow="0 12px 32px rgba(0,0,0,0.55), 0 0 30px rgba(216,189,143,0.3)"
+            boxShadow={`0 12px 32px rgba(0,0,0,0.55), 0 0 30px ${gold(0.3)}`}
             fadeMs={600}
           />
         </motion.div>
@@ -125,18 +125,16 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
               <span className="font-display text-[15px] leading-none tracking-[1px]">{card.roman}</span>
             )}
           </div>
-          <div className="font-serif text-[24px] font-light tracking-[8px]" style={{ color: PARCHMENT }}>
+          <div className="font-serif text-[28px] font-light tracking-[8px]" style={{ color: PARCHMENT, paddingLeft: 8 }}>
             {card.cn}
           </div>
           <div
             className="mt-1.5 italic"
-            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 15, letterSpacing: 2, color: GOLD_BRIGHT }}
+            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 17, letterSpacing: 2, color: GOLD_BRIGHT, paddingLeft: 2 }}
           >
             {card.en}
           </div>
         </motion.div>
-
-        <OrnDivider w={44} color={GOLD} style={{ marginTop: 26 }} />
 
         {/* Upright / reversed meanings */}
         <MeaningBlock label="正 位" accent={GOLD} keywords={card.keywords} meaning={card.meaning} />

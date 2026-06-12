@@ -2,12 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_DIM } from '@/lib/constants';
+import { GOLD, GOLD_DIM, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import { getDailyDraw, dateDisplay } from '@/lib/daily';
 import type { Card } from '@/lib/tarot-cards';
-import CardBack from './CardBack';
-import CardFront from './CardFront';
+import CardFlip from './CardFlip';
 import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
@@ -118,7 +117,7 @@ function DailyCard({
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              'radial-gradient(circle at center, rgba(238,212,160,0.62) 0%, rgba(228,198,150,0.34) 30%, rgba(216,189,143,0.16) 52%, rgba(216,189,143,0.05) 70%, transparent 82%)',
+              `radial-gradient(circle at center, rgba(238,212,160,0.62) 0%, rgba(228,198,150,0.34) 30%, ${gold(0.16)} 52%, ${gold(0.05)} 70%, transparent 82%)`,
             filter: 'blur(24px)',
           }}
           initial={false}
@@ -132,31 +131,7 @@ function DailyCard({
         className="relative"
         style={{ width: CARD_W, height: CARD_H, perspective: 1400, cursor: 'pointer' }}
       >
-        <motion.div
-          className="relative h-full w-full"
-          style={{ transformStyle: 'preserve-3d' }}
-          initial={false}
-          animate={{ rotateY: flipped ? 180 : 0 }}
-          transition={{ duration: 1.2, ease: EASE.reveal }}
-        >
-          <div
-            className="absolute inset-0"
-            style={{ backfaceVisibility: 'hidden', borderRadius: CARD_W * 0.08, overflow: 'hidden' }}
-          >
-            <CardBack w={CARD_W} h={CARD_H} />
-          </div>
-          <div
-            className="absolute inset-0"
-            style={{
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg)',
-              borderRadius: CARD_W * 0.08,
-              overflow: 'hidden',
-            }}
-          >
-            <CardFront card={card} w={CARD_W} h={CARD_H} reversed={reversed} />
-          </div>
-        </motion.div>
+        <CardFlip card={card} reversed={reversed} flipped={flipped} w={CARD_W} h={CARD_H} />
       </div>
     </div>
   );
@@ -188,8 +163,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
       <div className="absolute inset-0 flex flex-col items-center px-6 pb-8 pt-[60px]">
         {/* 標題 */}
         <div className="text-center">
-          <div className="font-serif text-[14px] font-light tracking-[6px] text-gold">今日</div>
-          <div className="mt-2.5 font-serif text-[18px] font-light tracking-[8px] text-parchment">
+          <div className="font-serif text-[18px] font-light tracking-[8px] text-parchment">
             今 日 運 勢
           </div>
           <div className="mt-2.5 text-[10px] tracking-[3px] text-muted">{dateDisplay(dateKey)}</div>
@@ -274,7 +248,6 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
           <CardDetailImmersive
             card={card}
             reversed={reversed}
-            pos={{ cn: '今 日' }}
             onClose={() => setDetail(false)}
           />
         )}

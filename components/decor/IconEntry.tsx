@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { gold } from '@/lib/constants';
 import { TAP, SPRING_TAP } from '@/lib/motion';
 
 interface IconEntryProps {
@@ -26,7 +27,7 @@ export default function IconEntry({ icon, label, ariaLabel, onClick }: IconEntry
           alt=""
           draggable={false}
           className="h-full w-full object-contain opacity-90"
-          style={{ filter: 'drop-shadow(0 0 4px rgba(216,189,143,0.22))' }}
+          style={{ filter: `drop-shadow(0 0 4px ${gold(0.22)})` }}
         />
       </span>
       <span className="whitespace-nowrap text-[10px] tracking-[2px]">{label}</span>

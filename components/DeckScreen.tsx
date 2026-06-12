@@ -8,7 +8,6 @@ import { EASE, TAP, SPRING_TAP } from '@/lib/motion';
 import { DECK, DECK_GROUPS } from '@/lib/deck-groups';
 import type { DeckCard, DeckGroupId } from '@/lib/deck-groups';
 import Starfield from './Starfield';
-import OrnDivider from './decor/OrnDivider';
 import BackButton from './decor/BackButton';
 import GroupMark from './decor/GroupMark';
 import FramedCardImg from './decor/FramedCardImg';
@@ -43,16 +42,19 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
             transition={SPRING_TAP}
             className="flex flex-col items-center gap-[7px] border-none bg-transparent p-0"
           >
-            <span
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontWeight: 300,
-                fontSize: 13,
-                letterSpacing: 1.5,
-                color: on ? PARCHMENT : MUTED,
-              }}
-            >
-              {grp.cn}
+            <span className="flex items-center gap-[5px]">
+              <GroupMark grp={grp} size={14} color={on ? GOLD : MUTED} />
+              <span
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontWeight: 300,
+                  fontSize: 13,
+                  letterSpacing: 1.5,
+                  color: on ? PARCHMENT : MUTED,
+                }}
+              >
+                {grp.cn}
+              </span>
             </span>
             <span
               className="transition-[width] duration-300"
@@ -74,7 +76,7 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
 // grid parent); the artwork itself fades in on load so lazy images don't pop.
 function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
   return (
-    <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[7px]">
+    <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[9px]">
       <motion.button
         onClick={onClick}
         whileTap={TAP}
@@ -94,9 +96,6 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
           {card.cn}
         </div>
-        <div className="italic" style={{ fontFamily: 'var(--font-cormorant)', fontSize: 9, letterSpacing: 0.8, color: MUTED }}>
-          {card.en}
-        </div>
         <div className="font-display" style={{ fontSize: 8, letterSpacing: 1.5, color: GOLD_DIM, marginTop: 2 }}>
           {card.badge}
         </div>
@@ -109,7 +108,6 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<DeckGroupId>('major');
   const [detail, setDetail] = useState<DeckCard | null>(null);
   const cards = DECK[tab];
-  const grp = DECK_GROUPS.find((x) => x.id === tab)!;
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -125,33 +123,10 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
 
       {/* scroll body */}
       <div className="absolute bottom-0 left-0 right-0 top-[106px] overflow-y-auto pb-9">
-        {/* element header — fades in on each tab switch so the change of suit
-            doesn't read as an abrupt content swap. */}
-        <motion.div
-          key={`head-${tab}`}
-          className="flex flex-col items-center px-0 pb-3.5 pt-[18px]"
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, ease: EASE.out }}
-        >
-          {/* Section mark — the suit symbol's home (not the card thumbnails). */}
-          <GroupMark grp={grp} />
-          <div
-            className="mt-[11px] italic"
-            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 23, letterSpacing: 2, color: PARCHMENT }}
-          >
-            {grp.cn}
-          </div>
-          <div className="font-display mt-1 pl-1 text-[9px] tracking-[3px]" style={{ color: MUTED }}>
-            {grp.cn} · {grp.count} 張
-          </div>
-          <OrnDivider w={40} color={GOLD} style={{ marginTop: 12 }} />
-        </motion.div>
-
         {/* grid — staggered entrance, replayed per tab via the key */}
         <motion.div
           key={`grid-${tab}`}
-          className="grid grid-cols-3 gap-x-[13px] gap-y-4 px-5 pt-1.5"
+          className="grid grid-cols-3 gap-x-[18px] gap-y-[22px] px-6 pt-6"
           variants={GRID_CONTAINER}
           initial="hidden"
           animate="show"
