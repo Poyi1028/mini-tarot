@@ -5,7 +5,6 @@ import { GOLD, GOLD_BRIGHT, GOLD_DIM, PARCHMENT, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { DeckCard } from '@/lib/deck-groups';
 import Starfield from './Starfield';
-import OrnDivider from './decor/OrnDivider';
 import BackButton from './decor/BackButton';
 import FramedCardImg from './decor/FramedCardImg';
 import SuitGlyph from './SuitGlyph';
@@ -103,7 +102,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
           <FramedCardImg
             src={card.img}
             alt={`${card.cn} ${card.en}`}
-            width={170}
+            width={200}
             radius={8}
             borderWidth={1.5}
             ringWidth={3}
@@ -126,18 +125,16 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
               <span className="font-display text-[15px] leading-none tracking-[1px]">{card.roman}</span>
             )}
           </div>
-          <div className="font-serif text-[24px] font-light tracking-[8px]" style={{ color: PARCHMENT, paddingLeft: 8 }}>
+          <div className="font-serif text-[28px] font-light tracking-[8px]" style={{ color: PARCHMENT, paddingLeft: 8 }}>
             {card.cn}
           </div>
           <div
             className="mt-1.5 italic"
-            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 15, letterSpacing: 2, color: GOLD_BRIGHT, paddingLeft: 2 }}
+            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 17, letterSpacing: 2, color: GOLD_BRIGHT, paddingLeft: 2 }}
           >
             {card.en}
           </div>
         </motion.div>
-
-        <OrnDivider w={44} color={GOLD} style={{ marginTop: 26 }} />
 
         {/* Upright / reversed meanings */}
         <MeaningBlock label="正 位" accent={GOLD} keywords={card.keywords} meaning={card.meaning} />

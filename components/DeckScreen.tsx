@@ -76,7 +76,7 @@ function DeckTabs({ tab, setTab }: { tab: DeckGroupId; setTab: (id: DeckGroupId)
 // grid parent); the artwork itself fades in on load so lazy images don't pop.
 function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
   return (
-    <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[7px]">
+    <motion.div variants={GRID_ITEM} className="flex flex-col items-center gap-[9px]">
       <motion.button
         onClick={onClick}
         whileTap={TAP}
@@ -126,7 +126,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
         {/* grid — staggered entrance, replayed per tab via the key */}
         <motion.div
           key={`grid-${tab}`}
-          className="grid grid-cols-3 gap-x-[13px] gap-y-4 px-5 pt-5"
+          className="grid grid-cols-3 gap-x-[18px] gap-y-[22px] px-6 pt-6"
           variants={GRID_CONTAINER}
           initial="hidden"
           animate="show"
