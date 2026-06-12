@@ -60,4 +60,4 @@ The gold/ink/purple palette is defined in **two** places that must stay in sync:
 - `app/globals.css` `@theme` block — Tailwind v4 design tokens (use as classes, e.g. `text-gold`, `bg-ink`, `font-display`). Named keyframe animations are also registered here (`animate-breath-glow`, etc.).
 - `lib/constants.ts` — the same colors as JS constants (`GOLD`, `PARCHMENT`, …) for inline `style={{}}` props, which the SVG-heavy card components rely on.
 
-Fonts: Cinzel (`font-display`) and Noto Serif TC (`font-serif`) are loaded via `next/font` in `app/layout.tsx` and exposed as the CSS variables that `@theme` references. UI copy is Traditional Chinese (`lang="zh-Hant"`).
+Fonts: exactly two faces, loaded via `next/font` in `app/layout.tsx` — Cormorant Garamond for all Latin/digits and Noto Serif TC for all Chinese. The `--font-display` / `--font-serif` / `--font-cormorant` tokens all share one stack (Garamond first, Noto Serif TC fallback), so English always renders Garamond and Chinese always Noto Serif TC. UI copy is Traditional Chinese (`lang="zh-Hant"`).

@@ -3,9 +3,9 @@ import type { MetadataRoute } from 'next';
 export default function manifest(): MetadataRoute.Manifest {
   return {
     id: '/',
-    name: '迷你塔羅',
-    short_name: '迷你塔羅',
-    description: '沉浸式塔羅占卜 — 紫霧靛藍×丁香紫×香檳金',
+    name: 'mini tarot',
+    short_name: 'mini tarot',
+    description: '沉浸式塔羅占卜',
     start_url: '/',
     scope: '/',
     categories: ['lifestyle', 'entertainment'],
