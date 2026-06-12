@@ -47,13 +47,21 @@ export default function CardDetailImmersive({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 1.02 }}
       transition={{ duration: DUR.slow, ease: EASE.reveal }}
-      style={{
-        cursor: 'pointer',
-        isolation: 'isolate',
-        background:
-          'radial-gradient(ellipse 92% 58% at 50% 22%, #17171d 0%, #101014 52%, #0a0a0d 100%)',
-      }}
+      style={{ cursor: 'pointer', isolation: 'isolate', background: '#0a0a0d' }}
     >
+      {/* blurred, scaled copy of the card art — fills the gap left above the
+          (down-nudged) card and the frame edges with the card's own colours
+          instead of black. Dimmed hard so the `screen`-blended foreground
+          below still reads rather than washing out. */}
+      <img
+        src={card.img}
+        alt=""
+        aria-hidden
+        draggable={false}
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+        style={{ transform: 'scale(1.4)', filter: 'blur(50px) brightness(0.5) saturate(1.1)' }}
+      />
+
       <Starfield density={22} seed={card.roman.length + 3} bg="transparent" />
 
       {/* roman watermark */}
@@ -72,9 +80,8 @@ export default function CardDetailImmersive({
         draggable={false}
         className="pointer-events-none absolute inset-0 h-full w-full object-cover"
         style={{
-          mixBlendMode: 'screen',
-          opacity: 0.9,
-          filter: 'brightness(1.12)',
+          opacity: 1,
+          filter: 'brightness(1.0)',
           // Nudged down so the subject (faces sit upper-middle on most cards)
           // settles toward centre. The Hanged Man — inverted — is the accepted
           // exception the user signed off on.
@@ -86,15 +93,6 @@ export default function CardDetailImmersive({
         }}
       />
 
-      {/* vignette — kept smoky rather than near-black so the frame edges read as
-          frosted glass, not a hard black border. */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse 88% 82% at 50% 48%, transparent 46%, rgba(22,22,28,0.5) 100%)',
-        }}
-      />
       {/* legibility scrims — lifted off pure black; the frost strips carry the
           glass feel, these only just darken enough to keep text readable. */}
       <div

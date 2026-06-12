@@ -3,11 +3,10 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, gold } from '@/lib/constants';
+import { GOLD, GOLD_BRIGHT, gold } from '@/lib/constants';
 import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
-import IconEntry from './decor/IconEntry';
 import TextAction from './decor/TextAction';
 
 interface Particle {
@@ -67,13 +66,9 @@ function SyncOverlay({ stage }: { stage: Stage }) {
 
 export default function InputScreen({
   onSubmit,
-  onOpenDaily,
-  onOpenDeck,
   onBack,
 }: {
   onSubmit: (q: string) => void;
-  onOpenDaily: () => void;
-  onOpenDeck: () => void;
   onBack: () => void;
 }) {
   const [q, setQ] = useState('');
@@ -145,19 +140,6 @@ export default function InputScreen({
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
       <Starfield density={32} seed={8} />
-
-      {/* 牌庫 + 今日運勢入口 —— 右上角並排；輸入溶解時淡出。 */}
-      <div
-        className="absolute left-0 right-0 top-[34px] z-[6] flex items-start justify-end gap-3 px-7"
-        style={{
-          opacity: isInput ? 1 : 0,
-          pointerEvents: isInput ? 'auto' : 'none',
-          transition: 'opacity 300ms ease',
-        }}
-      >
-        <IconEntry icon="/cards.svg" label="牌庫" ariaLabel="開啟牌庫" onClick={onOpenDeck} />
-        <IconEntry icon="/book.svg" label="每日運勢" ariaLabel="開啟今日運勢" onClick={onOpenDaily} />
-      </div>
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
           the GROUP's midline lands on the screen centre (the outer wrapper's
@@ -264,26 +246,38 @@ export default function InputScreen({
             )}
           </div>
 
-          {/* embedded send button (AI composer) */}
+          {/* embedded send button — a quiet gold "seal" rather than a loud AI
+              composer FAB: a hairline gold ring over a faint translucent fill,
+              marked with a thin celestial caret + sparkle ("send onward"). */}
           <motion.button
             onClick={ignite}
             disabled={!q.trim() || !isInput}
             aria-label="注入意念"
             whileTap={q.trim() ? TAP : undefined}
             transition={SPRING_TAP}
-            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full transition-[opacity,box-shadow,background] duration-200 disabled:cursor-default"
+            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full transition-[opacity,box-shadow,background,border-color] duration-200 disabled:cursor-default"
             style={{
-              background: q.trim() ? gold(0.95) : gold(0.1),
-              boxShadow: q.trim() ? `0 0 18px ${gold(0.35)}` : 'none',
+              background: q.trim() ? gold(0.14) : gold(0.05),
+              border: `1px solid ${q.trim() ? gold(0.85) : gold(0.22)}`,
+              boxShadow: q.trim() ? `0 0 18px ${gold(0.3)}` : 'none',
               opacity: q.trim() ? 1 : 0.5,
               cursor: q.trim() ? 'pointer' : 'default',
             }}
           >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              {/* upward caret — the "onward" gesture, thin and refined */}
               <path
-                d="M12 19V5M12 5l-6 6M12 5l6 6"
-                stroke={q.trim() ? '#1a1736' : GOLD}
-                strokeWidth="2.2"
+                d="M6 14l6-6 6 6"
+                stroke={q.trim() ? GOLD_BRIGHT : GOLD}
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* small 4-point sparkle cresting above it */}
+              <path
+                d="M12 6.5V3.2M12 6.5l1.6-1.1M12 6.5l-1.6-1.1"
+                stroke={q.trim() ? GOLD_BRIGHT : GOLD}
+                strokeWidth="1.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -303,7 +297,7 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <TextAction eyebrow="⌂" label="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
+        <TextAction label="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>
