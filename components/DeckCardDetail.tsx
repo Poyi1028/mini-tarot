@@ -20,7 +20,8 @@ function SectionHeading({ label, accent }: { label: string; accent: string }) {
   return (
     <div className="flex items-center justify-center gap-3">
       <span className="h-px w-6" style={{ background: `linear-gradient(to right, transparent, ${accent})` }} />
-      <span className="font-serif text-[16px] tracking-[7px]" style={{ color: accent }}>
+      {/* paddingLeft balances letter-spacing's trailing gap so the glyphs center true */}
+      <span className="font-serif text-[16px] tracking-[7px]" style={{ color: accent, paddingLeft: 7 }}>
         {label}
       </span>
       <span className="h-px w-6" style={{ background: `linear-gradient(to left, transparent, ${accent})` }} />
@@ -44,7 +45,7 @@ function MeaningBlock({
   return (
     <div className="mt-10 w-full text-center">
       <SectionHeading label={label} accent={accent} />
-      <div className="mt-4 font-serif text-[14px] tracking-[3px]" style={{ color: GOLD_BRIGHT }}>
+      <div className="mt-4 font-serif text-[14px] tracking-[3px]" style={{ color: GOLD_BRIGHT, paddingLeft: 3 }}>
         {keywords.join(' · ')}
       </div>
       <p
@@ -125,12 +126,12 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
               <span className="font-display text-[15px] leading-none tracking-[1px]">{card.roman}</span>
             )}
           </div>
-          <div className="font-serif text-[24px] font-light tracking-[8px]" style={{ color: PARCHMENT }}>
+          <div className="font-serif text-[24px] font-light tracking-[8px]" style={{ color: PARCHMENT, paddingLeft: 8 }}>
             {card.cn}
           </div>
           <div
             className="mt-1.5 italic"
-            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 15, letterSpacing: 2, color: GOLD_BRIGHT }}
+            style={{ fontFamily: 'var(--font-cormorant)', fontSize: 15, letterSpacing: 2, color: GOLD_BRIGHT, paddingLeft: 2 }}
           >
             {card.en}
           </div>

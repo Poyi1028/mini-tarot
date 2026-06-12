@@ -163,8 +163,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
       <div className="absolute inset-0 flex flex-col items-center px-6 pb-8 pt-[60px]">
         {/* 標題 */}
         <div className="text-center">
-          <div className="font-serif text-[14px] font-light tracking-[6px] text-gold">今日</div>
-          <div className="mt-2.5 font-serif text-[18px] font-light tracking-[8px] text-parchment">
+          <div className="font-serif text-[18px] font-light tracking-[8px] text-parchment">
             今 日 運 勢
           </div>
           <div className="mt-2.5 text-[10px] tracking-[3px] text-muted">{dateDisplay(dateKey)}</div>
@@ -249,7 +248,6 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
           <CardDetailImmersive
             card={card}
             reversed={reversed}
-            pos={{ cn: '今 日' }}
             onClose={() => setDetail(false)}
           />
         )}
