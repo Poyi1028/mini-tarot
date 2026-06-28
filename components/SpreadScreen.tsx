@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { GOLD, GOLD_DIM, MUTED, gold } from '@/lib/constants';
+import { GOLD, MUTED, gold } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import { TAROT_CARDS } from '@/lib/tarot-cards';
 import type { Card } from '@/lib/tarot-cards';
@@ -10,7 +10,6 @@ import CardFlip from './CardFlip';
 import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
-import BackButton from './decor/BackButton';
 import TextAction from './decor/TextAction';
 
 interface Position {
@@ -121,9 +120,9 @@ function ReadingPanel({ onRestart }: { onRestart: () => void }) {
       {/* Gold thread falling from the spread into the close */}
       <div className="mx-auto h-7 w-px bg-gradient-to-b from-transparent via-gold-soft/30 to-gold-soft/60" />
 
-      {/* Return home — an underline-link rite, not a form button */}
+      {/* Return home — placed at the end of the page as the closing action. */}
       <div className="mb-1 mt-5 flex justify-center">
-        <TextAction eyebrow="⌂" label="回到首頁" onClick={onRestart} ariaLabel="回到首頁" />
+        <TextAction eyebrow="↺" label="回到首頁" onClick={onRestart} ariaLabel="回到首頁" />
       </div>
     </div>
   );
@@ -172,9 +171,6 @@ export default function SpreadScreen({ question, onRestart }: { question: string
   return (
     <div className="absolute inset-0">
       <Starfield density={20} seed={13} />
-
-      {/* 返回首頁 —— 左上角 ‹，與牌庫一致；隨時可離開牌陣。 */}
-      <BackButton onClick={onRestart} />
 
       <div className={`absolute inset-0 ${showReading ? 'overflow-y-auto' : 'overflow-hidden'}`}>
       <div className="relative z-[2] flex min-h-full flex-col px-6 pb-6 pt-[52px]">
@@ -277,8 +273,8 @@ export default function SpreadScreen({ question, onRestart }: { question: string
           })}
 
           {/* Card names — surface beneath each card once it's flipped, with its
-              ritual mark and 正/逆位. Pinned to the slot, like the labels above. */}
-          {drawn.map(({ card: c, reversed }, i) => {
+              ritual mark. Pinned to the slot, like the labels above. */}
+          {drawn.map(({ card: c }, i) => {
             const slot = SLOTS[i];
             return (
               <div
@@ -307,12 +303,6 @@ export default function SpreadScreen({ question, onRestart }: { question: string
                 >
                   {c.en}
                 </div>
-                <div
-                  className="mt-1.5 font-serif text-[9px] tracking-[3px]"
-                  style={{ color: reversed ? GOLD_DIM : GOLD }}
-                >
-                  {reversed ? '逆 位' : '正 位'}
-                </div>
               </div>
             );
           })}
@@ -330,11 +320,11 @@ export default function SpreadScreen({ question, onRestart }: { question: string
 
         {/* Reading */}
         <motion.div
+          className="mt-auto pb-2 pt-12"
           initial={false}
           animate={{
             opacity: showReading ? 1 : 0,
             y: showReading ? 0 : 20,
-            marginTop: allFlipped ? 8 : 0,
           }}
           transition={{ duration: DUR.slow, ease: EASE.out }}
           style={{ pointerEvents: showReading ? 'auto' : 'none' }}

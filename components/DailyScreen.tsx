@@ -11,7 +11,6 @@ import SuitGlyph from './SuitGlyph';
 import CardDetailImmersive from './CardDetailImmersive';
 import Starfield from './Starfield';
 import BackButton from './decor/BackButton';
-import TextAction from './decor/TextAction';
 
 // 單張英雄牌尺寸，比例貼合 300×527 原圖（≈0.5676），不裁切不留邊。
 const CARD_W = 150;
@@ -153,8 +152,6 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
     return () => clearTimeout(t);
   }, [flipped]);
 
-  const keywords = reversed ? card.reversedKeywords : card.keywords;
-
   return (
     <div className="absolute inset-0">
       <Starfield density={20} seed={21} />
@@ -214,21 +211,9 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
                 >
                   {card.en}
                 </div>
-                <div
-                  className="mt-2 font-serif text-[9px] tracking-[3px]"
-                  style={{ color: reversed ? GOLD_DIM : GOLD }}
-                >
-                  {reversed ? '逆 位' : '正 位'}
+                <div className="mt-4 text-[10px] tracking-[3px] text-muted">
+                  點擊卡片查看牌義
                 </div>
-                <div className="mt-3.5 font-serif text-[12px] tracking-[2px] text-gold-soft">
-                  {keywords.join(' · ')}
-                </div>
-                <TextAction
-                  label="查看牌義"
-                  onClick={() => setDetail(true)}
-                  ariaLabel="查看牌義"
-                  className="mt-3"
-                />
               </motion.div>
             )}
           </div>
