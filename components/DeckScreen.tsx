@@ -12,6 +12,7 @@ import BackButton from './decor/BackButton';
 import GroupMark from './decor/GroupMark';
 import FramedCardImg from './decor/FramedCardImg';
 import DeckCardDetail from './DeckCardDetail';
+import CardDetailImmersive from './CardDetailImmersive';
 
 // Grid entrance — a parent that releases its thumbnails in a gentle stagger so
 // the page assembles itself instead of snapping in all at once. Keyed by tab so
@@ -107,6 +108,7 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
 export default function DeckScreen({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<DeckGroupId>('major');
   const [detail, setDetail] = useState<DeckCard | null>(null);
+  const [immersive, setImmersive] = useState<DeckCard | null>(null);
   const cards = DECK[tab];
 
   return (
@@ -114,7 +116,7 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       <Starfield density={26} seed={9} />
 
       {/* back */}
-      <BackButton onClick={onBack} top={64} />
+      <BackButton onClick={onBack} />
 
       {/* tabs */}
       <div className="absolute left-0 right-0 top-[64px] z-10">
@@ -144,7 +146,21 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
       />
 
       <AnimatePresence>
-        {detail && <DeckCardDetail card={detail} onBack={() => setDetail(null)} />}
+        {detail && (
+          <DeckCardDetail
+            key={`detail-${detail.num}`}
+            card={detail}
+            onBack={() => setDetail(null)}
+            onOpenImmersive={() => setImmersive(detail)}
+          />
+        )}
+        {immersive && (
+          <CardDetailImmersive
+            key={`immersive-${immersive.num}`}
+            card={immersive}
+            onClose={() => setImmersive(null)}
+          />
+        )}
       </AnimatePresence>
     </div>
   );

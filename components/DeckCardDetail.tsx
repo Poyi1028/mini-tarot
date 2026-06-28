@@ -57,7 +57,15 @@ function MeaningBlock({
   );
 }
 
-export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBack: () => void }) {
+export default function DeckCardDetail({
+  card,
+  onBack,
+  onOpenImmersive,
+}: {
+  card: DeckCard;
+  onBack: () => void;
+  onOpenImmersive: () => void;
+}) {
   return (
     <motion.div
       className="absolute inset-0 z-[100] overflow-y-auto overflow-x-hidden"
@@ -78,7 +86,10 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
       <div className="relative z-[2] flex flex-col items-center px-7 pb-16 pt-[88px]">
         {/* Card portrait — upper middle, framed (not full-bleed), wrapped in a
             soft breathing gold aura. */}
-        <motion.div
+        <motion.button
+          type="button"
+          aria-label={`開啟${card.cn}沉浸式牌卡詳情`}
+          onClick={onOpenImmersive}
           className="relative"
           initial={{ opacity: 0, y: 18, scale: 0.96 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -109,7 +120,7 @@ export default function DeckCardDetail({ card, onBack }: { card: DeckCard; onBac
             boxShadow={`0 12px 32px rgba(0,0,0,0.55), 0 0 30px ${gold(0.3)}`}
             fadeMs={600}
           />
-        </motion.div>
+        </motion.button>
 
         {/* Name + mark + element */}
         <motion.div
