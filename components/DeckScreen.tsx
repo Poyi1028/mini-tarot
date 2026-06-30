@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
-import { GOLD, GOLD_DIM, MUTED, PARCHMENT } from '@/lib/constants';
+import { GOLD, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, TAP, SPRING_TAP } from '@/lib/motion';
 import { DECK, DECK_GROUPS } from '@/lib/deck-groups';
 import type { DeckCard, DeckGroupId } from '@/lib/deck-groups';
@@ -93,12 +93,9 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
           lazy
         />
       </motion.button>
-      <div className="flex flex-col items-center text-center leading-[1.3]">
+      <div className="w-full text-center leading-[1.3]">
         <div style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, fontSize: 11.5, letterSpacing: 1, color: PARCHMENT }}>
           {card.cn}
-        </div>
-        <div className="font-display" style={{ fontSize: 8, letterSpacing: 1.5, color: GOLD_DIM, marginTop: 2 }}>
-          {card.badge}
         </div>
       </div>
     </motion.div>
@@ -108,7 +105,7 @@ function DeckThumb({ card, onClick }: { card: DeckCard; onClick: () => void }) {
 export default function DeckScreen({ onBack }: { onBack: () => void }) {
   const [tab, setTab] = useState<DeckGroupId>('major');
   const [detail, setDetail] = useState<DeckCard | null>(null);
-  const [immersive, setImmersive] = useState<DeckCard | null>(null);
+  const [immersive, setImmersive] = useState<{ card: DeckCard; reversed: boolean } | null>(null);
   const cards = DECK[tab];
 
   return (
@@ -151,13 +148,14 @@ export default function DeckScreen({ onBack }: { onBack: () => void }) {
             key={`detail-${detail.num}`}
             card={detail}
             onBack={() => setDetail(null)}
-            onOpenImmersive={() => setImmersive(detail)}
+            onOpenImmersive={(reversed) => setImmersive({ card: detail, reversed })}
           />
         )}
         {immersive && (
           <CardDetailImmersive
-            key={`immersive-${immersive.num}`}
-            card={immersive}
+            key={`immersive-${immersive.card.num}`}
+            card={immersive.card}
+            reversed={immersive.reversed}
             onClose={() => setImmersive(null)}
           />
         )}

@@ -1,10 +1,21 @@
 'use client';
 
+import { useEffect, useId, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { GOLD, GOLD_BRIGHT, MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import type { Card } from '@/lib/tarot-cards';
 import OrnDivider from './decor/OrnDivider';
+
+const TAP_MOVE_THRESHOLD = 8;
+const TAP_SCROLL_THRESHOLD = 2;
+
+type PointerStart = {
+  id: number;
+  x: number;
+  y: number;
+  scrollTop: number;
+};
 
 // 沉浸式牌義頁：牌面作為上方主視覺，現有牌名與牌義由圖像下緣向下閱讀。
 // 點擊畫面任一處關閉。Spread、Daily 與 Deck 共用此元件。
@@ -22,30 +33,91 @@ export default function CardDetailImmersive({
   const ts = '0 2px 14px rgba(5,4,10,0.88)';
   const keywords = reversed ? card.reversedKeywords : card.keywords;
   const meaning = reversed ? card.reversedMeaning : card.meaning;
+  const titleId = useId();
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const pointerStartRef = useRef<PointerStart | null>(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement;
+    const scroller = scrollerRef.current;
+
+    scroller?.focus({ preventScroll: true });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      if (previouslyFocused instanceof HTMLElement) {
+        previouslyFocused.focus({ preventScroll: true });
+      }
+    };
+  }, [onClose]);
 
   return (
     <motion.div
+      ref={scrollerRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
       className="absolute inset-0 z-[100] overflow-x-hidden overflow-y-auto overscroll-contain"
-      onClick={onClose}
-      initial={{ opacity: 0, scale: 1.025 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 1.015 }}
+      onPointerDown={(event) => {
+        if (!event.isPrimary) return;
+
+        pointerStartRef.current = {
+          id: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          scrollTop: event.currentTarget.scrollTop,
+        };
+      }}
+      onPointerUp={(event) => {
+        const start = pointerStartRef.current;
+        pointerStartRef.current = null;
+
+        if (!event.isPrimary || !start || start.id !== event.pointerId) return;
+
+        const moved = Math.max(
+          Math.abs(event.clientX - start.x),
+          Math.abs(event.clientY - start.y),
+        );
+        const scrolled = Math.abs(event.currentTarget.scrollTop - start.scrollTop);
+
+        if (moved <= TAP_MOVE_THRESHOLD && scrolled <= TAP_SCROLL_THRESHOLD) onClose();
+      }}
+      onPointerCancel={() => {
+        pointerStartRef.current = null;
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
       transition={{ duration: DUR.slow, ease: EASE.reveal }}
-      style={{ cursor: 'pointer', isolation: 'isolate', background: '#09090d' }}
+      style={{
+        cursor: 'pointer',
+        isolation: 'isolate',
+        background: '#09090d',
+        touchAction: 'pan-y',
+      }}
     >
-      {/* 高度隨裝置調整；放大一點裁掉牌圖素材本身的細黑框。 */}
+      {/* 高度隨裝置調整；只略微裁掉牌圖素材本身的細黑框。 */}
       <div
         className="relative w-full overflow-hidden"
-        style={{ height: 'clamp(540px, 74dvh, 650px)' }}
+        style={{ height: 'clamp(470px, 72dvh, 650px)' }}
       >
         <img
           src={card.img}
           alt={`${card.cn} ${card.en}`}
           draggable={false}
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          className="pointer-events-none absolute object-cover"
           style={{
+            inset: -2,
+            width: 'calc(100% + 4px)',
+            height: 'calc(100% + 4px)',
             objectPosition: 'center 30%',
-            transform: 'scale(1.06)',
             filter: 'brightness(0.94) saturate(0.94)',
           }}
         />
@@ -61,10 +133,14 @@ export default function CardDetailImmersive({
 
       {/* 牌名輕疊在圖像下緣，其餘資訊順著頁面自然向下排列。 */}
       <motion.div
-        className="relative z-[3] -mt-[166px] px-6 pb-9 text-left"
+        className="relative z-[3] px-6 text-left"
         initial={{ y: 18, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: DUR.base, delay: 0.14, ease: EASE.out }}
+        style={{
+          marginTop: 'calc(-1 * clamp(128px, 18dvh, 166px))',
+          paddingBottom: 'max(36px, env(safe-area-inset-bottom))',
+        }}
       >
         <div
           className="font-display"
@@ -74,6 +150,7 @@ export default function CardDetailImmersive({
         </div>
 
         <div
+          id={titleId}
           style={{
             marginTop: 5,
             fontFamily: 'var(--font-serif)',
