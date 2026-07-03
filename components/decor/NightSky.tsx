@@ -1,12 +1,10 @@
 'use client';
 
 import { memo } from 'react';
-import { GOLD_BRIGHT, gold, goldBright } from '@/lib/constants';
+import { GOLD_BRIGHT, gold } from '@/lib/constants';
 
-// A refined, static night sky for the home backdrop: a few soft nebula clouds
-// plus two hand-placed constellations whose stars are 4-point sparkles (not
-// plain dots). Deliberately sparse and calm — it frames the crystal, never
-// competes with it. No scattered background stars.
+// A sparse, static night sky with two hand-placed constellations whose stars
+// are 4-point sparkles. No scattered background stars or nebula glow.
 
 // Coordinate field for the SVG. Portrait-ish so `slice` covers a phone screen
 // without distorting the hand-tuned star positions.
@@ -66,20 +64,6 @@ function sparkle(cx: number, cy: number, r: number) {
 function NightSky() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Nebula clouds — extremely soft, low-opacity, heavily blurred. Warm gold
-          haze up top, a whisper of cool deep-space slate below. */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `
-            radial-gradient(ellipse 58% 40% at 24% 28%, ${gold(0.06)}, transparent 70%),
-            radial-gradient(ellipse 52% 36% at 80% 70%, rgba(116, 134, 168, 0.05), transparent 72%),
-            radial-gradient(ellipse 38% 28% at 66% 16%, ${goldBright(0.04)}, transparent 70%)
-          `,
-          filter: 'blur(10px)',
-        }}
-      />
-
       <svg
         viewBox={`0 0 ${FIELD_W} ${FIELD_H}`}
         preserveAspectRatio="xMidYMid slice"

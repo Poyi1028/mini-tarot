@@ -9,9 +9,8 @@ import InputScreen from './InputScreen';
 import ShuffleScreen from './ShuffleScreen';
 import SpreadScreen from './SpreadScreen';
 import DeckScreen from './DeckScreen';
-import DailyScreen from './DailyScreen';
 
-type Screen = 'splash' | 'home' | 'input' | 'shuffle' | 'spread' | 'deck' | 'daily';
+type Screen = 'splash' | 'home' | 'input' | 'shuffle' | 'spread' | 'deck';
 
 export default function TarotApp() {
   // 開場固定從 splash 起；它自動退場到 home。之後的內部導覽都在 home/input/...
@@ -37,7 +36,6 @@ export default function TarotApp() {
             <HomeScreen
               onStart={() => go('input')}
               onOpenDeck={() => go('deck')}
-              onOpenDaily={() => go('daily')}
             />
           )}
           {screen === 'deck' && <DeckScreen onBack={() => go('home')} />}
@@ -50,7 +48,6 @@ export default function TarotApp() {
               onBack={() => go('home')}
             />
           )}
-          {screen === 'daily' && <DailyScreen onBack={() => go('home')} />}
           {screen === 'shuffle' && <ShuffleScreen onComplete={() => go('spread')} />}
           {screen === 'spread' && (
             <SpreadScreen

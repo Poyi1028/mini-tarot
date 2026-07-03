@@ -7,8 +7,8 @@ import CardBack from './CardBack';
 import CardFront from './CardFront';
 
 // 共用的 3D 翻牌核心 —— preserve-3d 旋轉容器 + 牌背／牌面雙層。
-// SpreadScreen 與 DailyScreen 共用這一份翻轉機構；perspective 容器、
-// 點擊範圍與光暈等氛圍層由呼叫端各自疊加（兩處的氛圍刻意不同）。
+// SpreadScreen 與 HomeScreen 的每日運勢共用這一份翻轉機構；
+// perspective 容器、點擊範圍與氛圍層由呼叫端各自處理。
 export default function CardFlip({
   card,
   reversed,

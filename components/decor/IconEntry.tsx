@@ -19,9 +19,9 @@ export default function IconEntry({ icon, label, ariaLabel, onClick }: IconEntry
       aria-label={ariaLabel}
       whileTap={TAP}
       transition={SPRING_TAP}
-      className="flex min-h-[60px] min-w-[58px] flex-col items-center justify-center gap-1.5 bg-transparent px-1 py-1 text-lilac/90 transition-[opacity,transform] duration-200 active:opacity-75"
+      className="flex min-h-[76px] min-w-[72px] flex-col items-center justify-center gap-2 bg-transparent px-2 py-2 text-lilac/90 transition-[opacity,transform] duration-200 active:opacity-75"
     >
-      <span className="flex h-[30px] w-[36px] items-center justify-center">
+      <span className="flex h-[38px] w-[46px] items-center justify-center">
         <img
           src={icon}
           alt=""
@@ -30,7 +30,7 @@ export default function IconEntry({ icon, label, ariaLabel, onClick }: IconEntry
           style={{ filter: `drop-shadow(0 0 4px ${gold(0.22)})` }}
         />
       </span>
-      <span className="whitespace-nowrap text-[10px] tracking-[2px]">{label}</span>
+      <span className="whitespace-nowrap text-[12px] tracking-[2px]">{label}</span>
     </motion.button>
   );
 }

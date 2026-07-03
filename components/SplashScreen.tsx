@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { GOLD, PARCHMENT, gold } from '@/lib/constants';
+import { GOLD, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR } from '@/lib/motion';
 import NightSky from './decor/NightSky';
 import CrystalBall from './CrystalBall';
@@ -12,7 +12,6 @@ import CrystalBall from './CrystalBall';
 // 淡接）。退場時機綁字體載入：等到字體就緒、且至少停留一個最短品牌秒數後才走，
 // 把首屏的 FOUT/無樣式閃爍藏在這層底下。點一下可立即略過。
 const SPLASH_BG = `
-  radial-gradient(ellipse 80% 55% at 50% 0%, ${gold(0.025)}, transparent 70%),
   linear-gradient(180deg, #0c0b11 0%, #0a0910 55%, #08070d 100%)
 `;
 
