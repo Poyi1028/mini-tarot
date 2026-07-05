@@ -139,7 +139,11 @@ export default function InputScreen({
 
   return (
     <div className="absolute inset-0 flex flex-col items-center justify-center px-7 py-[64px]">
-      <Starfield density={32} seed={8} />
+      <Starfield
+        density={16}
+        seed={8}
+        bg="linear-gradient(180deg, #100e16 0%, #0d0c13 50%, #0b0a10 100%)"
+      />
 
       {/* Input area — AI-style composer. Bar + box live in one flex column so
           the GROUP's midline lands on the screen centre (the outer wrapper's
@@ -152,7 +156,7 @@ export default function InputScreen({
         {/* Focal bar — sits in flow above the box and counts toward centring.
             Its central sun animates from inside the SVG (see public/bar.svg). */}
         <motion.div
-          className="pointer-events-none mb-7 flex w-full justify-center"
+          className="pointer-events-none absolute bottom-full mb-7 flex w-full justify-center"
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: isInput ? 0.95 : 0, y: 0 }}
           transition={{ duration: DUR.base, delay: 0.1, ease: EASE.out }}
@@ -297,7 +301,12 @@ export default function InputScreen({
           transition: 'opacity 300ms ease',
         }}
       >
-        <TextAction label="回到首頁" onClick={onBack} ariaLabel="回到首頁" />
+        <TextAction
+          label="回到首頁"
+          onClick={onBack}
+          ariaLabel="回到首頁"
+          className="px-7 py-3 [&>span:first-of-type]:text-[13px] [&>span:first-of-type]:tracking-[5px] [&>span:last-child]:w-20"
+        />
       </div>
 
       <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>

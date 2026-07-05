@@ -2,9 +2,9 @@ import TarotApp from '@/components/TarotApp';
 
 export default function Home() {
   return (
-    <main className="flex min-h-[100dvh] justify-center bg-ink">
+    <main className="flex h-[100dvh] min-h-0 w-full overflow-hidden bg-ink justify-center">
       <div
-        className="relative w-full max-w-[480px] min-h-[100dvh] overflow-hidden"
+        className="relative h-full min-h-0 w-full max-w-[480px] overflow-hidden"
         style={{
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',

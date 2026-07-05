@@ -190,22 +190,22 @@ export default function HomeScreen({
       </motion.section>
 
       {/* 引言只保留一個安靜的停頓，不再與每日牌競爭視覺重量。 */}
-      <div className="relative z-[2] flex min-h-[62px] w-full shrink-0 items-center justify-center">
+      <div className="relative z-[2] mb-3 flex min-h-[78px] w-full shrink-0 items-center justify-center">
         {quote && (
           <motion.blockquote
-            className="w-full max-w-[310px] text-center"
+            className="w-full max-w-[310px]"
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: DUR.slow, delay: 0.18, ease: EASE.out }}
           >
             <p
-              className="whitespace-pre-line font-serif text-[12px] font-light leading-[1.7] tracking-[1.1px]"
+              className="whitespace-pre-line text-left font-serif text-[17px] font-light leading-[1.8] tracking-[1.2px]"
               style={{ color: PARCHMENT }}
             >
               {quote.text}
             </p>
             <footer
-              className="mt-1 text-[8px] tracking-[1.5px]"
+              className="mt-1 text-right text-[11px] tracking-[1.5px]"
               style={{ color: MUTED }}
             >
               —— {quote.author}
