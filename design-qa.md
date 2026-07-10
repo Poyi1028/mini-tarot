@@ -34,3 +34,60 @@
 - P3：若要更接近概念稿，可再增加中央牌面的柔和光暈；目前版本選擇保留既有、較安靜的 PWA 視覺語言。
 
 final result: passed
+
+---
+
+# InputScreen 星盤祭壇 QA
+
+- source visual truth path: `C:\Users\jason\.codex\generated_images\019f4b2a-1ea1-7b41-9de7-ae00e146c326\exec-690df33d-4b47-4b20-8044-4b8ea5ea6d64.png`
+- implementation screenshot path: unavailable; the in-app browser exposed no capture surface
+- viewport: `390 × 844`
+- state: 提問頁、空白輸入框、未送出
+
+## Full-view comparison evidence
+
+已開啟並檢查選定的第 2 張設計稿。實作頁面與新星盤資產皆可透過本機伺服器載入，但目前無法取得瀏覽器渲染截圖，因此不能完成同尺寸的並排視覺比較。
+
+## Focused region comparison evidence
+
+未執行。星盤主視覺、輸入框標籤、長文字狀態與注入意念印記都需要瀏覽器渲染證據，不能以程式碼或 HTTP 回應代替。
+
+## Findings
+
+- [P1] 缺少實作畫面的視覺證據
+  - Location: `InputScreen` 完整畫面。
+  - Evidence: 選定稿可開啟，但實作截圖無法擷取。
+  - Impact: 無法確認字體、垂直節奏、短螢幕溢位、圖像比例與互動狀態是否達到選定稿。
+  - Fix: 在 `390 × 844` 開啟提問頁，擷取空白、聚焦與長文字三個狀態，再與選定稿放入同一比較畫面。
+
+## Required fidelity surfaces
+
+- Fonts and typography: blocked pending rendered evidence.
+- Spacing and layout rhythm: blocked pending rendered evidence.
+- Colors and visual tokens: blocked pending rendered evidence.
+- Image quality and asset fidelity: generated altar asset inspected independently; in-page crop and scale remain blocked.
+- Copy and content: source code contains `你的問題`、`寫下你心中的疑問`、`注入意念`、`回到首頁`; rendered wrapping remains blocked.
+
+## Primary interaction and console checks
+
+- Page HTTP response: `200`.
+- Altar asset HTTP response: `200 image/png`.
+- Browser interaction test: blocked.
+- Browser console errors: blocked.
+
+## Comparison history
+
+- No visual iteration completed because the first implementation capture is unavailable.
+
+## Implementation checklist
+
+1. Capture the implementation at `390 × 844` in the empty state.
+2. Capture focus and long-text states.
+3. Compare the source and implementation in one combined image.
+4. Fix all P0/P1/P2 mismatches and repeat the comparison.
+
+## Follow-up polish
+
+- None classified until visual comparison is available.
+
+final result: blocked
