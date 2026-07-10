@@ -7,6 +7,7 @@ import { GOLD, GOLD_BRIGHT, gold } from '@/lib/constants';
 import { EASE, DUR, TAP, SPRING_TAP } from '@/lib/motion';
 import Starfield from './Starfield';
 import Constellation from './decor/Constellation';
+import type { ConstellationVariant } from './decor/Constellation';
 import TextAction from './decor/TextAction';
 
 interface Particle {
@@ -25,7 +26,13 @@ type Phase = 'input' | 'dissolve';
 // whole thing sinks into near-black so the screen swap reads as dark→dark.
 type Stage = 'forming' | 'bloom' | 'exit';
 
-function SyncOverlay({ stage }: { stage: Stage }) {
+function SyncOverlay({
+  stage,
+  constellation,
+}: {
+  stage: Stage;
+  constellation: ConstellationVariant;
+}) {
   const exiting = stage === 'exit';
   return (
     <motion.div
@@ -46,7 +53,7 @@ function SyncOverlay({ stage }: { stage: Stage }) {
         transition={{ duration: 0.5, ease: EASE.inOut }}
       >
         <div className="relative mb-8 h-[140px] w-[180px]">
-          <Constellation stage={stage} />
+          <Constellation stage={stage} variant={constellation} />
         </div>
         <motion.div
           className="font-serif text-sm font-light leading-[2] tracking-[5px] text-parchment"
@@ -77,6 +84,7 @@ export default function InputScreen({
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showSync, setShowSync] = useState(false);
   const [stage, setStage] = useState<Stage>('forming');
+  const [constellation, setConstellation] = useState<ConstellationVariant>('lyra');
   const [focused, setFocused] = useState(false);
 
   // Once the char-span layer is rendered (phase === 'dissolve'), measure each
@@ -124,6 +132,7 @@ export default function InputScreen({
 
   function ignite() {
     if (!q.trim() || phase !== 'input') return;
+    setConstellation(Math.random() < 0.5 ? 'lyra' : 'corona');
     setPhase('dissolve');
     // One continuous ~4.3s arc: the words gather into light (mote-gather), the
     // constellation unhurriedly wires itself up, the centre blooms ("synced"),
@@ -309,7 +318,9 @@ export default function InputScreen({
         />
       </div>
 
-      <AnimatePresence>{showSync && <SyncOverlay stage={stage} />}</AnimatePresence>
+      <AnimatePresence>
+        {showSync && <SyncOverlay stage={stage} constellation={constellation} />}
+      </AnimatePresence>
     </div>
   );
 }

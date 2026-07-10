@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+} from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MUTED, PARCHMENT } from '@/lib/constants';
 import { EASE, DUR, SPRING_TAP, TAP } from '@/lib/motion';
@@ -24,6 +30,7 @@ const HOME_BG = `
 
 const DAILY_CARD_W = 184;
 const DAILY_CARD_H = 323;
+const DAILY_CHARGE_MS = 1400;
 
 export default function HomeScreen({
   onStart,
@@ -39,6 +46,10 @@ export default function HomeScreen({
   const [dailyFlipped, setDailyFlipped] = useState(false);
   const [dailyRevealed, setDailyRevealed] = useState(false);
   const [dailyDetail, setDailyDetail] = useState(false);
+  const [isCharging, setIsCharging] = useState(false);
+  const [chargeProgress, setChargeProgress] = useState(0);
+  const chargeStartedAtRef = useRef(0);
+  const chargeFrameRef = useRef<number | null>(null);
 
   useEffect(() => {
     setQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
@@ -59,14 +70,73 @@ export default function HomeScreen({
 
   const dailyDraw = dailyState?.draw;
 
+  const clearChargeFrame = () => {
+    if (chargeFrameRef.current === null) return;
+    cancelAnimationFrame(chargeFrameRef.current);
+    chargeFrameRef.current = null;
+  };
+
+  useEffect(() => clearChargeFrame, []);
+
+  const resetDailyCharge = () => {
+    clearChargeFrame();
+    setIsCharging(false);
+    setChargeProgress(0);
+  };
+
+  const revealDailyDraw = () => {
+    if (!dailyDraw || dailyFlipped) return;
+
+    clearChargeFrame();
+    saveDailyDraw(dailyDraw);
+    setDailyFlipped(true);
+    setIsCharging(false);
+    setChargeProgress(1);
+  };
+
+  const startDailyCharge = (event: PointerEvent<HTMLButtonElement>) => {
+    if (!dailyDraw || dailyFlipped) return;
+
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    clearChargeFrame();
+    chargeStartedAtRef.current = performance.now();
+    setIsCharging(true);
+    setChargeProgress(0);
+
+    const tick = (now: number) => {
+      const nextProgress = Math.min(
+        (now - chargeStartedAtRef.current) / DAILY_CHARGE_MS,
+        1,
+      );
+
+      setChargeProgress(nextProgress);
+
+      if (nextProgress >= 1) {
+        chargeFrameRef.current = null;
+        revealDailyDraw();
+        return;
+      }
+
+      chargeFrameRef.current = requestAnimationFrame(tick);
+    };
+
+    chargeFrameRef.current = requestAnimationFrame(tick);
+  };
+
+  const cancelDailyCharge = () => {
+    if (dailyFlipped) return;
+    resetDailyCharge();
+  };
+
+  const handleDailyKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (dailyFlipped || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    revealDailyDraw();
+  };
+
   const handleDailyClick = () => {
     if (!dailyDraw) return;
-
-    if (!dailyFlipped) {
-      saveDailyDraw(dailyDraw);
-      setDailyFlipped(true);
-      return;
-    }
 
     if (dailyRevealed) setDailyDetail(true);
   };
@@ -84,10 +154,7 @@ export default function HomeScreen({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: DUR.slow, ease: EASE.out }}
       >
-        <span className="block font-display text-[8px] tracking-[4px] text-gold-soft/45">
-          DAILY ORACLE
-        </span>
-        <div className="mt-1.5 flex items-end justify-between border-b border-gold/15 pb-3">
+        <div className="flex items-end justify-between border-b border-gold/15 pb-3">
           <h1 className="font-serif text-[21px] font-light tracking-[6px] text-gold-soft">
             今日運勢
           </h1>
@@ -132,23 +199,56 @@ export default function HomeScreen({
             <motion.button
               type="button"
               onClick={handleDailyClick}
+              onContextMenu={(event) => event.preventDefault()}
+              onKeyDown={handleDailyKeyDown}
+              onPointerDown={startDailyCharge}
+              onPointerUp={cancelDailyCharge}
+              onPointerCancel={cancelDailyCharge}
+              onPointerLeave={cancelDailyCharge}
               whileTap={TAP}
               transition={SPRING_TAP}
-              className="block h-full w-full cursor-pointer rounded-[14px] bg-transparent p-0"
+              className="relative block h-full w-full cursor-pointer touch-none select-none rounded-[14px] bg-transparent p-0"
               aria-describedby="daily-oracle-status"
               aria-label={
                 dailyRevealed
                   ? `查看${dailyDraw.card.cn}牌義`
-                  : '翻開今日運勢'
+                  : '長按揭開今日運勢'
               }
             >
-              <CardFlip
-                card={dailyDraw.card}
-                reversed={dailyDraw.reversed}
-                flipped={dailyFlipped}
-                w={DAILY_CARD_W}
-                h={DAILY_CARD_H}
-              />
+              <motion.div
+                className="h-full w-full"
+                animate={{ scale: isCharging ? 1.025 : 1 }}
+                transition={{ duration: 0.2, ease: EASE.out }}
+              >
+                <CardFlip
+                  card={dailyDraw.card}
+                  reversed={dailyDraw.reversed}
+                  flipped={dailyFlipped}
+                  w={DAILY_CARD_W}
+                  h={DAILY_CARD_H}
+                />
+              </motion.div>
+
+              {!dailyFlipped && (
+                <>
+                  <motion.span
+                    className="pointer-events-none absolute -inset-2 rounded-[18px] border border-gold/25"
+                    style={{
+                      boxShadow: `0 0 ${8 + chargeProgress * 18}px rgba(218, 186, 107, ${
+                        0.18 + chargeProgress * 0.26
+                      })`,
+                    }}
+                    animate={{ opacity: isCharging ? 1 : 0 }}
+                    transition={{ duration: 0.18, ease: EASE.out }}
+                  />
+                  <motion.span
+                    className="pointer-events-none absolute -bottom-5 left-0 h-px rounded-full bg-gold/85"
+                    style={{ width: `${chargeProgress * 100}%` }}
+                    animate={{ opacity: isCharging ? 1 : 0 }}
+                    transition={{ duration: 0.12, ease: EASE.out }}
+                  />
+                </>
+              )}
             </motion.button>
           )}
         </div>
@@ -172,17 +272,11 @@ export default function HomeScreen({
                 {dailyDraw.card.cn}
                 {dailyDraw.reversed ? '・逆位' : ''}
               </span>
-              <span className="mt-1 text-[8px] tracking-[2.5px] text-muted transition-opacity group-active:opacity-60">
-                輕觸查看牌義
-              </span>
             </motion.button>
           ) : (
             <>
               <span className="text-[11px] tracking-[3.5px] text-gold-soft/80">
-                輕觸，揭示今日訊息
-              </span>
-              <span className="mt-1 text-[8px] tracking-[2px] text-muted/70">
-                一日一張・為你保留
+                {isCharging ? '凝聚中...' : '長按，凝聚今日訊息'}
               </span>
             </>
           )}
@@ -230,10 +324,7 @@ export default function HomeScreen({
           aria-label="開始占卜"
           className="group flex min-h-[68px] flex-col items-start justify-center px-1 text-left"
         >
-          <span className="font-display text-[8px] tracking-[3px] text-muted">
-            THREE CARD READING
-          </span>
-          <span className="mt-1 font-serif text-[18px] tracking-[5px] text-gold-soft">
+          <span className="font-serif text-[18px] tracking-[5px] text-gold-soft">
             開始占卜
           </span>
           <span className="mt-2 h-px w-20 bg-gold/45 transition-[width,opacity] duration-200 group-active:w-14 group-active:opacity-60" />

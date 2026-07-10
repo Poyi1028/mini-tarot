@@ -2,59 +2,99 @@ import { motion } from 'framer-motion';
 import { GOLD, GOLD_BRIGHT, PARCHMENT } from '@/lib/constants';
 import { EASE } from '@/lib/motion';
 
-// The sync sigil, reimagined: the dissolved question's light settles into a
-// handful of stars that then wire themselves together into a constellation.
-// Replaces the old spinning geometric `SyncSigil`. Driven by `stage`:
-//   forming → stars fade in, then lines draw in sequence (pathLength)
-//   bloom   → a soft flare blooms at the centre ("synced")
-//   exit    → handled by the parent overlay fading the whole group out
 type Stage = 'forming' | 'bloom' | 'exit';
+export type ConstellationVariant = 'lyra' | 'corona';
 
-// Cygnus — the Swan, a.k.a. the Northern Cross. Chosen over a single open arc
-// because its shape genuinely BRANCHES: a long spine (tail → heart → head) is
-// crossed by an outstretched pair of wings, all four limbs meeting at the
-// central star Sadr. That 4-way junction reads as a cross/swan in flight —
-// recognisable and ritualistic — rather than one unbroken line. Laid out in
-// the 180×140 field as a gently tilted cross, heart (Sadr) ≈ (90, 70).
-const STARS: ReadonlyArray<{ x: number; y: number }> = [
-  { x: 96, y: 18 }, // 0 Deneb — the tail, brightest, high on the spine
-  { x: 90, y: 70 }, // 1 Sadr — the heart, where spine and wings cross (bloom)
-  { x: 82, y: 118 }, // 2 Albireo — the head/beak, low on the spine
-  { x: 30, y: 56 }, // 3 west wing inner (Fawaris / δ Cygni)
-  { x: 150, y: 84 }, // 4 east wing outer (ε Cygni / Gienah) tip
-  { x: 60, y: 62 }, // 5 west wing mid, between Sadr and the tip
-  { x: 120, y: 78 }, // 6 east wing mid, between Sadr and the tip
-];
+interface Star {
+  x: number;
+  y: number;
+  r?: number;
+}
 
-// Edges fan OUT from the heart (1) along all four limbs, so the draw-in stagger
-// blooms from the centre: first the spine (tail then head), then each wing
-// sweeps outward. Multiple edges share node 1 — this is the branch, not a chain.
-const EDGES: ReadonlyArray<[number, number]> = [
-  [1, 0], // heart → tail (Deneb)
-  [1, 2], // heart → head (Albireo)
-  [1, 5], // heart → west wing mid
-  [5, 3], // west wing mid → inner tip
-  [1, 6], // heart → east wing mid
-  [6, 4], // east wing mid → outer tip
-];
+interface ConstellationDefinition {
+  stars: ReadonlyArray<Star>;
+  segments: ReadonlyArray<string>;
+  bloom: { x: number; y: number };
+}
 
-// Tuned so stars + lines finish just before the bloom beat (~2.0s after the
-// overlay mounts; see ignite() in InputScreen). With more edges than the old
-// arc, the per-line stagger is tightened so the full wiring still lands < ~2s,
-// yet each limb still draws as one unhurried outward gesture.
-const STAR_IN = 0.12; // first star appears
-const STAR_STEP = 0.08; // per-star stagger (7 stars → settle by ~0.7s)
-const LINE_BASE = 0.7; // first line starts as the stars settle
-const LINE_STEP = 0.11; // per-line stagger (6 edges → last starts ~1.25s, ends ~1.8s)
+// Stars are ordered from the focal point outward so their stagger reads as
+// light gathering into a shape rather than a diagram appearing node-by-node.
+const LYRA: ConstellationDefinition = {
+  bloom: { x: 53, y: 24 },
+  stars: [
+    { x: 53, y: 24, r: 2.1 },
+    { x: 73, y: 50, r: 1.5 },
+    { x: 119, y: 58, r: 1.7 },
+    { x: 128, y: 91, r: 1.5 },
+    { x: 77, y: 106, r: 1.8 },
+    { x: 43, y: 76, r: 1.6 },
+    { x: 94, y: 78, r: 1.2 },
+    { x: 66, y: 128, r: 1.4 },
+  ],
+  segments: [
+    'M 53 24 Q 58 38 73 50',
+    'M 73 50 L 119 58',
+    'M 119 58 Q 130 72 128 91',
+    'M 128 91 L 77 106',
+    'M 77 106 L 43 76',
+    'M 43 76 Q 45 43 53 24',
+    'M 73 50 L 77 106',
+    'M 119 58 L 77 106',
+    'M 77 106 Q 70 118 66 128',
+  ],
+};
 
-export default function Constellation({ stage }: { stage: Stage }) {
+const CORONA: ConstellationDefinition = {
+  bloom: { x: 90, y: 35 },
+  stars: [
+    { x: 90, y: 35, r: 2.2 },
+    { x: 67, y: 67, r: 1.6 },
+    { x: 113, y: 67, r: 1.7 },
+    { x: 41, y: 89, r: 1.8 },
+    { x: 140, y: 90, r: 1.8 },
+    { x: 20, y: 62, r: 1.4 },
+    { x: 162, y: 61, r: 1.5 },
+  ],
+  segments: [
+    'M 90 35 L 67 67',
+    'M 90 35 L 113 67',
+    'M 67 67 Q 53 78 41 89',
+    'M 113 67 Q 127 79 140 90',
+    'M 41 89 L 20 62',
+    'M 140 90 L 162 61',
+  ],
+};
+
+const DEFINITIONS: Record<ConstellationVariant, ConstellationDefinition> = {
+  lyra: LYRA,
+  corona: CORONA,
+};
+
+const STAR_IN = 0.12;
+const STAR_STEP = 0.07;
+const LINE_BASE = 0.68;
+const LINE_STEP = 0.075;
+
+export default function Constellation({
+  stage,
+  variant,
+}: {
+  stage: Stage;
+  variant: ConstellationVariant;
+}) {
+  const definition = DEFINITIONS[variant];
+
   return (
-    <svg viewBox="0 0 180 140" width="180" height="140" className="overflow-visible">
-      {/* Centre bloom — a blurred flare that only swells on the `bloom` beat.
-          Sits at Sadr (the heart, where all four limbs cross). */}
+    <svg
+      viewBox="0 0 180 140"
+      width="180"
+      height="140"
+      className="overflow-visible"
+      aria-hidden
+    >
       <motion.circle
-        cx={90}
-        cy={70}
+        cx={definition.bloom.x}
+        cy={definition.bloom.y}
         r={7}
         fill={GOLD_BRIGHT}
         initial={{ opacity: 0, scale: 1 }}
@@ -63,47 +103,57 @@ export default function Constellation({ stage }: { stage: Stage }) {
           scale: stage === 'bloom' ? 2.3 : stage === 'exit' ? 2.8 : 1,
         }}
         transition={{ duration: 0.7, ease: EASE.reveal }}
-        style={{ filter: 'blur(6px)', transformOrigin: '90px 70px' }}
+        style={{
+          filter: 'blur(6px)',
+          transformOrigin: `${definition.bloom.x}px ${definition.bloom.y}px`,
+        }}
       />
 
-      {/* Constellation lines — each traces itself on via pathLength. */}
-      {EDGES.map(([a, b], i) => (
-        <motion.line
-          key={`e${i}`}
-          x1={STARS[a].x}
-          y1={STARS[a].y}
-          x2={STARS[b].x}
-          y2={STARS[b].y}
+      {definition.segments.map((d, i) => (
+        <motion.path
+          key={`${variant}-segment-${i}`}
+          d={d}
+          fill="none"
           stroke={PARCHMENT}
-          strokeWidth={0.7}
+          strokeWidth={0.72}
           strokeLinecap="round"
+          strokeLinejoin="round"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 0.65 }}
-          transition={{ duration: 0.55, ease: EASE.out, delay: LINE_BASE + i * LINE_STEP }}
+          animate={{ pathLength: 1, opacity: 0.62 }}
+          transition={{
+            duration: 0.55,
+            ease: EASE.out,
+            delay: LINE_BASE + i * LINE_STEP,
+          }}
         />
       ))}
 
-      {/* Stars — framer fades/scales the GROUP in; the CSS twinkle lives on a
-          child circle so the two never fight over `opacity`. */}
-      {STARS.map((s, i) => (
-        <motion.g
-          key={`s${i}`}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease: EASE.out, delay: STAR_IN + i * STAR_STEP }}
-          style={{ transformOrigin: `${s.x}px ${s.y}px` }}
-        >
-          <circle
-            cx={s.x}
-            cy={s.y}
-            r={4.5}
-            fill={GOLD}
-            className="animate-star-twinkle"
-            style={{ animationDelay: `${-i * 0.4}s`, filter: 'blur(2px)' }}
-          />
-          <circle cx={s.x} cy={s.y} r={1.6} fill={GOLD_BRIGHT} />
-        </motion.g>
-      ))}
+      {definition.stars.map((star, i) => {
+        const radius = star.r ?? 1.5;
+        return (
+          <motion.g
+            key={`${variant}-star-${i}`}
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.5,
+              ease: EASE.out,
+              delay: STAR_IN + i * STAR_STEP,
+            }}
+            style={{ transformOrigin: `${star.x}px ${star.y}px` }}
+          >
+            <circle
+              cx={star.x}
+              cy={star.y}
+              r={radius * 3.2}
+              fill={GOLD}
+              className="animate-star-twinkle"
+              style={{ animationDelay: `${-i * 0.37}s`, filter: 'blur(2.2px)' }}
+            />
+            <circle cx={star.x} cy={star.y} r={radius} fill={GOLD_BRIGHT} />
+          </motion.g>
+        );
+      })}
     </svg>
   );
 }

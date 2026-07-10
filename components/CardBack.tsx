@@ -3,8 +3,8 @@
 import { memo } from 'react';
 import { gold } from '@/lib/constants';
 
-// A shared, physical-deck-style card back. The source artwork keeps its fine
-// engraved detail at every hero size while the wrapper owns sizing and glow.
+// A shared, physical-deck-style card back. The source artwork is a simplified
+// sun-and-moon redraw while the wrapper owns sizing and glow.
 function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; glow?: boolean }) {
   return (
     <div
@@ -22,7 +22,7 @@ function CardBack({ w = 84, h = 148, glow = false }: { w?: number; h?: number; g
       }}
     >
       <img
-        src="/card-back.png"
+        src="/card-back-simple.png"
         alt=""
         aria-hidden="true"
         draggable={false}
